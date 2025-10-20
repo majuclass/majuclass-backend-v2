@@ -2,17 +2,15 @@ package com.ssafy.a202.domain.scenario.entity;
 
 import com.ssafy.a202.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Getter
+@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Table(name = "seq_options")
-public class seqOption extends BaseTimeEntity {
+public class SeqOption extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,8 +27,8 @@ public class seqOption extends BaseTimeEntity {
     private String optionText;
 
     @Column(nullable = false, columnDefinition = "TINYINT(1)")
-    private Boolean isAnswer;
+    private boolean isAnswer;
 
     @Column(nullable = false, columnDefinition = "TINYINT(1)")
-    private Boolean isDeleted;
+    private boolean isDeleted;
 }
