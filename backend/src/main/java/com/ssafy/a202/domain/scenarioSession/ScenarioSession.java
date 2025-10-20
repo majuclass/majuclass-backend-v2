@@ -1,0 +1,42 @@
+package com.ssafy.a202.domain.scenarioSession;
+
+import com.ssafy.a202.domain.scenario.entity.Scenario;
+import com.ssafy.a202.global.entity.BaseTimeEntity;
+import jakarta.persistence.*;
+import lombok.*;
+import org.springframework.web.bind.support.SessionStatus;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
+@Getter
+@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Table(name = "scenario_sessions")
+public class ScenarioSession extends BaseTimeEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @OneToMany(mappedBy = "scenarioSession", cascade = CascadeType.ALL)
+    private List<SessionAnswer> sessionAnswers = new ArrayList<>();
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "student_id")
+    private Student student;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "scenario_id")
+    private Scenario scenario;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private SessionStatus sessionStatus;
+
+
+    @Column(nullable = false, columnDefinition = "TINYINT(1)")
+    private Boolean isDeleted;
+}
