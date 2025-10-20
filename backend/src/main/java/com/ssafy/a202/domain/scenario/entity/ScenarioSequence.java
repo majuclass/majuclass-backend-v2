@@ -23,7 +23,7 @@ public class ScenarioSequence extends BaseTimeEntity {
     private Scenario scenario;
 
     @Column(nullable = false)
-    private int seq_no;
+    private int seqNo;
 
     @Column(nullable = false)
     private String seqS3Bucket;
@@ -34,6 +34,6 @@ public class ScenarioSequence extends BaseTimeEntity {
     @Column(nullable = false)
     private String question;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TINYINT(1)")
     private Boolean isDeleted;
 }
