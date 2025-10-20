@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -19,8 +20,8 @@ public class ScenarioCategory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany(mappedBy = "category")
-    private List<Scenario> scenarios;
+    @OneToMany(mappedBy = "scenarioCategory")
+    private List<Scenario> scenarios = new ArrayList<>();
 
     private String categoryName;
 }
