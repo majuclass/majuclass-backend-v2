@@ -39,5 +39,5 @@ public class Scenario extends BaseTimeEntity {
     private String thumbnailS3Key;
 
     @Column(nullable = false, columnDefinition = "TINYINT(1)")
-    private Boolean isDeleted;
+    private boolean isDeleted;
 }

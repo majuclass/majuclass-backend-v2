@@ -2,10 +2,10 @@ package com.ssafy.a202.domain.scenarioSession;
 
 import com.ssafy.a202.domain.scenario.entity.Scenario;
 import com.ssafy.a202.domain.user.entity.Student;
+import com.ssafy.a202.global.constants.SessionStatus;
 import com.ssafy.a202.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.web.bind.support.SessionStatus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,5 +38,5 @@ public class ScenarioSession extends BaseTimeEntity {
     private SessionStatus sessionStatus;
 
     @Column(nullable = false, columnDefinition = "TINYINT(1)")
-    private Boolean isDeleted;
+    private boolean isDeleted;
 }
