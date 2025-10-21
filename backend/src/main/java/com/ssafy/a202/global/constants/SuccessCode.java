@@ -1,0 +1,29 @@
+package com.ssafy.a202.global.constants;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+/**
+ * 성공 응답 메시지를 정의하는 열거형
+ */
+@Getter
+@AllArgsConstructor
+public enum SuccessCode {
+
+    // 공통
+    SUCCESS_DEFAULT("요청이 성공적으로 처리되었습니다"),
+
+    // 인증 관련
+    LOGIN_SUCCESS("로그인이 성공했습니다"),
+    LOGOUT_SUCCESS("로그아웃이 완료되었습니다"),
+    TOKEN_REFRESH_SUCCESS("토큰 갱신이 완료되었습니다"),
+
+    // 사용자 관련
+    USER_PROFILE_SUCCESS("프로필 조회가 완료되었습니다"),
+    USER_LIST_SUCCESS("사용자 목록 조회가 완료되었습니다"),
+    USER_CREATE_SUCCESS("사용자가 성공적으로 생성되었습니다"),
+    USER_UPDATE_SUCCESS("사용자 정보가 성공적으로 수정되었습니다"),
+    USER_DELETE_SUCCESS("사용자가 성공적으로 삭제되었습니다");
+
+    private final String message;
+}
