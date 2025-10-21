@@ -1,6 +1,7 @@
 package com.ssafy.a202.domain.scenarioSession;
 
 import com.ssafy.a202.domain.scenario.entity.Scenario;
+import com.ssafy.a202.domain.user.entity.Student;
 import com.ssafy.a202.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -35,7 +36,6 @@ public class ScenarioSession extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private SessionStatus sessionStatus;
-
 
     @Column(nullable = false, columnDefinition = "TINYINT(1)")
     private Boolean isDeleted;
