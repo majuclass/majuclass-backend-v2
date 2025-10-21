@@ -40,10 +40,13 @@ dependencies {
 	// 보안
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 
-	// JWT (최신 버전 0.12.6)
+	// JWT
 	implementation 'io.jsonwebtoken:jjwt-api:0.12.6'
 	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.6'
 	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.6'
+
+	// AWS S3
+	implementation 'io.awspring.cloud:spring-cloud-aws-starter-s3:3.4.0'
 
 	// Swagger
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.13'
