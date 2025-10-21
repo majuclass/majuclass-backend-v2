@@ -1,0 +1,31 @@
+# Gradle
+.gradle
+build/
+!gradle/wrapper/gradle-wrapper.jar
+
+# IDE
+.idea/
+.vscode/
+*.iml
+*.iws
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Docker
+Dockerfile
+.dockerignore
+compose.yaml
+
+# 환경 변수 (이미지에 포함하면 안 됨)
+.env
+
+# 기타
+README.md
+*.md
