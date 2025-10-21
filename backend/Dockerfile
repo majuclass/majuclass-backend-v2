@@ -9,7 +9,7 @@ RUN gradle dependencies --no-daemon || true
 
 # 소스 코드 복사 및 빌드
 COPY . .
-RUN gradle bootJar --no-daemon
+RUN gradle build -x test --no-daemon
 
 # Runtime stage
 FROM eclipse-temurin:21-jre
