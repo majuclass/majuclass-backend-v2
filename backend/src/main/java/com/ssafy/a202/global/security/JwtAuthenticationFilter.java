@@ -1,0 +1,85 @@
+package com.ssafy.a202.global.security;
+
+import com.ssafy.a202.global.constants.Role;
+import io.jsonwebtoken.JwtException;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import java.io.IOException;
+import java.util.List;
+
+/**
+ * JWT 인증 필터
+ * HTTP 요청에서 JWT 토큰을 추출하고 검증하여 SecurityContext에 인증 정보를 설정
+ */
+@Slf4j
+@Component
+@RequiredArgsConstructor
+public class JwtAuthenticationFilter extends OncePerRequestFilter {
+
+    private final JwtProvider jwtProvider;
+
+    @Override
+    protected void doFilterInternal(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            FilterChain filterChain
+    ) throws ServletException, IOException {
+
+        String token = extractToken(request);
+
+        if (token != null) {
+            try {
+                // 토큰 검증
+                jwtProvider.validateToken(token);
+
+                // 토큰에서 사용자 정보 추출
+                Long userId = jwtProvider.getUserIdFromToken(token);
+                String username = jwtProvider.getUsernameFromToken(token);
+                Role role = jwtProvider.getRoleFromToken(token);
+
+                // UserPrincipal 생성
+                UserPrincipal userPrincipal = new UserPrincipal(userId, username, role);
+
+                // Authentication 객체 생성 및 SecurityContext에 저장
+                UsernamePasswordAuthenticationToken authentication =
+                        new UsernamePasswordAuthenticationToken(
+                                userPrincipal,  // principal
+                                null,           // credentials
+                                List.of(new SimpleGrantedAuthority("ROLE_" + role.name()))
+                        );
+
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+
+                log.debug("JWT authentication successful for user: {}", username);
+
+            } catch (JwtException e) {
+                log.debug("JWT validation failed: {}", e.getMessage());
+                // 인증 실패 시 SecurityContext를 비워둠 (익명 사용자로 처리)
+                SecurityContextHolder.clearContext();
+            }
+        }
+
+        filterChain.doFilter(request, response);
+    }
+
+    /**
+     * HTTP 요청 헤더에서 Bearer 토큰 추출
+     */
+    private String extractToken(HttpServletRequest request) {
+        String bearerToken = request.getHeader("Authorization");
+        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+            return bearerToken.substring(7);
+        }
+        return null;
+    }
+}

@@ -39,5 +39,5 @@ public class ScenarioSequence extends BaseTimeEntity {
     private String question;
 
     @Column(nullable = false, columnDefinition = "TINYINT(1)")
-    private Boolean isDeleted;
+    private boolean isDeleted;
 }
