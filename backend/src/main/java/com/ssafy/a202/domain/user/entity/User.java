@@ -38,12 +38,10 @@ public class User extends BaseTimeEntity {
     @Column(length = 200)
     private String phone;
 
-    @Builder.Default
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private Role role = Role.USER;
 
-    @Builder.Default
     @OneToMany(mappedBy = "user")
     private List<Student> students = new ArrayList<>();
 
@@ -56,7 +54,7 @@ public class User extends BaseTimeEntity {
         this.name = name;
         this.email = email;
         this.phone = phone;
-        this.role = role;
+        this.role = (role != null) ? role : Role.USER;
     }
 
     // ================================
