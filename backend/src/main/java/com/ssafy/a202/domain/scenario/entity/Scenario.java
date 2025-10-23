@@ -38,6 +38,9 @@ public class Scenario extends BaseTimeEntity {
     @Column(nullable = false)
     private String thumbnailS3Key;
 
+    @Column(nullable = false)
+    private int totalSequences;
+
     @Column(nullable = false, columnDefinition = "TINYINT(1)")
     private boolean isDeleted;
 }

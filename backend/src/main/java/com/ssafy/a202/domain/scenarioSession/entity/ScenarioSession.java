@@ -1,4 +1,4 @@
-package com.ssafy.a202.domain.scenarioSession;
+package com.ssafy.a202.domain.scenariosession.entity;
 
 import com.ssafy.a202.domain.scenario.entity.Scenario;
 import com.ssafy.a202.domain.user.entity.Student;
