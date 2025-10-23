@@ -23,7 +23,14 @@ public enum SuccessCode {
     USER_LIST_SUCCESS("사용자 목록 조회가 완료되었습니다"),
     USER_CREATE_SUCCESS("사용자가 성공적으로 생성되었습니다"),
     USER_UPDATE_SUCCESS("사용자 정보가 성공적으로 수정되었습니다"),
-    USER_DELETE_SUCCESS("사용자가 성공적으로 삭제되었습니다");
+    USER_DELETE_SUCCESS("사용자가 성공적으로 삭제되었습니다"),
+
+    // 시나리오 관련
+    SCENARIO_LIST_SUCCESS("시나리오 목록 조회가 완료되었습니다"),
+    SCENARIO_DETAIL_SUCCESS("시나리오 상세 조회가 완료되었습니다"),
+    SCENARIO_CREATE_SUCCESS("시나리오가 성공적으로 생성되었습니다"),
+    SCENARIO_UPDATE_SUCCESS("시나리오가 성공적으로 수정되었습니다"),
+    SCENARIO_DELETE_SUCCESS("시나리오가 성공적으로 삭제되었습니다");
 
     private final String message;
 }
