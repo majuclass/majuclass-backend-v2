@@ -19,7 +19,7 @@ public class ScenarioSequence extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany(mappedBy = "scenarioSequence", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "scenarioSequence", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SeqOption> options = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
