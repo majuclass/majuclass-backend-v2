@@ -25,6 +25,7 @@ public class ScenarioResponse {
     private String thumbnailS3Key;
     private Long categoryId;
     private String categoryName;
+    private int totalSequences;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -42,6 +43,7 @@ public class ScenarioResponse {
                 .thumbnailS3Key(scenario.getThumbnailS3Key())
                 .categoryId(category != null ? category.getId() : null)
                 .categoryName(category != null ? category.getCategoryName() : null)
+                .totalSequences(scenario.getTotalSequences())
                 .createdAt(scenario.getCreatedAt())
                 .updatedAt(scenario.getUpdatedAt())
                 .build();

@@ -1,4 +1,12 @@
 # ===================================
+# Server Configuration
+# ===================================
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+
+# ===================================
 # Spring Configuration
 # ===================================
 spring:
@@ -39,9 +47,11 @@ jwt:
   refresh-token-expiration: ${JWT_REFRESH_TOKEN_EXPIRATION}
 
 # ===================================
-# Server Configuration
+# AWS S3 Configuration
 # ===================================
-server:
-  port: 8080
-  servlet:
-    context-path: /api
+aws:
+  s3:
+    bucket: ${AWS_S3_BUCKET}
+    region: ${AWS_S3_REGION:ap-northeast-2}
+    access-key: ${AWS_ACCESS_KEY_ID}
+    secret-key: ${AWS_SECRET_ACCESS_KEY}
