@@ -42,7 +42,7 @@ public class User extends BaseTimeEntity {
     @Column(nullable = false, length = 20)
     private Role role = Role.USER;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Student> students = new ArrayList<>();
 
     @Builder

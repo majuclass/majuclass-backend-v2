@@ -4,12 +4,11 @@ import com.ssafy.a202.domain.auth.dto.LoginRequest;
 import com.ssafy.a202.domain.auth.dto.LoginResponse;
 import com.ssafy.a202.domain.user.entity.User;
 import com.ssafy.a202.domain.user.repository.UserRepository;
-import com.ssafy.a202.global.exception.CustomException;
 import com.ssafy.a202.global.constants.ErrorCode;
+import com.ssafy.a202.global.exception.CustomException;
 import com.ssafy.a202.global.security.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,7 +22,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class AuthServiceImpl implements AuthService {
 
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
+    // todo: 회원가입 기능 적용 전까지 주석처리.
+    //    private final SecurityConfig securityConfig;
     private final JwtProvider jwtProvider;
 
     @Override
@@ -32,10 +32,11 @@ public class AuthServiceImpl implements AuthService {
         User user = userRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
+        // todo: 회원가입 기능 적용 전까지 주석처리.
         // 2. 비밀번호 검증
-        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new CustomException(ErrorCode.INVALID_PASSWORD);
-        }
+//        if (!securityConfig.passwordEncoder().matches(request.getPassword(), user.getPassword())) {
+//            throw new CustomException(ErrorCode.INVALID_PASSWORD);
+//        }
 
         // 3. JWT 토큰 생성
         String accessToken = jwtProvider.generateAccessToken(

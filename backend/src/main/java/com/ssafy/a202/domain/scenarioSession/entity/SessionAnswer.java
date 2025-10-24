@@ -1,4 +1,4 @@
-package com.ssafy.a202.domain.scenarioSession;
+package com.ssafy.a202.domain.scenariosession.entity;
 
 import com.ssafy.a202.domain.scenario.entity.ScenarioSequence;
 import com.ssafy.a202.global.entity.BaseTimeEntity;
