@@ -18,6 +18,9 @@ public class LoginResponse {
     @Schema(description = "사용자명", example = "user123")
     private String username;
 
+    @Schema(description = "사용자 이름", example = "홍길동")
+    private String name;
+
     @Schema(description = "사용자 역할", example = "ADMIN")
     private String role;
 
