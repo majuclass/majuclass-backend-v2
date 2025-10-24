@@ -21,8 +21,7 @@ public class ScenarioResponse {
     private Long id;
     private String title;
     private String summary;
-    private String thumbnailS3Bucket;
-    private String thumbnailS3Key;
+    private String thumbnailUrl;
     private Long categoryId;
     private String categoryName;
     private int totalSequences;
@@ -32,15 +31,14 @@ public class ScenarioResponse {
     /**
      * Scenario 엔티티를 ScenarioResponse로 변환
      */
-    public static ScenarioResponse from(Scenario scenario) {
+    public static ScenarioResponse from(Scenario scenario, String thumbnailUrl) {
         ScenarioCategory category = scenario.getScenarioCategory();
 
         return ScenarioResponse.builder()
                 .id(scenario.getId())
                 .title(scenario.getTitle())
                 .summary(scenario.getSummary())
-                .thumbnailS3Bucket(scenario.getThumbnailS3Bucket())
-                .thumbnailS3Key(scenario.getThumbnailS3Key())
+                .thumbnailUrl(thumbnailUrl)
                 .categoryId(category != null ? category.getId() : null)
                 .categoryName(category != null ? category.getCategoryName() : null)
                 .totalSequences(scenario.getTotalSequences())
