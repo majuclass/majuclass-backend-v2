@@ -5,6 +5,7 @@ import com.ssafy.a202.domain.scenario.entity.Scenario;
 import com.ssafy.a202.domain.scenario.repository.ScenarioRepository;
 import com.ssafy.a202.global.exception.CustomException;
 import com.ssafy.a202.global.constants.ErrorCode;
+import com.ssafy.a202.global.s3.S3PresignedUrlProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -22,13 +23,18 @@ import java.util.List;
 public class ScenarioServiceImpl implements ScenarioService {
 
     private final ScenarioRepository scenarioRepository;
+    private final S3PresignedUrlProvider s3PresignedUrlProvider;
 
     @Override
     public List<ScenarioResponse> getAllScenarios() {
         List<Scenario> scenarios = scenarioRepository.findByDeletedFalse();
 
         return scenarios.stream()
-                .map(ScenarioResponse::from)
+                .map(scenario -> {
+                    String thumbnailUrl = s3PresignedUrlProvider.generatePresignedUrl(
+                            scenario.getThumbnailS3Key());
+                    return ScenarioResponse.from(scenario, thumbnailUrl);
+                })
                 .toList();
     }
 
@@ -37,7 +43,11 @@ public class ScenarioServiceImpl implements ScenarioService {
         List<Scenario> scenarios = scenarioRepository.findByScenarioCategoryIdAndDeletedFalse(categoryId);
 
         return scenarios.stream()
-                .map(ScenarioResponse::from)
+                .map(scenario -> {
+                    String thumbnailUrl = s3PresignedUrlProvider.generatePresignedUrl(
+                            scenario.getThumbnailS3Key());
+                    return ScenarioResponse.from(scenario, thumbnailUrl);
+                })
                 .toList();
     }
 
@@ -50,6 +60,9 @@ public class ScenarioServiceImpl implements ScenarioService {
             throw new CustomException(ErrorCode.RESOURCE_NOT_FOUND);
         }
 
-        return ScenarioResponse.from(scenario);
+        String thumbnailUrl = s3PresignedUrlProvider.generatePresignedUrl(
+                scenario.getThumbnailS3Key());
+
+        return ScenarioResponse.from(scenario, thumbnailUrl);
     }
 }
