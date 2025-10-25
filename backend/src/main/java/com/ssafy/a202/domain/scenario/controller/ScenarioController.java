@@ -2,6 +2,7 @@ package com.ssafy.a202.domain.scenario.controller;
 
 import com.ssafy.a202.domain.scenario.dto.ScenarioResponse;
 import com.ssafy.a202.domain.scenario.service.ScenarioService;
+import com.ssafy.a202.global.constants.Difficulty;
 import com.ssafy.a202.global.constants.SuccessCode;
 import com.ssafy.a202.global.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -25,19 +26,14 @@ public class ScenarioController {
 
     private final ScenarioService scenarioService;
 
-    @Operation(summary = "전체 시나리오 목록 조회", description = "삭제되지 않은 모든 시나리오의 목록을 조회합니다.")
+    @Operation(summary = "시나리오 목록 조회", description = "시나리오 목록을 조회합니다. 카테고리와 난이도로 필터링할 수 있습니다.")
     @GetMapping
-    public ApiResponse<List<ScenarioResponse>> getAllScenarios() {
-        List<ScenarioResponse> scenarios = scenarioService.getAllScenarios();
-        return ApiResponse.success(SuccessCode.SCENARIO_LIST_SUCCESS, scenarios);
-    }
-
-    @Operation(summary = "카테고리별 시나리오 목록 조회", description = "특정 카테고리의 시나리오 목록을 조회합니다.")
-    @GetMapping("/category/{categoryId}")
-    public ApiResponse<List<ScenarioResponse>> getScenariosByCategory(
-            @Parameter(description = "카테고리 ID", example = "1")
-            @PathVariable Long categoryId) {
-        List<ScenarioResponse> scenarios = scenarioService.getScenariosByCategory(categoryId);
+    public ApiResponse<List<ScenarioResponse>> getAllScenarios(
+            @Parameter(description = "카테고리 ID (선택)", example = "1")
+            @RequestParam(required = false) Long categoryId,
+            @Parameter(description = "난이도 (선택, EASY 또는 HARD)", example = "EASY")
+            @RequestParam(required = false) Difficulty difficulty) {
+        List<ScenarioResponse> scenarios = scenarioService.getAllScenarios(categoryId, difficulty);
         return ApiResponse.success(SuccessCode.SCENARIO_LIST_SUCCESS, scenarios);
     }
 

@@ -27,7 +27,14 @@ public enum ErrorCode {
     TOKEN_INVALID(HttpStatus.UNAUTHORIZED, "유효하지 않은 토큰입니다"),
     TOKEN_MISSING(HttpStatus.UNAUTHORIZED, "인증 토큰이 누락되었습니다"),
     ACCESS_DENIED(HttpStatus.FORBIDDEN, "접근 권한이 없습니다"),
-    ACCOUNT_DISABLED(HttpStatus.FORBIDDEN, "비활성화된 계정입니다");
+    ACCOUNT_DISABLED(HttpStatus.FORBIDDEN, "비활성화된 계정입니다"),
+
+    // 시나리오 관련 (SCENARIO)
+    SCENARIO_NOT_FOUND(HttpStatus.NOT_FOUND, "요청한 시나리오를 찾을 수 없습니다"),
+    SEQUENCE_NOT_FOUND(HttpStatus.NOT_FOUND, "요청한 시퀀스를 찾을 수 없습니다"),
+    OPTION_NOT_FOUND(HttpStatus.NOT_FOUND, "요청한 옵션을 찾을 수 없습니다"),
+    INVALID_OPTION_SELECTED(HttpStatus.BAD_REQUEST, "유효하지 않은 옵션이 선택되었습니다"),
+    CORRECT_OPTION_NOT_FOUND(HttpStatus.INTERNAL_SERVER_ERROR, "시퀀스의 정답을 찾을 수 없습니다");
 
     private final HttpStatus status;
     private final String message;

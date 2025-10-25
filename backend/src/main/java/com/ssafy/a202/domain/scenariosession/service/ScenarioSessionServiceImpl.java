@@ -2,7 +2,10 @@ package com.ssafy.a202.domain.scenariosession.service;
 
 import com.ssafy.a202.domain.scenario.entity.Scenario;
 import com.ssafy.a202.domain.scenario.entity.ScenarioSequence;
+import com.ssafy.a202.domain.scenario.entity.SeqOption;
 import com.ssafy.a202.domain.scenario.repository.ScenarioRepository;
+import com.ssafy.a202.domain.scenariosession.dto.AnswerCheckResponse;
+import com.ssafy.a202.domain.scenariosession.dto.AnswerSubmitRequest;
 import com.ssafy.a202.domain.scenariosession.dto.OptionResponse;
 import com.ssafy.a202.domain.scenariosession.dto.SequenceResponse;
 import com.ssafy.a202.domain.scenariosession.dto.SequenceWithOptionsResponse;
@@ -32,11 +35,11 @@ public class ScenarioSessionServiceImpl implements ScenarioSessionService {
     public List<SequenceWithOptionsResponse> getScenarioSimulation(Long scenarioId) {
         // 시나리오 조회
         Scenario scenario = scenarioRepository.findById(scenarioId)
-                .orElseThrow(() -> new CustomException(ErrorCode.RESOURCE_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ErrorCode.SCENARIO_NOT_FOUND));
 
         // 삭제된 시나리오는 조회 불가
         if (scenario.isDeleted()) {
-            throw new CustomException(ErrorCode.RESOURCE_NOT_FOUND);
+            throw new CustomException(ErrorCode.SCENARIO_NOT_FOUND);
         }
 
         log.info("Retrieved all sequences and options for scenario ID: {}", scenarioId);
@@ -58,18 +61,18 @@ public class ScenarioSessionServiceImpl implements ScenarioSessionService {
     public SequenceResponse getSequence(Long scenarioId, int sequenceNumber) {
         // 시나리오 조회
         Scenario scenario = scenarioRepository.findById(scenarioId)
-                .orElseThrow(() -> new CustomException(ErrorCode.RESOURCE_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ErrorCode.SCENARIO_NOT_FOUND));
 
         // 삭제된 시나리오는 조회 불가
         if (scenario.isDeleted()) {
-            throw new CustomException(ErrorCode.RESOURCE_NOT_FOUND);
+            throw new CustomException(ErrorCode.SCENARIO_NOT_FOUND);
         }
 
         // 해당 시퀀스 번호의 시퀀스 조회
         ScenarioSequence sequence = scenario.getScenarioSequences().stream()
                 .filter(seq -> seq.getSeqNo() == sequenceNumber && !seq.isDeleted())
                 .findFirst()
-                .orElseThrow(() -> new CustomException(ErrorCode.RESOURCE_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ErrorCode.SEQUENCE_NOT_FOUND));
 
         // 다음 시퀀스 존재 여부 확인
         boolean hasNext = scenario.getScenarioSequences().stream()
@@ -87,18 +90,18 @@ public class ScenarioSessionServiceImpl implements ScenarioSessionService {
     public List<OptionResponse> getSequenceOptions(Long scenarioId, int sequenceNumber) {
         // 시나리오 조회
         Scenario scenario = scenarioRepository.findById(scenarioId)
-                .orElseThrow(() -> new CustomException(ErrorCode.RESOURCE_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ErrorCode.SCENARIO_NOT_FOUND));
 
         // 삭제된 시나리오는 조회 불가
         if (scenario.isDeleted()) {
-            throw new CustomException(ErrorCode.RESOURCE_NOT_FOUND);
+            throw new CustomException(ErrorCode.SCENARIO_NOT_FOUND);
         }
 
         // 해당 시퀀스 번호의 시퀀스 조회
         ScenarioSequence sequence = scenario.getScenarioSequences().stream()
                 .filter(seq -> seq.getSeqNo() == sequenceNumber && !seq.isDeleted())
                 .findFirst()
-                .orElseThrow(() -> new CustomException(ErrorCode.RESOURCE_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ErrorCode.SEQUENCE_NOT_FOUND));
 
         log.info("Retrieved options for sequence {} in scenario ID: {}", sequenceNumber, scenarioId);
 
@@ -108,5 +111,46 @@ public class ScenarioSessionServiceImpl implements ScenarioSessionService {
                 .sorted((a, b) -> Integer.compare(a.getOptionNo(), b.getOptionNo()))
                 .map(OptionResponse::from)
                 .toList();
+    }
+
+    @Override
+    public AnswerCheckResponse submitAnswer(AnswerSubmitRequest request) {
+        log.info("Checking answer for scenario ID: {}, sequence number: {}, selected option ID: {}",
+                request.getScenarioId(), request.getSequenceNumber(), request.getSelectedOptionId());
+
+        // 시나리오 조회
+        Scenario scenario = scenarioRepository.findById(request.getScenarioId())
+                .orElseThrow(() -> new CustomException(ErrorCode.SCENARIO_NOT_FOUND));
+
+        // 삭제된 시나리오는 접근 불가
+        if (scenario.isDeleted()) {
+            throw new CustomException(ErrorCode.SCENARIO_NOT_FOUND);
+        }
+
+        // 해당 시퀀스 번호의 시퀀스 조회
+        ScenarioSequence sequence = scenario.getScenarioSequences().stream()
+                .filter(seq -> seq.getSeqNo() == request.getSequenceNumber() && !seq.isDeleted())
+                .findFirst()
+                .orElseThrow(() -> new CustomException(ErrorCode.SEQUENCE_NOT_FOUND));
+
+        // 사용자가 선택한 옵션 찾기
+        SeqOption selectedOption = sequence.getOptions().stream()
+                .filter(option -> option.getId().equals(request.getSelectedOptionId()) && !option.isDeleted())
+                .findFirst()
+                .orElseThrow(() -> new CustomException(ErrorCode.INVALID_OPTION_SELECTED));
+
+        // 정답 여부 확인
+        boolean isCorrect = selectedOption.isAnswer();
+
+        log.info("Answer check result - scenarioId: {}, sequenceNumber: {}, isCorrect: {}, submitted option ID: {}",
+                scenario.getId(), sequence.getSeqNo(), isCorrect, selectedOption.getId());
+
+        return AnswerCheckResponse.builder()
+                .scenarioId(scenario.getId())
+                .sequenceId(sequence.getId())
+                .sequenceNumber(sequence.getSeqNo())
+                .submittedOptionId(selectedOption.getId())
+                .isCorrect(isCorrect)
+                .build();
     }
 }

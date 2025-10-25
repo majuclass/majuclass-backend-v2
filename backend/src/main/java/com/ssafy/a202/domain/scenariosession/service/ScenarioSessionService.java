@@ -1,5 +1,7 @@
 package com.ssafy.a202.domain.scenariosession.service;
 
+import com.ssafy.a202.domain.scenariosession.dto.AnswerCheckResponse;
+import com.ssafy.a202.domain.scenariosession.dto.AnswerSubmitRequest;
 import com.ssafy.a202.domain.scenariosession.dto.OptionResponse;
 import com.ssafy.a202.domain.scenariosession.dto.SequenceResponse;
 import com.ssafy.a202.domain.scenariosession.dto.SequenceWithOptionsResponse;
@@ -37,4 +39,12 @@ public interface ScenarioSessionService {
      * @return 옵션 응답 목록
      */
     List<OptionResponse> getSequenceOptions(Long scenarioId, int sequenceNumber);
+
+    /**
+     * 답안 제출 및 검증
+     *
+     * @param request 답안 제출 요청
+     * @return 답안 검증 결과
+     */
+    AnswerCheckResponse submitAnswer(AnswerSubmitRequest request);
 }
