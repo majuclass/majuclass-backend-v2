@@ -1,5 +1,6 @@
 package com.ssafy.a202.domain.scenario.dto;
 
+import com.ssafy.a202.global.constants.Difficulty;
 import com.ssafy.a202.domain.scenario.entity.Scenario;
 import com.ssafy.a202.domain.scenario.entity.ScenarioCategory;
 import lombok.AllArgsConstructor;
@@ -25,6 +26,7 @@ public class ScenarioResponse {
     private Long categoryId;
     private String categoryName;
     private int totalSequences;
+    private Difficulty difficulty;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -42,6 +44,7 @@ public class ScenarioResponse {
                 .categoryId(category != null ? category.getId() : null)
                 .categoryName(category != null ? category.getCategoryName() : null)
                 .totalSequences(scenario.getTotalSequences())
+                .difficulty(scenario.getDifficulty())
                 .createdAt(scenario.getCreatedAt())
                 .updatedAt(scenario.getUpdatedAt())
                 .build();

@@ -1,6 +1,7 @@
 package com.ssafy.a202.domain.scenario.repository;
 
 import com.ssafy.a202.domain.scenario.entity.Scenario;
+import com.ssafy.a202.global.constants.Difficulty;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -18,4 +19,14 @@ public interface ScenarioRepository extends JpaRepository<Scenario, Long> {
      * 카테고리별 시나리오 조회
      */
     List<Scenario> findByScenarioCategoryIdAndIsDeletedFalse(Long categoryId);
+
+    /**
+     * 난이도별 시나리오 조회
+     */
+    List<Scenario> findByDifficultyAndIsDeletedFalse(Difficulty difficulty);
+
+    /**
+     * 카테고리 및 난이도별 시나리오 조회
+     */
+    List<Scenario> findByScenarioCategoryIdAndDifficultyAndIsDeletedFalse(Long categoryId, Difficulty difficulty);
 }
