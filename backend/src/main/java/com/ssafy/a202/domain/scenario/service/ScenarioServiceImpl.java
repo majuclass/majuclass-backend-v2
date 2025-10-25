@@ -27,7 +27,7 @@ public class ScenarioServiceImpl implements ScenarioService {
 
     @Override
     public List<ScenarioResponse> getAllScenarios() {
-        List<Scenario> scenarios = scenarioRepository.findByDeletedFalse();
+        List<Scenario> scenarios = scenarioRepository.findByIsDeletedFalse();
 
         return scenarios.stream()
                 .map(scenario -> {
@@ -40,7 +40,7 @@ public class ScenarioServiceImpl implements ScenarioService {
 
     @Override
     public List<ScenarioResponse> getScenariosByCategory(Long categoryId) {
-        List<Scenario> scenarios = scenarioRepository.findByScenarioCategoryIdAndDeletedFalse(categoryId);
+        List<Scenario> scenarios = scenarioRepository.findByScenarioCategoryIdAndIsDeletedFalse(categoryId);
 
         return scenarios.stream()
                 .map(scenario -> {

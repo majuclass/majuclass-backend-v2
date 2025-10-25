@@ -12,10 +12,10 @@ public interface ScenarioRepository extends JpaRepository<Scenario, Long> {
     /**
      * 삭제되지 않은 모든 시나리오 조회
      */
-    List<Scenario> findByDeletedFalse();
+    List<Scenario> findByIsDeletedFalse();
 
     /**
      * 카테고리별 시나리오 조회
      */
-    List<Scenario> findByScenarioCategoryIdAndDeletedFalse(Long categoryId);
+    List<Scenario> findByScenarioCategoryIdAndIsDeletedFalse(Long categoryId);
 }
