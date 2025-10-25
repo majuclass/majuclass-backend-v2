@@ -1,9 +1,11 @@
 /** @format */
 
+import SimulationPage from "./pages/SimulationPage";
+
 function App() {
   return (
     <>
-      <h1 className="text-3xl font-bold underline">Hello world!</h1>
+      <SimulationPage />
     </>
   );
 }
