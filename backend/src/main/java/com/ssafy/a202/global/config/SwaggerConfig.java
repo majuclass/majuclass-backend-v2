@@ -16,7 +16,7 @@ public class SwaggerConfig {
     public OpenAPI openAPI() {
         return new OpenAPI()
                 .info(new Info()
-                        .title("발당장애를 위한 서비스")
+                        .title("발달장애를 위한 서비스")
                         .description("시나리오 기반 학습 시스템 REST API 문서")
                         .version("v1.0.0")
                         .contact(new Contact()

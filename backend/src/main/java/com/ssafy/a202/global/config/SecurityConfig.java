@@ -47,7 +47,7 @@ public class SecurityConfig {
                 // 요청별 인증 설정
                 .authorizeHttpRequests(auth -> auth
                         // 인증 없이 접근 가능한 경로
-                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers("/error").permitAll()
 
