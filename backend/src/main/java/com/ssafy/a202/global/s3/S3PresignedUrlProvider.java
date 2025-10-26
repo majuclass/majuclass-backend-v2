@@ -8,6 +8,8 @@ import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
 import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequest;
 
+import java.time.Duration;
+
 @Slf4j
 @Component
 public class S3PresignedUrlProvider {
@@ -22,7 +24,7 @@ public class S3PresignedUrlProvider {
     }
 
     /**
-     * S3 객체에 대한 프리사인드 URL 생성 (유효시간 제한 없음)
+     * S3 객체에 대한 프리사인드 URL 생성 (유효시간: 7일)
      *
      * @param s3Key S3 객체 키
      * @return 프리사인드 URL (GET 요청용)
@@ -36,6 +38,7 @@ public class S3PresignedUrlProvider {
 
             GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()
                 .getObjectRequest(getObjectRequest)
+                .signatureDuration(Duration.ofDays(7))  // 최대 7일
                 .build();
 
             PresignedGetObjectRequest presignedRequest = s3Presigner.presignGetObject(presignRequest);
