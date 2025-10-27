@@ -1,11 +1,17 @@
+// 개발자 페이지
 /** @format */
 
-function App() {
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import StartPage from "./pages/(StartPage)/startpage";
+
+export default function App() {
   return (
-    <>
-      <h1 className="text-3xl font-bold underline">Hello world!</h1>
-    </>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<StartPage />} />
+        <Route path="/startpage" element={<Navigate to="/" replace />} />
+        {/* 다른 라우트들... */}
+      </Routes>
+    </BrowserRouter>
   );
 }
-
-export default App;
