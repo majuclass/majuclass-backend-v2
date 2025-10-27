@@ -75,8 +75,9 @@ public class SecurityConfig {
         configuration.setAllowedOrigins(List.of(
                 "http://localhost:3000",
                 "http://localhost:5173",
-                "http://localhost:8080"
+                "http://localhost:8080",
                 // TODO: 프로덕션 도메인 추가 필요
+                "http://k13a202.p.ssafy.io:8080/"
         ));
 
         // 허용할 HTTP 메서드
