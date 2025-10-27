@@ -39,6 +39,8 @@ services:
       DB_USER: ${DB_USERNAME}
       DB_PASSWORD: ${DB_PASSWORD}
       DB_NAME: ${DB_NAME}
+    env_file:
+      - .env
     depends_on:
       db:
         condition: service_healthy
@@ -62,6 +64,8 @@ services:
         &serverTimezone=Asia/Seoul&characterEncoding=UTF-8
       SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+    env_file:
+      - .env
     depends_on:
       db:
         condition: service_healthy
