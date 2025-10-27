@@ -26,7 +26,7 @@ services:
       retries: 20
       start_period: 10s
     networks: [appnet]
-    profiles: ["db"]
+    profiles: ["default", "db"]
 
   fastapi:
     build:
@@ -34,7 +34,7 @@ services:
       dockerfile: Dockerfile
     container_name: a202-fastapi
     environment:
-      DB_HOST: ${DB_HOST}
+      DB_HOST: db
       DB_PORT: ${DB_PORT}
       DB_USER: ${DB_USERNAME}
       DB_PASSWORD: ${DB_PASSWORD}
@@ -50,7 +50,7 @@ services:
       uvicorn app.main:app
       --host 0.0.0.0 --port 8000 --workers 2
     networks: [appnet]
-    profiles: ["fastapi"]
+    profiles: ["default", "fastapi"]
 
   spring:
     build:
@@ -72,4 +72,4 @@ services:
     ports:
       - "${SPRING_PORT}:8080"
     networks: [appnet]
-    profiles: ["spring"]
+    profiles: ["default", "spring"]
