@@ -1,0 +1,71 @@
+name: a202
+
+networks:
+  appnet:
+
+volumes:
+  mysql_data:
+
+services:
+  db:
+    image: mysql:8.4
+    container_name: a202-mysql
+    environment:
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+    ports:
+      - "${DB_PORT}:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u$$MYSQL_USER -p$$MYSQL_PASSWORD --silent"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 10s
+    networks: [appnet]
+    profiles: ["db"]
+
+  fastapi:
+    build:
+      context: ./ai
+      dockerfile: Dockerfile
+    container_name: a202-fastapi
+    environment:
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_USER: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "${FASTAPI_PORT}:8000"
+    command: >
+      uvicorn app.main:app
+      --host 0.0.0.0 --port 8000 --workers 2
+    networks: [appnet]
+    profiles: ["fastapi"]
+
+  spring:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: a202-spring
+    environment:
+      SPRING_DATASOURCE_URL: >
+        jdbc:mysql://db:3306/${DB_NAME}
+        ?useSSL=false&allowPublicKeyRetrieval=true
+        &serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+      SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "${SPRING_PORT}:8080"
+    networks: [appnet]
+    profiles: ["spring"]
