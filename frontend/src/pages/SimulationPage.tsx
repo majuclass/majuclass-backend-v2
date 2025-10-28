@@ -8,6 +8,7 @@ import StartScreen from "../components/scenario/StartScreen";
 import SequenceScreen from "../components/scenario/SequenceScreen";
 import EndScreen from "../components/scenario/EndScreen";
 import FeedbackScreen from "../components/scenario/FeedbackScreen";
+import ScenarioLayout from "../components/layout/ScenarioLayout";
 
 export default function SimulationPage() {
   const [gameState, setGameState] = useState<"loading" | "error" | "playing">(
@@ -22,6 +23,7 @@ export default function SimulationPage() {
   const [sequenceNumber, setSequenceNumber] = useState(1);
   const [isCorrect, setIsCorrect] = useState<boolean>(false);
 
+  // TODO: 에러 처리
   //   TODO: id 분리
   const scenarioId = 1;
 
@@ -163,13 +165,21 @@ export default function SimulationPage() {
     }
   };
   //   실 렌더링
+  //   TODO: img 확장
   return (
-    <div className="scenario-player">
-      <h1>{scenario?.title}</h1>
-      <div className="content">
-        {/* TODO: progress bar */}
-        {renderContent()}
-      </div>
-    </div>
+    <ScenarioLayout
+      backgroundImg={
+        scenario?.backgroundImage ||
+        "src/assets/scenarios/cinema/cinema-ticket-bg-img.png"
+      }
+      characterImg={
+        scenario?.characterImage ||
+        "src/assets/scenarios/cinema/cinema-girl-normal.png"
+      }
+      showCharacter={screen !== "start"}
+      blurBackground={screen === "start" || screen === "option"}
+    >
+      {renderContent()}
+    </ScenarioLayout>
   );
 }
