@@ -9,10 +9,16 @@ type OptionScreenProps = {
 };
 
 export default function OptionScreen({ options, onSelect }: OptionScreenProps) {
+  const colors = ["pink", "yellow", "green", "blue"] as const; // 색상 순서 지정
+
   return (
     <div className="flex flex-wrap justify-center gap-4 p-6">
-      {options.map((option) => (
-        <OptionButton key={option.optionId} onClick={() => onSelect(option)}>
+      {options.map((option, index) => (
+        <OptionButton
+          key={option.optionId}
+          color={colors[index % colors.length]}
+          onClick={() => onSelect(option)}
+        >
           {option.optionText}
         </OptionButton>
       ))}

@@ -1,6 +1,4 @@
 /** @format */
-import cinemaBoy from "../../assets/scenarios/cinema/cinema-boy-normal.png";
-import cinemaTicketBg from "../../assets/scenarios/cinema/cinema-ticket-bg-img.png";
 
 import type { Sequence } from "../../types/Scenario";
 import DialogueBox from "./DialogueBox";
