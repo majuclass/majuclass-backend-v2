@@ -19,7 +19,7 @@ export default function ScenarioLayout({
 }: ScenarioLayoutProps) {
   return (
     <div
-      className="relative w-full h-screen bg-cover bg-center"
+      className="relative w-full h-screen bg-cover bg-center font-shark"
       style={{ backgroundImage: `url(${backgroundImg})` }}
     >
       {blurBackground && (
