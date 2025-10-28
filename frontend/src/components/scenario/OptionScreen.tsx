@@ -1,6 +1,7 @@
 /** @format */
 
 import type { Option } from "../../types/Scenario";
+import OptionButton from "./OptionButton";
 
 type OptionScreenProps = {
   options: Option[];
@@ -9,11 +10,11 @@ type OptionScreenProps = {
 
 export default function OptionScreen({ options, onSelect }: OptionScreenProps) {
   return (
-    <div>
+    <div className="flex flex-wrap justify-center gap-4 p-6">
       {options.map((option) => (
-        <button key={option.optionId} onClick={() => onSelect(option)}>
+        <OptionButton key={option.optionId} onClick={() => onSelect(option)}>
           {option.optionText}
-        </button>
+        </OptionButton>
       ))}
     </div>
   );

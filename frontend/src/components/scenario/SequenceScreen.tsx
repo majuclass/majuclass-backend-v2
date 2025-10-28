@@ -1,6 +1,9 @@
 /** @format */
+import cinemaBoy from "../../assets/scenarios/cinema/cinema-boy-normal.png";
+import cinemaTicketBg from "../../assets/scenarios/cinema/cinema-ticket-bg-img.png";
 
 import type { Sequence } from "../../types/Scenario";
+import DialogueBox from "./DialogueBox";
 
 /** @format */
 
@@ -14,11 +17,16 @@ export default function SequenceScreen({
   onNext,
 }: SequenceScreenProps) {
   return (
-    <div>
-      <h2>시퀀스 진행 스크린</h2>
-      <p>시퀀스 번호: {sequence.sequenceNumber}</p>
-      <p>질문: {sequence.question}</p>
-      <button onClick={onNext}>문제 풀기</button>
+    <div className="relative h-screen w-screen flex flex-col items-center justify-end bg-center bg-cover">
+      {/* 대화 상자 */}
+      <div className="relative z-20 w-full flex justify-center">
+        <DialogueBox
+          speaker="직원"
+          text={sequence.question}
+          showNextButton
+          onNext={onNext}
+        />
+      </div>
     </div>
   );
 }
