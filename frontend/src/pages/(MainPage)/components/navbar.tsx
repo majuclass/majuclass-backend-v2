@@ -24,7 +24,7 @@ export default function NavBar() {
         </Link>
 
         <Link
-          to="/scenlist"
+          to="/scenarios"
           className={`nav-item ${location.pathname === "/scenario" ? "active" : ""}`}
         >
           <i className="nav-icon"><HiOutlineClock /></i>

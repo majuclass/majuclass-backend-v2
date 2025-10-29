@@ -1,4 +1,4 @@
-// src/pages/(ScenListPage)/api.ts
+// src/pages/(ScenarioListPage)/api.ts
 
 // ===== 공통 타입 =====
 export type Difficulty = 'EASY' | 'HARD';
@@ -23,7 +23,7 @@ interface ApiResponse<T> {
   data: T;
 }
 
-const API_BASE = '/api';
+const API_BASE = '/api/v1';
 
 // ===== 내부 유틸 =====
 function authHeader(): Record<string, string> {

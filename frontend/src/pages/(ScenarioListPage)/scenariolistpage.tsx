@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useMemo, useRef, useState } from "react";
 import NavBar from "../(MainPage)/components/navbar"; // 네브바
-import ScenarioCard from "./components/scencard";
+import ScenarioCard from "./components/scenariocard";
 import { fetchScenarios, type Difficulty, type Scenario } from "./api";
 
-export default function ScenListPage() {
+export default function ScenarioListPage() {
   const [items, setItems] = useState<Scenario[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
