@@ -1,7 +1,7 @@
 /** @format */
 
-import type { Option } from "../../types/Scenario";
-import OptionButton from "./OptionButton";
+import type { Option } from "../../../types/Scenario";
+import OptionButton from "../OptionButton";
 
 type OptionScreenProps = {
   options: Option[];

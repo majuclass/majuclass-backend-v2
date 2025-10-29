@@ -3,7 +3,7 @@
  *
  */
 
-import type { Scenario } from "../../types/Scenario";
+import type { Scenario } from "../../../types/Scenario";
 
 type StartScreenProps = {
   scenario: Scenario;

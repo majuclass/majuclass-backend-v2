@@ -1,7 +1,7 @@
 /** @format */
 
-import type { Sequence } from "../../types/Scenario";
-import DialogueBox from "./DialogueBox";
+import type { Sequence } from "../../../types/Scenario";
+import DialogueBox from "../DialogueBox";
 
 /** @format */
 

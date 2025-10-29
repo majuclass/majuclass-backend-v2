@@ -3,11 +3,11 @@
 import { useEffect, useState } from "react";
 import type { Option, Scenario, Sequence } from "../types/Scenario";
 import api from "../apiInstance";
-import OptionScreen from "../components/scenario/OptionScreen";
-import StartScreen from "../components/scenario/StartScreen";
-import SequenceScreen from "../components/scenario/SequenceScreen";
-import EndScreen from "../components/scenario/EndScreen";
-import FeedbackScreen from "../components/scenario/FeedbackScreen";
+import OptionScreen from "../components/scenario/screen/OptionScreen";
+import StartScreen from "../components/scenario/screen/StartScreen";
+import SequenceScreen from "../components/scenario/screen/SequenceScreen";
+import EndScreen from "../components/scenario/screen/EndScreen";
+import FeedbackScreen from "../components/scenario/screen/FeedbackScreen";
 import ScenarioLayout from "../components/layout/ScenarioLayout";
 
 /** 시뮬레이션 실행 제어 컨트롤러
