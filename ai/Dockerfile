@@ -17,5 +17,4 @@ FROM base AS final
 COPY --from=builder /wheels /wheels
 RUN pip install --no-cache-dir /wheels/* && rm -rf /wheels
 COPY . .
-EXPOSE 8001
-CMD ["./start.sh"]
+EXPOSE 8000
