@@ -10,6 +10,9 @@ import EndScreen from "../components/scenario/EndScreen";
 import FeedbackScreen from "../components/scenario/FeedbackScreen";
 import ScenarioLayout from "../components/layout/ScenarioLayout";
 
+/** 시뮬레이션 실행 제어 컨트롤러
+ * @param scenarioId - 불러올 시나리오 고유 ID
+ */
 export default function SimulationPage() {
   const [gameState, setGameState] = useState<"loading" | "error" | "playing">(
     "loading"
