@@ -1,35 +1,59 @@
+import { useState, useEffect } from "react"
 import Lottie from "lottie-react"
 import "./startpage.css"
 import LoginCard from "./components/logincard"
-import characterImg1 from "./assets/hello.png"
-// import characterImg2 from "./assets/hello.png"
-import bgAnimation from "./assets/Animated background - no balloon.json";
-
-
+import NormalCharacter from "./assets/hello.png"
+import HelloCharacter from "./assets/hello.png"
+import BackgroundAnimation from "./assets/Animated background - no balloon.json";
 
 export default function StartPage() {
-  return (
-    <main className="startpage-bg">
-        <Lottie
-            animationData={bgAnimation}
-            loop    
-            autoplay
-            className="bg-lottie"
-            rendererSettings={{ preserveAspectRatio: "xMidYMid slice"}}
-        />
+    const [showHello, setShowHello] = useState(false)
+    const [showBubble, setShowBubble] = useState(false)
 
-        <section className="scene">
-            <img
-                src={characterImg1}
-                alt="기본 캐릭터"
-                className = "character left"
-                draggable={false}
-            />    
-        </section>
+    useEffect(() => {
+        const helloTimer = setTimeout(() => {
+            setShowHello(true)
+            setTimeout(() =>{
+                setShowBubble(true)
+            }, 300)
+        }, 1000)
 
-        <div className="logincard">
-            <LoginCard/>
-        </div>
-    </main>
-  );
+        return () => clearTimeout(helloTimer)
+    })
+    return (
+        <main className="startpage-bg">
+            <Lottie
+                animationData={BackgroundAnimation}
+                loop
+                autoPlay
+                className="bg=lottie"
+                rendererSettings={{
+                    preserveAspectRatio: "xMidYMid slice"
+                }}
+            />
+            <section className="content-wrapper">
+                <div className="character-section">
+                    <div className="character-container">
+                        <img 
+                            src={showHello ? HelloCharacter : NormalCharacter} 
+                            alt="캐릭터"
+                            className={`character ${showHello ? 'hello' : 'normal'}`} 
+                            draggable={false}
+                        />
+
+                        {showBubble && (
+                            <div className="speech-bubble">
+                                <div className="bubble-content">
+                                    <span className="greeting-text">하이</span>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+                <div className="login-section">
+                    <LoginCard />
+                </div>
+            </section>
+        </main>
+    );
 }

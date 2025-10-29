@@ -1,134 +1,167 @@
-import { useEffect, useState } from "react";
+// components/LoginCard.tsx
+
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { useAuth } from "../hooks/userlogin";
 
-type Props = {
-  onLogin?: (payload: { id: string; pw: string; remember: boolean }) => Promise<void> | void;
-};
+export default function LoginCard() {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
+  const [localError, setLocalError] = useState<string | null>(null);
+  
+  // Custom Hook 사용
+  const { login, isLoading } = useAuth();
 
-export default function LoginCard({ onLogin }: Props) {
-  const [id, setId] = useState("");
-  const [pw, setPw] = useState("");
-  const [showPw, setShowPw] = useState(false);
-  const [remember, setRemember] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [err, setErr] = useState<string | null>(null);
-
-  // 아이디 저장 옵션 유지
+  // 아이디 저장 기능 - 컴포넌트 마운트 시 체크
   useEffect(() => {
-    const savedRemember = localStorage.getItem("remember_id") === "1";
-    const savedId = localStorage.getItem("saved_id") || "";
-    setRemember(savedRemember);
-    if (savedRemember && savedId) setId(savedId);
+    const savedRemember = localStorage.getItem("remember_username") === "true";
+    const savedUsername = localStorage.getItem("saved_username") || "";
+    
+    setRememberMe(savedRemember);
+    if (savedRemember && savedUsername) {
+      setUsername(savedUsername);
+    }
   }, []);
 
+  // 아이디 저장 체크박스 변경 처리
   useEffect(() => {
-    if (remember) {
-      localStorage.setItem("remember_id", "1");
-      localStorage.setItem("saved_id", id);
+    if (rememberMe) {
+      localStorage.setItem("remember_username", "true");
+      if (username) {
+        localStorage.setItem("saved_username", username);
+      }
     } else {
-      localStorage.setItem("remember_id", "0");
-      localStorage.removeItem("saved_id");
+      localStorage.setItem("remember_username", "false");
+      localStorage.removeItem("saved_username");
     }
-  }, [remember, id]);
+  }, [rememberMe, username]);
 
-  const canSubmit = id.trim().length > 0 && pw.trim().length > 0 && !loading;
+  // 폼 제출 가능 여부
+  const canSubmit = username.trim().length > 0 && password.trim().length > 0 && !isLoading;
 
-  const onSubmit = async (e: React.FormEvent) => {
+  // 로그인 폼 제출 처리
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!canSubmit) return;
 
     try {
-      setErr(null);
-      setLoading(true);
-      if (onLogin) {
-        await onLogin({ id: id.trim(), pw, remember });
-      } else {
-        // TODO: 실제 API 연동
-        console.log({ id: id.trim(), pw, remember });
-        await new Promise((r) => setTimeout(r, 600)); // 데모용 딜레이
-      }
-    } catch (error: unknown) {
-      let msg = "로그인에 실패했어요. 다시 시도해주세요.";
-      if (error instanceof Error) msg = error.message;
-      else if (typeof error === "string") msg = error;
-      setErr(msg);
-    } finally {
-      setLoading(false);
+      setLocalError(null);
+      // useAuth의 login 함수 호출
+      await login({
+        username: username.trim(),
+        password: password,
+        rememberMe
+      });
+    } catch (error) {
+      // 에러 메시지 표시
+      const errorMessage = error instanceof Error ? error.message : '로그인에 실패했습니다.';
+      setLocalError(errorMessage);
     }
   };
 
   return (
-    <div className="login-card" role="form" aria-labelledby="login-title">
-      <h1 className="login-title" id="login-title">Login</h1>
+    <div className="login-card">
+      <h1 className="login-title">Login</h1>
 
-      <form onSubmit={onSubmit} className="login-form" noValidate>
-        {/* 아이디 */}
-        <div className="field">
-          <label htmlFor="login-id" className="sr-only">아이디</label>
+      <form onSubmit={handleSubmit} className="login-form" noValidate>
+        {/* 아이디 입력 필드 */}
+        <div className="form-field">
+          <label htmlFor="username" className="sr-only">
+            아이디
+          </label>
           <input
-            id="login-id"
-            name="id"
+            id="username"
+            name="username"
             type="text"
             placeholder="아이디"
-            value={id}
-            onChange={(e) => setId(e.target.value)}
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
             autoComplete="username"
-            inputMode="text"
-            spellCheck={false}
-            aria-invalid={!!err}
+            autoFocus
+            disabled={isLoading}
+            className={localError ? "error" : ""}
           />
         </div>
 
-        {/* 비밀번호 */}
-        <div className="field pw-field">
-          <label htmlFor="login-pw" className="sr-only">비밀번호</label>
+        {/* 비밀번호 입력 필드 */}
+        <div className="form-field password-field">
+          <label htmlFor="password" className="sr-only">
+            비밀번호
+          </label>
           <input
-            id="login-pw"
+            id="password"
             name="password"
-            type={showPw ? "text" : "password"}
+            type={showPassword ? "text" : "password"}
             placeholder="비밀번호"
-            value={pw}
-            onChange={(e) => setPw(e.target.value)}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             autoComplete="current-password"
-            aria-invalid={!!err}
+            disabled={isLoading}
+            className={localError ? "error" : ""}
           />
           <button
             type="button"
-            className="pw-toggle"
-            onClick={() => setShowPw((v) => !v)}
-            aria-label={showPw ? "비밀번호 감추기" : "비밀번호 표시"}
-            aria-pressed={showPw}
-            aria-controls="login-pw"
+            className="password-toggle"
+            onClick={() => setShowPassword(!showPassword)}
+            aria-label={showPassword ? "비밀번호 숨기기" : "비밀번호 표시"}
+            tabIndex={-1}
           >
-            {showPw ? "🙈" : "👁️"}
+            {showPassword ? "👁️" : "👁️‍🗨️"}
           </button>
         </div>
 
-        {/* 아이디 저장 */}
-        <label className="remember">
-          <input
-            type="checkbox"
-            checked={remember}
-            onChange={(e) => setRemember(e.target.checked)}
-          />
-          아이디 저장
-        </label>
+        {/* 아이디 저장 체크박스 */}
+        <div className="form-options">
+          <label className="remember-checkbox">
+            <input
+              type="checkbox"
+              checked={rememberMe}
+              onChange={(e) => setRememberMe(e.target.checked)}
+              disabled={isLoading}
+            />
+            <span>아이디 저장</span>
+          </label>
+        </div>
 
-        {/* 에러 메시지 */}
-        {err && (
-          <p role="alert" style={{ color: "#b42318", fontSize: 14, margin: "4px 0 0" }}>
-            {err}
-          </p>
+        {/* 에러 메시지 표시 */}
+        {localError && (
+          <div className="error-message" role="alert">
+            {localError}
+          </div>
         )}
 
         {/* 로그인 버튼 */}
-        <button className="submit" disabled={!canSubmit}>
-          {loading ? "로그인 중..." : "로그인"}
+        <button 
+          type="submit" 
+          className="login-button"
+          disabled={!canSubmit}
+        >
+          {isLoading ? "로그인 중..." : "로그인"}
         </button>
 
-        <p className="signup">
-          아직 회원이 아니신가요? <Link to="/signup">회원가입하기</Link>
-        </p>
+        {/* 추가 링크들 */}
+        <div className="login-links">
+          <span className="signup-text">
+            아직 회원이 아니신가요?{" "}
+            <Link to="/signup" className="signup-link">
+              회원가입
+            </Link>
+          </span>
+        </div>
+
+        {/* 또는 구분선 (선택사항) */}
+        <div className="divider">
+          <span>또는</span>
+        </div>
+
+        {/* 소셜 로그인 버튼들 (선택사항) */}
+        <div className="social-login">
+          <button type="button" className="social-button" disabled={isLoading}>
+            <span>🔑</span> 간편 로그인
+          </button>
+        </div>
       </form>
     </div>
   );
