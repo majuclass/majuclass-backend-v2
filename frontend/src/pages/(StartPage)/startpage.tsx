@@ -2,7 +2,7 @@ import { useState, useEffect } from "react"
 import Lottie from "lottie-react"
 import "./startpage.css"
 import LoginCard from "./components/logincard"
-import NormalCharacter from "./assets/hello.png"
+import NormalCharacter from "./assets/normal.png"
 import HelloCharacter from "./assets/hello.png"
 import BackgroundAnimation from "./assets/Animated background - no balloon.json";
 
@@ -19,14 +19,14 @@ export default function StartPage() {
         }, 1000)
 
         return () => clearTimeout(helloTimer)
-    })
+    }, []) // 렌더 1회 실행만
     return (
         <main className="startpage-bg">
             <Lottie
                 animationData={BackgroundAnimation}
                 loop
                 autoPlay
-                className="bg=lottie"
+                className="bg-lottie"
                 rendererSettings={{
                     preserveAspectRatio: "xMidYMid slice"
                 }}

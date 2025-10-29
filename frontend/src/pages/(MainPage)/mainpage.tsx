@@ -1,10 +1,10 @@
-// pages/(MainPage)/mainpage.tsx
+// src/pages/(MainPage)/mainpage.tsx
+import NavBar from "./components/navbar";
 
 export default function MainPage() {
   return (
-    <div>
-      <h1>메인 페이지</h1>
-      <p>로그인 성공!</p>
+    <div className="min-h-screen bg-gray-50">
+      <NavBar />
     </div>
   );
 }

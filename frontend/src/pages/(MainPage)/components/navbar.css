@@ -1,84 +1,59 @@
-/* 바 전체 배경/높이 */
-.navber {
-  position: sticky;
-  top: 0;
-  z-index: 20;
-  background: #fff1cc; /* 이미지 톤과 유사한 따뜻한 베이지 */
-  border-bottom: 1px solid rgba(0,0,0,0.06);
-}
+/* src/pages/(MainPage)/components/navbar.css */
 
-/* 내부 컨테이너 */
-.navber-inner {
-  max-width: 1280px;
-  margin: 0 auto;
-  height: 64px;
+.navbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 clamp(12px, 4vw, 28px);
-  gap: 12px;
-  color: #111;
+  padding: 16px 48px;
+  background-color: #FFF7D6; /* 이미지 배경색 (#fff7d6 기준) */
+  border-bottom: 1px solid #E5E7EB;
+  font-family: "Pretendard", sans-serif;
 }
 
-/* 왼쪽 메뉴(가로) */
-.navber-left {
+.navbar-left {
   display: flex;
   align-items: center;
-  gap: clamp(18px, 5vw, 56px);
-  list-style: none;
-  margin: 0;
-  padding: 0;
+  gap: 48px;
 }
 
-/* 링크 공통 */
-.nav-link {
-  display: inline-flex;
+.nav-item {
+  display: flex;
   align-items: center;
-  gap: 10px;
-  color: #111;
+  gap: 8px;
+  color: #111827;
+  font-size: 18px;
+  font-weight: 500;
   text-decoration: none;
-  font-size: clamp(16px, 1.25vw, 20px);
-  font-weight: 600;
-  opacity: 0.92;
-  transition: transform .12s ease, opacity .12s ease;
+  transition: all 0.2s ease;
 }
-.nav-link:hover { opacity: 1; transform: translateY(-1px); }
-.nav-link.active { opacity: 1; }
 
-/* 아이콘 공통 */
-.nav-ic { display: inline-block; }
+.nav-item:hover {
+  color: #4F46E5;
+  transform: translateY(-1px);
+}
 
-/* 오른쪽 영역: 인사말 + 아바타 */
-.navber-right {
+.nav-item.active {
+  color: #4338CA;
+}
+
+.nav-icon {
+  font-size: 22px;
+}
+
+.navbar-right {
   display: flex;
   align-items: center;
-  gap: 14px;
-}
-.greeting {
-  font-size: clamp(16px, 1.25vw, 20px);
-  color: #111;
-}
-.greeting strong { font-weight: 800; }
-
-/* 아바타 버튼 (테두리 원형) */
-.avatar {
-  width: 40px;
-  height: 40px;
-  display: grid;
-  place-items: center;
-  border-radius: 999px;
-  border: 2px solid #111;
-  background: transparent;
-  cursor: pointer;
+  gap: 12px;
+  font-size: 18px;
+  color: #111827;
 }
 
-/* 작은 화면: 가로 스크롤 메뉴 */
-@media (max-width: 820px) {
-  .navber-inner { height: 60px; }
-  .navber-left {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    gap: 20px;
-  }
-  .greeting { display: none; } /* 너무 길면 숨김 */
+.navbar-greeting strong {
+  font-weight: 700;
 }
+
+.profile-icon {
+  font-size: 32px;
+}
+
+.nav-icon svg, .profile-icon svg { width: 1em; height: 1em; display: block; }
