@@ -7,13 +7,31 @@ import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    /**
-     * username으로 사용자 조회
-     */
-    Optional<User> findByUsername(String username);
+    // ================================
+    // 1. JWT 기반 인증용 메서드
+    // ================================
 
     /**
-     * username 존재 여부 확인
+     * ID로 활성 사용자 조회 (JWT 토큰에서 ID 추출 후 사용)
      */
-    boolean existsByUsername(String username);
+    Optional<User> findByIdAndIsDeletedFalse(Long id);
+
+    /**
+     * 로그인 시 username으로 사용자 조회 (최초 인증용)
+     */
+    Optional<User> findByUsernameAndIsDeletedFalse(String username);
+
+    // ================================
+    // 2. 사용자 관리용 메서드
+    // ================================
+
+    /**
+     * 사용자명 중복 확인 (회원가입 시)
+     */
+    boolean existsByUsernameAndIsDeletedFalse(String username);
+
+    /**
+     * 이메일 중복 확인 (회원가입 시)
+     */
+    boolean existsByEmailAndIsDeletedFalse(String email);
 }

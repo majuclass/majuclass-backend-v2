@@ -20,7 +20,7 @@ public class LoginRequest {
 
     @Schema(description = "사용자 ID", example = "admin", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "사용자 ID는 필수입니다")
-    @Size(min = 3, max = 20, message = "사용자명은 3~20자 사이여야 합니다")
+    @Size(min = 3, max = 50, message = "사용자명은 3~50자 사이여야 합니다")
     private String username;
 
     @Schema(description = "비밀번호", example = "password123", requiredMode = Schema.RequiredMode.REQUIRED)

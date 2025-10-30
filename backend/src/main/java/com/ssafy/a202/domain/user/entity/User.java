@@ -35,26 +35,24 @@ public class User extends BaseTimeEntity {
     @Column(nullable = false, unique = true, length = 200)
     private String email;
 
-    @Column(length = 200)
-    private String phone;
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private Role role = Role.USER;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @Column(nullable = false, columnDefinition = "TINYINT(1)")
+    private boolean isDeleted = false;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<Student> students = new ArrayList<>();
 
     @Builder
-    public User(School school, String username, String password,
-                   String name, String email, String phone, Role role) {
+    public User(School school, String username, String password, String name, String email, Role role) {
         this.school = school;
         this.username = username;
         this.password = password;
         this.name = name;
         this.email = email;
-        this.phone = phone;
-        this.role = (role != null) ? role : Role.USER;
+        this.role = role != null ? role : Role.USER;
     }
 
     // ================================

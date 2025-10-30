@@ -1,5 +1,6 @@
 package com.ssafy.a202.global.security;
 
+import com.ssafy.a202.domain.auth.service.TokenBlacklistService;
 import com.ssafy.a202.global.constants.Role;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
@@ -27,6 +28,7 @@ import java.util.List;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtProvider jwtProvider;
+    private final TokenBlacklistService tokenBlacklistService;
 
     @Override
     protected void doFilterInternal(
@@ -41,6 +43,23 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             try {
                 // 토큰 검증
                 jwtProvider.validateToken(token);
+
+                // 블랙리스트 확인
+                if (tokenBlacklistService.isBlacklisted(token)) {
+                    log.debug("Token is blacklisted (logged out)");
+                    SecurityContextHolder.clearContext();
+                    filterChain.doFilter(request, response);
+                    return;
+                }
+
+                // 토큰 타입 확인 (access 토큰만 허용)
+                String tokenType = jwtProvider.getTokenTypeFromToken(token);
+                if (!"access".equals(tokenType)) {
+                    log.debug("Invalid token type for API access: {}", tokenType);
+                    SecurityContextHolder.clearContext();
+                    filterChain.doFilter(request, response);
+                    return;
+                }
 
                 // 토큰에서 사용자 정보 추출
                 Long userId = jwtProvider.getUserIdFromToken(token);
