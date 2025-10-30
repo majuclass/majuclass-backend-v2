@@ -22,7 +22,7 @@ export default function App() {
         {/* 시나리오 목록 페이지 */}
         <Route path="/scenarios" element={<ScenarioListPage />}/>
         {/* 시나리오 페이지 */}
-        <Route path="/simulation" element={<SimulationPage />}/>
+        <Route path="/simulation/:scenarioId" element={<SimulationPage />}/>
         {/* 다른 라우터는 아래 추가 */}
       </Routes>
     </BrowserRouter>

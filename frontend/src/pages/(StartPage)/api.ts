@@ -2,9 +2,12 @@
 // src/pages/(StartPage)/api.ts
 import axios from "axios";
 
-// 고정 BASE_URL (차후 ENV 전환 가능)
+// .env에 설정된 환경 변수 사용
+const BASE_URL = import.meta.env.VITE_BASE_API_URL?.replace(/\/+$/, "") || "";
+
+// Axios 인스턴스 생성
 export const api = axios.create({
-  baseURL: "http://k13a202.p.ssafy.io:8080/api",
+  baseURL: BASE_URL,
   timeout: 15000,
 });
 

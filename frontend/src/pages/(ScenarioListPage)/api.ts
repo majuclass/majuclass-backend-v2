@@ -1,7 +1,9 @@
 // src/pages/(ScenarioListPage)/api.ts
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import axios from "axios";
 
 // ===== 공통 타입 =====
-export type Difficulty = 'EASY' | 'HARD';
+export type Difficulty = "EASY" | "HARD";
 
 export interface Scenario {
   id: number;
@@ -16,79 +18,83 @@ export interface Scenario {
   updatedAt?: string; // ISO
 }
 
-// 백엔드 공통 래퍼 (스웨거: ApiResponse)
+// ✅ 스웨거 공통 래퍼 (실제 응답 형태에 맞춤)
 interface ApiResponse<T> {
-  code: number | string;     // e.g. 200 or "SUCCESS"
-  message: string;
+  status: "SUCCESS" | "ERROR";
+  message?: string;
   data: T;
 }
 
-const API_BASE = '/api/v1';
+// ✅ .env 사용 (끝 슬래시 제거)
+const BASE_URL =
+  import.meta.env.VITE_BASE_API_URL?.replace(/\/+$/, "") || "";
 
-// ===== 내부 유틸 =====
-function authHeader(): Record<string, string> {
-  const token = localStorage.getItem('accessToken');
-  return token ? { Authorization: `Bearer ${token}` } : {};
-}
+// ✅ axios 인스턴스 (시나리오 페이지 전용)
+const scenarioApi = axios.create({
+  baseURL: BASE_URL,
+  timeout: 15000,
+});
 
-async function fetchJSON<T>(input: RequestInfo, init?: RequestInit): Promise<T> {
-  const res = await fetch(input, init);
-  if (!res.ok) {
-    const text = await res.text().catch(() => '');
-    throw new Error(`HTTP ${res.status} ${res.statusText} :: ${text}`);
+// ✅ 요청 인터셉터 - 토큰 자동 주입
+scenarioApi.interceptors.request.use((config) => {
+  const token = localStorage.getItem("accessToken");
+  if (token) {
+    config.headers = config.headers ?? {};
+    (config.headers as any).Authorization = `Bearer ${token}`;
   }
-  return (await res.json()) as T;
+  return config;
+});
+
+// ✅ 공통 언랩
+function unwrap<T>(res: ApiResponse<T>): T {
+  if (res.status !== "SUCCESS") {
+    throw new Error(res.message ?? "요청에 실패했습니다.");
+  }
+  return res.data;
 }
 
 // ===== API: 시나리오 목록 =====
 export interface FetchScenariosParams {
   categoryId?: number;
   difficulty?: Difficulty;
-  page?: number; // 0-based
-  size?: number; // page size
+  // 백엔드 스웨거에는 page/size 없어서 옵션으로만 두고, 있으면 보냄
+  page?: number;
+  size?: number;
 }
 
 export async function fetchScenarios(
-  params?: FetchScenariosParams,
-  signal?: AbortSignal
+  params?: FetchScenariosParams
 ): Promise<Scenario[]> {
-  const q = new URLSearchParams();
-  if (params?.categoryId) q.set('categoryId', String(params.categoryId));
-  if (params?.difficulty) q.set('difficulty', params.difficulty);
-  
-  if (typeof params?.page === 'number') q.set('page', String(params.page));
-  if (typeof params?.size === 'number') q.set('size', String(params.size));
+  // 스웨거 기준 엔드포인트: GET /scenarios
+  const query: Record<string, string> = {};
 
-  const url = `${API_BASE}/scenarios${q.toString() ? `?${q.toString()}` : ''}`;
+  if (typeof params?.categoryId === "number") {
+    query.categoryId = String(params.categoryId);
+  }
+  if (params?.difficulty) {
+    query.difficulty = params.difficulty;
+  }
+  if (typeof params?.page === "number") {
+    query.page = String(params.page);
+  }
+  if (typeof params?.size === "number") {
+    query.size = String(params.size);
+  }
 
-  const resp = await fetchJSON<ApiResponse<Scenario[]>>(url, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-      ...authHeader(),
-    },
-    signal,
+  const { data } = await scenarioApi.get<ApiResponse<Scenario[]>>("/scenarios", {
+    params: query,
   });
 
-  // 성공/실패 판단은 백 코드 정책에 따라 다를 수 있음. 여기서는 data만 신뢰해서 반환.
-  return resp.data ?? [];
+  return unwrap(data) ?? [];
 }
 
 // ===== API: 시나리오 단건 상세 =====
 export async function fetchScenarioById(
-  scenarioId: number,
-  signal?: AbortSignal
+  scenarioId: number
 ): Promise<Scenario> {
-  const url = `${API_BASE}/scenarios/${scenarioId}`;
-
-  const resp = await fetchJSON<ApiResponse<Scenario>>(url, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-      ...authHeader(),
-    },
-    signal,
-  });
-
-  return resp.data;
+  // 스웨거: GET /scenarios/{scenarioId}
+  const { data } = await scenarioApi.get<ApiResponse<Scenario>>(
+    `/scenarios/${scenarioId}`
+  );
+  return unwrap(data);
 }
