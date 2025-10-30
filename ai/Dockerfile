@@ -15,6 +15,7 @@ RUN pip install --no-cache-dir --upgrade pip && \
 # ---- final ----
 FROM base AS final
 COPY --from=builder /wheels /wheels
-RUN pip install --no-cache-dir /wheels/* && rm -rf /wheels
+COPY requirements.txt .
+RUN pip install --no-cache-dir --no-index --find-links=/wheels -r requirements.txt && rm -rf /wheels
 COPY . .
 EXPOSE 8000
