@@ -1,0 +1,134 @@
+/* ScenListPage 전용 스타일 */
+
+/* ===== 전체 컨테이너 ===== */
+.scenlist-container {
+  min-height: 100vh;
+  background-color: #f9fafb; /* Tailwind: bg-gray-50 */
+  display: flex;
+  flex-direction: column;
+}
+
+/* ===== 헤더 영역 ===== */
+.scenlist-header {
+  padding: 1.5rem 2rem;
+  max-width: 72rem;
+  margin: 0 auto;
+  color: #1f2937; /* gray-800 */
+  font-weight: 600;
+  font-size: 1.5rem;
+}
+
+/* ===== 카드 그리드 ===== */
+.scenlist-grid {
+  display: grid;
+  gap: 1.25rem;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: 0 1.5rem 3rem;
+}
+
+/* 카드 hover 애니메이션 */
+.scenlist-grid article {
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.scenlist-grid article:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+}
+
+/* ===== 에러 / 빈 상태 박스 ===== */
+.scenlist-alert {
+  border-radius: 0.5rem;
+  border: 1px solid #fecaca; /* red-200 */
+  background-color: #fef2f2; /* red-50 */
+  padding: 1rem;
+  color: #b91c1c; /* red-700 */
+  max-width: 72rem;
+  margin: 1rem auto;
+  font-size: 0.875rem;
+}
+
+.scenlist-empty {
+  border-radius: 0.5rem;
+  border: 1px solid #e5e7eb; /* gray-200 */
+  background-color: white;
+  padding: 2rem;
+  text-align: center;
+  color: #6b7280; /* gray-600 */
+  font-size: 0.875rem;
+  max-width: 72rem;
+  margin: 1rem auto;
+}
+
+/* ===== 페이지네이션 ===== */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 2rem 0;
+}
+
+.pagination button {
+  height: 36px;
+  padding: 0 12px;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  background-color: white;
+  color: #374151;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.pagination button:hover:not(:disabled) {
+  background-color: #f3f4f6;
+}
+
+.pagination button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.pagination span {
+  font-size: 0.875rem;
+  color: #4b5563;
+}
+
+/* ===== 스켈레톤 카드 애니메이션 ===== */
+@keyframes skeleton-pulse {
+  0% {
+    background-color: #f3f4f6;
+  }
+  50% {
+    background-color: #e5e7eb;
+  }
+  100% {
+    background-color: #f3f4f6;
+  }
+}
+
+.skeleton-card {
+  width: 400px;
+  height: 240px;
+  border-radius: 16px;
+  border: 1px solid #f3f4f6;
+  background-color: white;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+.skeleton-header {
+  height: 144px;
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+}
+
+.skeleton-line {
+  height: 1rem;
+  width: 70%;
+  margin: 0.5rem 1rem;
+  border-radius: 4px;
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+}
