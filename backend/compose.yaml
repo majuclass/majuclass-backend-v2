@@ -16,10 +16,8 @@ services:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - REDIS_PASSWORD=${REDIS_PASSWORD}
-      - AWS_REGION=${AWS_REGION}
-      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
-      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-      - S3_BUCKET_NAME=${S3_BUCKET_NAME}
+      - S3_PUBLIC_URL_BASE=${S3_PUBLIC_URL_BASE}
+      - LAMBDA_PRESIGNED_URL_API=${LAMBDA_PRESIGNED_URL_API}
     depends_on:
       mysql:
         condition: service_healthy
