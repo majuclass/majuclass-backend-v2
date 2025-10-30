@@ -172,11 +172,11 @@ export default function SimulationPage() {
   return (
     <ScenarioLayout
       backgroundImg={
-        scenario?.backgroundImage ||
+        // scenario?.backgroundImage ||
         "src/assets/scenarios/cinema/cinema-ticket-bg-img.png"
       }
       characterImg={
-        scenario?.characterImage ||
+        // scenario?.characterImage ||
         "src/assets/scenarios/cinema/cinema-girl-normal.png"
       }
       showCharacter={screen !== "start"}

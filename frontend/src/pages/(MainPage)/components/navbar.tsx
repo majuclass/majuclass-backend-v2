@@ -1,3 +1,5 @@
+/** @format */
+
 // src/pages/(MainPage)/components/navbar.tsx
 import { Link, useLocation } from "react-router-dom";
 import "./navbar.css";
@@ -17,34 +19,58 @@ export default function NavBar() {
       <div className="navbar-left">
         <Link
           to="/main"
-          className={`nav-item ${location.pathname === "/main" ? "active" : ""}`}
+          className={`nav-item ${
+            location.pathname === "/main" ? "active" : ""
+          }`}
         >
-          <i className="nav-icon"><HiOutlineHome /></i>
+          <i className="nav-icon">
+            <HiOutlineHome />
+          </i>
           <span>메인 페이지</span>
         </Link>
 
         <Link
           to="/scenarios"
-          className={`nav-item ${location.pathname === "/scenario" ? "active" : ""}`}
+          className={`nav-item ${
+            location.pathname === "/scenario" ? "active" : ""
+          }`}
         >
-          <i className="nav-icon"><HiOutlineClock /></i>
+          <i className="nav-icon">
+            <HiOutlineClock />
+          </i>
           <span>학생 시나리오</span>
         </Link>
 
         <Link
           to="/student"
-          className={`nav-item ${location.pathname === "/student" ? "active" : ""}`}
+          className={`nav-item ${
+            location.pathname === "/student" ? "active" : ""
+          }`}
         >
-          <i className="nav-icon"><HiOutlineFolder /></i>
+          <i className="nav-icon">
+            <HiOutlineFolder />
+          </i>
           <span>학생 관리</span>
         </Link>
 
         <Link
           to="/about"
-          className={`nav-item ${location.pathname === "/about" ? "active" : ""}`}
+          className={`nav-item ${
+            location.pathname === "/about" ? "active" : ""
+          }`}
         >
-          <i className="nav-icon"><HiOutlineChatBubbleBottomCenterText /></i>
+          <i className="nav-icon">
+            <HiOutlineChatBubbleBottomCenterText />
+          </i>
           <span>서비스 소개</span>
+        </Link>
+        <Link
+          to="/simulation"
+          className={`nav-item ${
+            location.pathname === "/simulation" ? "active" : ""
+          }`}
+        >
+          <span className="font-bold">시뮬레이션 테스트</span>
         </Link>
       </div>
 
@@ -52,7 +78,9 @@ export default function NavBar() {
         <span className="navbar-greeting">
           <strong>김선생님</strong>, 안녕하세요!
         </span>
-        <i className="profile-icon"><HiOutlineUserCircle /></i>
+        <i className="profile-icon">
+          <HiOutlineUserCircle />
+        </i>
       </div>
     </nav>
   );
