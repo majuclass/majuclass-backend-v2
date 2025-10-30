@@ -14,7 +14,7 @@ export default function DialogueBox({
   showNextButton = false,
 }: DialogueBoxProps) {
   return (
-    <div className="bg-white rounded-xl shadow-xl w-11/12 max-w-md mb-10 p-4 border-4 border-b-8 border-gray-300">
+    <div className="bg-white rounded-xl shadow-xl w-11/12 max-w-2xl mb-10 p-4 border-4 border-b-8 border-gray-300 text-2xl">
       {/* 상단: 이름표 */}
       <div className="flex items-center mb-2">
         <div className="bg-yellow-200 font-bold px-2 py-1 rounded">
@@ -23,7 +23,7 @@ export default function DialogueBox({
       </div>
 
       {/* 본문: 대사 */}
-      <p className="text-gray-800 text-lg font-semibold whitespace-pre-line">
+      <p className="text-gray-800 text-xl font-semibold whitespace-pre-line">
         {text}
       </p>
 

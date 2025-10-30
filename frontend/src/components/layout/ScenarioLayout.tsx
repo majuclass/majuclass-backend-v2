@@ -1,6 +1,4 @@
-/** @format
- * 모든 screen이 사용할 scenarioWrapper
- */
+/** @format */
 
 interface ScenarioLayoutProps {
   backgroundImg: string;
@@ -10,6 +8,13 @@ interface ScenarioLayoutProps {
   children: React.ReactNode;
 }
 
+/** 시나리오 진행 모든 스크린이 사용할 screen의 wrapper
+ * @param backgroundImg - 배경 이미지 URL
+ * @param characterImg - 캐릭터 이미지 URL
+ * @param showCharacter - 캐릭터 full body 보이기 (기본 true)
+ * @param blurBackground - 배경 블러 처리 (기본 false)
+ * @param children - 시나리오 내부 화면 요소
+ */
 export default function ScenarioLayout({
   backgroundImg,
   characterImg,
