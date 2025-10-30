@@ -20,7 +20,7 @@ public class TokenBlacklistServiceImpl implements TokenBlacklistService {
     private final RedisTemplate<String, String> redisTemplate;
     private final JwtProvider jwtProvider;
 
-    private static final String BLACKLIST_KEY_PREFIX = "blacklist:jti:";
+    private static final String BLACKLIST_KEY_PREFIX = "blacklist:";
 
     /**
      * 토큰을 블랙리스트에 추가
@@ -49,8 +49,7 @@ public class TokenBlacklistServiceImpl implements TokenBlacklistService {
         try {
             String jti = jwtProvider.getJtiFromToken(token);
             String key = BLACKLIST_KEY_PREFIX + jti;
-            Boolean exists = redisTemplate.hasKey(key);
-            return Boolean.TRUE.equals(exists);
+            return Boolean.TRUE.equals(redisTemplate.hasKey(key));
         }  catch (Exception e) {
             log.error("Failed to check token blacklist status: ", e);
             // Redis 연결 실패 시 보수적으로 접근을 허용하지 않음
