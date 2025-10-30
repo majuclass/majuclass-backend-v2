@@ -77,7 +77,7 @@ public class SecurityConfig {
                 "http://localhost:5173",
                 "http://localhost:8080",
                 "http://k13a202.p.ssafy.io:8080/",
-                "http://majuclass.com/"
+                "https://majuclass.com/"
         ));
 
         // 허용할 HTTP 메서드
