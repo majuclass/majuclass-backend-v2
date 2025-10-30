@@ -1,5 +1,7 @@
 /** @format */
 
+import { useNavigate } from "react-router-dom";
+
 interface ScenarioLayoutProps {
   backgroundImg: string;
   characterImg: string;
@@ -22,6 +24,9 @@ export default function ScenarioLayout({
   blurBackground = false,
   children,
 }: ScenarioLayoutProps) {
+  //   시나리오 화면 탈출하는 함수
+  const navigate = useNavigate();
+
   return (
     <div
       className="relative w-full h-screen bg-cover bg-center font-shark"
@@ -41,6 +46,13 @@ export default function ScenarioLayout({
 
       {/* 시나리오 화면 (Start / Sequence / Feedback 등) */}
       <div className="relative z-10 w-full h-full flex items-center justify-center">
+        {/* 시나리오 중단하고 나가기 */}
+        <div
+          onClick={() => navigate(-1)}
+          className="absolute top-4 left-10 z-50 text-2xl cursor-pointer select-none"
+        >
+          {"< 나가기"}
+        </div>
         {children}
       </div>
     </div>
