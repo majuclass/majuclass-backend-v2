@@ -24,7 +24,7 @@ export default function OptionButton({
   return (
     <button
       onClick={onClick}
-      className={`font-shark w-full max-w-md py-4 px-6 rounded-xl text-center text-2xl font-semibold shadow-xl  transition ${colorMap[color]}`}
+      className={`font-shark w-full max-w-md py-4 px-6 rounded-xl text-center text-3xl font-semibold shadow-xl  transition ${colorMap[color]}`}
     >
       {children}
     </button>
