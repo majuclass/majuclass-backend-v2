@@ -157,8 +157,12 @@ export default function SimulationPage() {
               <SequenceScreen sequence={sequence} onNext={handleSelectOption} />
             ) : null;
           case "option":
-            return options ? (
-              <OptionScreen options={options} onSelect={handleFeedback} />
+            return options && sequence ? (
+              <OptionScreen
+                options={options}
+                sequence={sequence}
+                onSelect={handleFeedback}
+              />
             ) : null;
           case "feedback":
             return <FeedbackScreen isCorrect={isCorrect} />;
@@ -179,7 +183,7 @@ export default function SimulationPage() {
         // scenario?.characterImage ||
         "src/assets/scenarios/cinema/cinema-girl-normal.png"
       }
-      showCharacter={screen !== "start"}
+      showCharacter={screen !== "start" && screen !== "option"}
       blurBackground={screen === "start" || screen === "option"}
     >
       {renderContent()}

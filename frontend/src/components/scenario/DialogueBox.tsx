@@ -23,7 +23,7 @@ export default function DialogueBox({
       </div>
 
       {/* 본문: 대사 */}
-      <p className="text-gray-800 text-xl font-semibold whitespace-pre-line">
+      <p className="text-gray-800 text-xl font-semibold whitespace-pre-line text-center">
         {text}
       </p>
 
