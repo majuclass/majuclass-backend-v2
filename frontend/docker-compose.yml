@@ -1,0 +1,18 @@
+version: "3.8"
+
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: maju-frontend:fe
+    container_name: maju-frontend
+    ports:
+      - "127.0.0.1:3000:80"   # 호스트 Nginx가 / → 127.0.0.1:3000 프록시
+    restart: unless-stopped
+    networks:
+      - web
+
+networks:
+  web:
+    driver: bridge
