@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import NavBar from "../(MainPage)/components/navbar"; // 네브바
 import ScenarioCard from "./components/scenariocard";
 import { fetchScenarios, type Difficulty, type Scenario } from "./api";
@@ -14,37 +14,36 @@ export default function ScenarioListPage() {
   const pageSize = 12;
   const [hasNext, setHasNext] = useState(false);
 
-  // 선택 필터(지금은 단순히 타입만 준비)
+  // 선택 필터 (지금은 단순히 타입만 준비)
   const [categoryId] = useState<number | undefined>(undefined);
   const [difficulty] = useState<Difficulty | undefined>(undefined);
 
-  const abortRef = useRef<AbortController | null>(null);
-
   // 시나리오 목록 로드
   useEffect(() => {
+    let mounted = true;
     setLoading(true);
     setError(null);
 
-    abortRef.current?.abort();
-    const controller = new AbortController();
-    abortRef.current = controller;
-
-    fetchScenarios(
-      { categoryId, difficulty, page, size: pageSize },
-      controller.signal
-    )
+    fetchScenarios({ categoryId, difficulty, page, size: pageSize })
       .then((data) => {
+        if (!mounted) return;
         setItems(data);
-        // 다음 페이지 존재 여부 추정
+        // axios + 현재 백엔드에선 page/size가 안 먹을 수도 있으니
+        // 일단 길이로 다음 페이지 여부 추정
         setHasNext(data.length === pageSize);
       })
       .catch((e: any) => {
-        if (e?.name === "AbortError") return;
+        if (!mounted) return;
         setError(e?.message ?? "시나리오 목록을 불러오지 못했습니다.");
       })
-      .finally(() => setLoading(false));
+      .finally(() => {
+        if (!mounted) return;
+        setLoading(false);
+      });
 
-    return () => controller.abort();
+    return () => {
+      mounted = false;
+    };
   }, [categoryId, difficulty, page]);
 
   // 시뮬레이션 라우트 규약

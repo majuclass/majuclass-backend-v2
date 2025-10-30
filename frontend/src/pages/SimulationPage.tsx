@@ -1,6 +1,7 @@
 /** @format */
 
 import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom"; // 라우팅 연결 추가
 import type { Option, Scenario, Sequence } from "../types/Scenario";
 import api from "../apiInstance";
 import OptionScreen from "../components/scenario/screen/OptionScreen";
@@ -10,10 +11,19 @@ import EndScreen from "../components/scenario/screen/EndScreen";
 import FeedbackScreen from "../components/scenario/screen/FeedbackScreen";
 import ScenarioLayout from "../components/layout/ScenarioLayout";
 
+// 이미지 추가 
+import bgCinema from "../assets/scenarios/cinema/cinema-ticket-bg-img.png";
+import girlNormal from "../assets/scenarios/cinema/cinema-girl-normal.png";
+
+
 /** 시뮬레이션 실행 제어 컨트롤러
  * @param scenarioId - 불러올 시나리오 고유 ID
  */
 export default function SimulationPage() {
+  const { scenarioId: scenarioIdParam } = useParams<{ scenarioId: string }>(); // 연결 변수 
+  const scenarioId = scenarioIdParam ? Number(scenarioIdParam) : 1; // 변경: 없으면 1로 fallback
+
+
   const [gameState, setGameState] = useState<"loading" | "error" | "playing">(
     "loading"
   );
@@ -28,7 +38,7 @@ export default function SimulationPage() {
 
   // TODO: 에러 처리
   //   TODO: id 분리
-  const scenarioId = 1;
+  // const scenarioId = 1;
 
   // 시나리오는 최초 로딩 1회
   useEffect(() => {
@@ -173,11 +183,11 @@ export default function SimulationPage() {
     <ScenarioLayout
       backgroundImg={
         // scenario?.backgroundImage ||
-        "src/assets/scenarios/cinema/cinema-ticket-bg-img.png"
+        bgCinema
       }
       characterImg={
         // scenario?.characterImage ||
-        "src/assets/scenarios/cinema/cinema-girl-normal.png"
+        girlNormal
       }
       showCharacter={screen !== "start"}
       blurBackground={screen === "start" || screen === "option"}

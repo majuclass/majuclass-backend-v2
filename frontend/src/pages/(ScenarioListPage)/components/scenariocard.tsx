@@ -13,13 +13,17 @@ type Props = {
   className?: string;
 };
 
-export default function ScenarioCard({ scenario, onStartRoute, className }: Props) {
+export default function ScenarioCard({
+  scenario,
+  onStartRoute,
+  className,
+}: Props) {
   const navigate = useNavigate();
   const [isFlipped, setIsFlipped] = useState(false);
   const [detail, setDetail] = useState<Scenario>(scenario);
   const [loadingDetail, setLoadingDetail] = useState(false);
   const [errorDetail, setErrorDetail] = useState<string | null>(null);
-  const abortRef = useRef<AbortController | null>(null);
+
   const frontBtnRef = useRef<HTMLButtonElement | null>(null);
   const backFirstFocusRef = useRef<HTMLButtonElement | null>(null);
 
@@ -50,12 +54,9 @@ export default function ScenarioCard({ scenario, onStartRoute, className }: Prop
     // 최초 상세 로드
     setLoadingDetail(true);
     setErrorDetail(null);
-    abortRef.current?.abort();
-    const controller = new AbortController();
-    abortRef.current = controller;
 
     try {
-      const full = await fetchScenarioById(scenario.id, controller.signal);
+      const full = await fetchScenarioById(scenario.id);
       scenarioDetailCache.set(scenario.id, full);
       setDetail(full);
       queueMicrotask(() => backFirstFocusRef.current?.focus());
@@ -64,6 +65,8 @@ export default function ScenarioCard({ scenario, onStartRoute, className }: Prop
     } finally {
       setLoadingDetail(false);
     }
+
+    // 이 함수가 async라 클로저 밖으로 나가도 alive는 유지됨
   };
 
   const closeBack = () => {
@@ -71,7 +74,7 @@ export default function ScenarioCard({ scenario, onStartRoute, className }: Prop
     queueMicrotask(() => frontBtnRef.current?.focus());
   };
 
-  // 카드 바깥 클릭으로 닫기 (선택 로직: 플립 상태에서만 동작)
+  // 카드 바깥 클릭으로 닫기 (플립 상태에서만 동작)
   const wrapperRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
     if (!isFlipped) return;
@@ -84,7 +87,6 @@ export default function ScenarioCard({ scenario, onStartRoute, className }: Prop
     document.addEventListener("mousedown", onDocClick);
     return () => {
       document.removeEventListener("mousedown", onDocClick);
-      abortRef.current?.abort();
     };
   }, [isFlipped]);
 
@@ -159,7 +161,7 @@ export default function ScenarioCard({ scenario, onStartRoute, className }: Prop
           <div className="h-[48px] px-4 pb-3 flex items-center justify-between gap-2">
             <button
               ref={frontBtnRef}
-              onClick={openBack}
+              onClick={() => void openBack()}
               aria-expanded={isFlipped}
               aria-controls={`card-back-${detail.id}`}
               className="flex-1 h-9 rounded-lg border border-gray-200 hover:bg-gray-50 text-sm"
