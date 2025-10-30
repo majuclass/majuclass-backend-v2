@@ -18,6 +18,7 @@ public enum ErrorCode {
     REQUEST_TIMEOUT(HttpStatus.REQUEST_TIMEOUT, "요청 시간이 초과되었습니다"),
     UNSUPPORTED_MEDIA_TYPE(HttpStatus.UNSUPPORTED_MEDIA_TYPE, "지원하지 않는 미디어 타입입니다"),
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류가 발생했습니다"),
+    EXTERNAL_API_ERROR(HttpStatus.BAD_GATEWAY, "외부 API 호출에 실패했습니다"),
 
     // 인증/인가 관련 (AUTH)
     INVALID_CREDENTIALS(HttpStatus.UNAUTHORIZED, "잘못된 로그인 정보입니다"),
@@ -28,6 +29,9 @@ public enum ErrorCode {
     TOKEN_MISSING(HttpStatus.UNAUTHORIZED, "인증 토큰이 누락되었습니다"),
     ACCESS_DENIED(HttpStatus.FORBIDDEN, "접근 권한이 없습니다"),
     ACCOUNT_DISABLED(HttpStatus.FORBIDDEN, "비활성화된 계정입니다"),
+    USERNAME_DUPLICATE(HttpStatus.CONFLICT, "이미 사용 중인 사용자 ID입니다"),
+    EMAIL_DUPLICATE(HttpStatus.CONFLICT, "이미 사용 중인 이메일입니다"),
+    SCHOOL_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 학교입니다"),
 
     // 시나리오 관련 (SCENARIO)
     SCENARIO_NOT_FOUND(HttpStatus.NOT_FOUND, "요청한 시나리오를 찾을 수 없습니다"),

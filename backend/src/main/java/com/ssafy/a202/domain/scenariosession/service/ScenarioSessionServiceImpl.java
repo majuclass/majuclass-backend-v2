@@ -11,7 +11,7 @@ import com.ssafy.a202.domain.scenariosession.dto.SequenceResponse;
 import com.ssafy.a202.domain.scenariosession.dto.SequenceWithOptionsResponse;
 import com.ssafy.a202.global.exception.CustomException;
 import com.ssafy.a202.global.constants.ErrorCode;
-import com.ssafy.a202.global.s3.S3PresignedUrlProvider;
+import com.ssafy.a202.global.s3.S3UrlService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -29,7 +29,7 @@ import java.util.List;
 public class ScenarioSessionServiceImpl implements ScenarioSessionService {
 
     private final ScenarioRepository scenarioRepository;
-    private final S3PresignedUrlProvider s3PresignedUrlProvider;
+    private final S3UrlService s3UrlService;
 
     @Override
     public List<SequenceWithOptionsResponse> getScenarioSimulation(Long scenarioId) {
@@ -49,8 +49,8 @@ public class ScenarioSessionServiceImpl implements ScenarioSessionService {
                 .filter(seq -> !seq.isDeleted())  // 삭제되지 않은 시퀀스만
                 .sorted((a, b) -> Integer.compare(a.getSeqNo(), b.getSeqNo()))  // seqNo 순서로 정렬
                 .map(seq -> {
-                    // 각 시퀀스의 미디어 프리사인드 URL 생성
-                    String mediaUrl = s3PresignedUrlProvider.generatePresignedUrl(
+                    // 각 시퀀스의 미디어 URL 생성
+                    String mediaUrl = s3UrlService.generateUrl(
                             seq.getSeqS3Key());
                     return SequenceWithOptionsResponse.from(seq, mediaUrl);
                 })
@@ -78,8 +78,8 @@ public class ScenarioSessionServiceImpl implements ScenarioSessionService {
         boolean hasNext = scenario.getScenarioSequences().stream()
                 .anyMatch(seq -> seq.getSeqNo() == sequenceNumber + 1 && !seq.isDeleted());
 
-        // 미디어 프리사인드 URL 생성
-        String mediaUrl = s3PresignedUrlProvider.generatePresignedUrl(sequence.getSeqS3Key());
+        // 미디어 URL 생성
+        String mediaUrl = s3UrlService.generateUrl(sequence.getSeqS3Key());
 
         log.info("Retrieved sequence {} for scenario ID: {}", sequenceNumber, scenarioId);
 

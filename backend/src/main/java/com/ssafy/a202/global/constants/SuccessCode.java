@@ -17,6 +17,7 @@ public enum SuccessCode {
     LOGIN_SUCCESS("로그인이 성공했습니다"),
     LOGOUT_SUCCESS("로그아웃이 완료되었습니다"),
     TOKEN_REFRESH_SUCCESS("토큰 갱신이 완료되었습니다"),
+    SIGNUP_SUCCESS("회원가입이 완료되었습니다"),
 
     // 사용자 관련
     USER_PROFILE_SUCCESS("프로필 조회가 완료되었습니다"),

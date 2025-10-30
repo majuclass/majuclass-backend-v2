@@ -29,6 +29,9 @@ public class Student extends BaseTimeEntity {
     @Column(nullable = false, length = 50)
     private String name;
 
+    @Column(nullable = false, columnDefinition = "TINYINT(1)")
+    private boolean isDeleted = false;
+
     @Builder
     public Student(School school, User user, String name) {
         this.school = school;

@@ -6,7 +6,7 @@ import com.ssafy.a202.domain.scenario.repository.ScenarioRepository;
 import com.ssafy.a202.global.constants.Difficulty;
 import com.ssafy.a202.global.exception.CustomException;
 import com.ssafy.a202.global.constants.ErrorCode;
-import com.ssafy.a202.global.s3.S3PresignedUrlProvider;
+import com.ssafy.a202.global.s3.S3UrlService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -24,7 +24,7 @@ import java.util.List;
 public class ScenarioServiceImpl implements ScenarioService {
 
     private final ScenarioRepository scenarioRepository;
-    private final S3PresignedUrlProvider s3PresignedUrlProvider;
+    private final S3UrlService s3UrlService;
 
     @Override
     public List<ScenarioResponse> getAllScenarios(Long categoryId, Difficulty difficulty) {
@@ -49,7 +49,7 @@ public class ScenarioServiceImpl implements ScenarioService {
 
         return scenarios.stream()
                 .map(scenario -> {
-                    String thumbnailUrl = s3PresignedUrlProvider.generatePresignedUrl(
+                    String thumbnailUrl = s3UrlService.generateUrl(
                             scenario.getThumbnailS3Key());
                     return ScenarioResponse.from(scenario, thumbnailUrl);
                 })
@@ -65,7 +65,7 @@ public class ScenarioServiceImpl implements ScenarioService {
             throw new CustomException(ErrorCode.RESOURCE_NOT_FOUND);
         }
 
-        String thumbnailUrl = s3PresignedUrlProvider.generatePresignedUrl(
+        String thumbnailUrl = s3UrlService.generateUrl(
                 scenario.getThumbnailS3Key());
 
         return ScenarioResponse.from(scenario, thumbnailUrl);

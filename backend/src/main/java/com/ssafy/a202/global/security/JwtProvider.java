@@ -45,42 +45,52 @@ public class JwtProvider {
      * Access Token 생성
      */
     public String generateAccessToken(Long userId, String username, Role role) {
-        return generateToken(userId, username, role, accessTokenExpiration);
+        return generateToken(userId, username, role, "access", accessTokenExpiration);
     }
 
     /**
      * Refresh Token 생성
      */
     public String generateRefreshToken(Long userId, String username, Role role) {
-        return generateToken(userId, username, role, refreshTokenExpiration);
+        return generateToken(userId, username, role, "refresh", refreshTokenExpiration);
     }
 
     /**
      * JWT 토큰 생성 (내부 구현)
+     * HS256 (HMAC-SHA256) 알고리즘 명시적 사용
      */
-    private String generateToken(Long userId, String username, Role role, long expiration) {
+    private String generateToken(Long userId, String username, Role role, String tokenType, long expiration) {
         Date now = new Date();
         Date exp = new Date(now.getTime() + expiration);
 
         return Jwts.builder()
                 .subject(userId.toString())
                 .claim("jti", UUID.randomUUID().toString())  // JWT ID 추가
+                .claim("token_type", tokenType)
                 .claim("username", username)
                 .claim("role", role.name())
                 .issuedAt(now)
                 .expiration(exp)
-                .signWith(secretKey)
+                .signWith(secretKey, Jwts.SIG.HS256)
                 .compact();
     }
 
     /**
      * 토큰 유효성 검증
+     * @param token JWT 토큰
+     * @throws JwtException 토큰이 유효하지 않은 경우
      */
-    public void validateToken(String token) throws JwtException {
-        Jwts.parser()
-                .verifyWith(secretKey)
-                .build()
-                .parseSignedClaims(token);
+    public void validateToken(String token) {
+        try {
+            Jwts.parser()
+                    .verifyWith(secretKey)
+                    .build()
+                    .parseSignedClaims(token);
+        }  catch (JwtException e) {
+            // 예외를 그대로 던져서 Filter에서 처리하게 함
+            log.debug("JWT validation failed: {}", e.getMessage());
+            throw e;
+        }
     }
 
     /**
@@ -122,6 +132,14 @@ public class JwtProvider {
     public String getJtiFromToken(String token) {
         Claims claims = getClaimsFromToken(token);
         return claims.get("jti", String.class);
+    }
+
+    /**
+     * 토큰에서 토큰 타입 추출
+     */
+    public String getTokenTypeFromToken(String token) {
+        Claims claims = getClaimsFromToken(token);
+        return claims.get("token_type", String.class);
     }
 
     /**
