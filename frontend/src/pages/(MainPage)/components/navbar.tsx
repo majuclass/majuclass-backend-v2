@@ -64,14 +64,6 @@ export default function NavBar() {
           </i>
           <span>서비스 소개</span>
         </Link>
-        <Link
-          to="/simulation"
-          className={`nav-item ${
-            location.pathname === "/simulation" ? "active" : ""
-          }`}
-        >
-          <span className="font-bold">시뮬레이션 테스트</span>
-        </Link>
       </div>
 
       <div className="navbar-right">
