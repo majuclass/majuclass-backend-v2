@@ -39,8 +39,9 @@ export default function StartPage() {
             {showBubble && (
               <div className="speech-bubble">
                 <div className="bubble-content">
-                  <span className="greeting-text">하이</span>
+                  <span className="greeting-text">마주교실에 오신 것을 환영합니다!</span>
                 </div>
+                <div className="greeting-subtitle">학생들의 성장을 함께하는 공간입니다</div>
               </div>
             )}
           </div>

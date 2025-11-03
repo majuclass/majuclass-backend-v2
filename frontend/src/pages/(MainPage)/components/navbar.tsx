@@ -2,7 +2,7 @@
 
 // src/pages/(MainPage)/components/navbar.tsx
 import { Link, useLocation } from "react-router-dom";
-import "./navbar.css";
+import "./NavBar.css";
 import {
   HiOutlineHome,
   HiOutlineClock,
