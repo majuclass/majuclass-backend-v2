@@ -1,4 +1,3 @@
-
 /* ===== 전역 리셋 및 변수 ===== */
 :root {
   --primary-color: #4F46E5;
@@ -36,22 +35,24 @@
   position: relative;
   z-index: 1;
   width: 100%;
-  max-width: 1400px;
+  max-width: 1920px;
   min-height: 100vh;
   margin: 0 auto;
-  padding: 0 40px;
+  padding: 40px 60px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 60px;
+  justify-content: flex-end;
 }
 
-/* ===== 캐릭터 섹션 (왼쪽) ===== */
+/* ===== 캐릭터 섹션 (왼쪽 아래) ===== */
 .character-section {
-  flex: 1;
+  position: absolute;
+  left: 60px;
+  bottom: 60px;
   display: flex;
-  justify-content: center;
-  align-items: center;
+  justify-content: flex-start;
+  align-items: flex-end;
+  z-index: 2;
 }
 
 .character-container {
@@ -60,7 +61,7 @@
 }
 
 .character {
-  width: 320px;
+  width: 280px;
   height: auto;
   display: block;
   transition: transform 0.3s ease;
@@ -97,31 +98,35 @@
   }
 }
 
-/* ===== 말풍선 ===== */
+/* ===== 말풍선 (캐릭터 위쪽) ===== */
 .speech-bubble {
   position: absolute;
-  top: -20px;
-  right: -100px;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-bottom: 20px;
   background: white;
   border-radius: 20px;
-  padding: 16px 24px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  padding: 20px 28px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   animation: fadeInBounce 0.5s ease-out;
-  /* gpt 추천 */
-  transition: opacity 0.3s ease, transform 0.3s ease; 
+  transition: opacity 0.3s ease, transform 0.3s ease;
   z-index: 10;
+  min-width: 280px;
+  max-width: 400px;
 }
 
 .speech-bubble::before {
   content: '';
   position: absolute;
-  bottom: 20px;
-  left: -10px;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
   width: 0;
   height: 0;
   border-style: solid;
-  border-width: 10px 15px 10px 0;
-  border-color: transparent white transparent transparent;
+  border-width: 15px 12px 0 12px;
+  border-color: white transparent transparent transparent;
 }
 
 .bubble-content {
@@ -129,42 +134,54 @@
 }
 
 .greeting-text {
-  font-size: 24px;
+  font-size: 18px;
   font-weight: 600;
   color: var(--text-primary);
+  line-height: 1.6;
+  text-align: center;
+  display: block;
+}
+
+.greeting-subtitle {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--text-secondary);
+  margin-top: 8px;
+  text-align: center;
   display: block;
 }
 
 @keyframes fadeInBounce {
   0% {
     opacity: 0;
-    transform: scale(0.8) translateY(10px);
+    transform: translateX(-50%) scale(0.8) translateY(10px);
   }
   60% {
-    transform: scale(1.05) translateY(-5px);
+    transform: translateX(-50%) scale(1.05) translateY(-5px);
   }
   100% {
     opacity: 1;
-    transform: scale(1) translateY(0);
+    transform: translateX(-50%) scale(1) translateY(0);
   }
 }
 
 /* ===== 로그인 섹션 (오른쪽) ===== */
 .login-section {
-  flex: 0 0 440px;
+  flex: 0 0 500px;
   display: flex;
   justify-content: center;
   align-items: center;
+  margin-right: 80px;
 }
 
 /* ===== 로그인 카드 ===== */
 .login-card {
   width: 100%;
-  max-width: 440px;
+  max-width: 500px;
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
   border-radius: 24px;
-  padding: 48px 40px;
+  padding: 52px 44px;
   box-shadow: var(--card-shadow);
   animation: slideInRight 0.6s ease-out;
 }
@@ -187,11 +204,11 @@
 }
 
 .login-title {
-  font-size: 32px;
+  font-size: 36px;
   font-weight: 700;
   text-align: center;
   color: var(--text-primary);
-  margin: 0 0 36px 0;
+  margin: 0 0 40px 0;
   letter-spacing: -0.5px;
 }
 
@@ -209,8 +226,8 @@
 
 .form-field input {
   width: 100%;
-  height: 52px;
-  padding: 0 16px;
+  height: 56px;
+  padding: 0 18px;
   font-size: 16px;
   border: 2px solid var(--border-color);
   border-radius: 12px;
@@ -249,7 +266,7 @@
 
 .password-toggle {
   position: absolute;
-  right: 16px;
+  right: 18px;
   top: 50%;
   transform: translateY(-50%);
   background: none;
@@ -314,8 +331,8 @@
 /* 로그인 버튼 */
 .login-button {
   width: 100%;
-  height: 52px;
-  font-size: 16px;
+  height: 56px;
+  font-size: 17px;
   font-weight: 600;
   color: white;
   background: var(--primary-color);
@@ -437,44 +454,71 @@
 }
 
 /* ===== 반응형 디자인 ===== */
-@media (max-width: 1024px) {
-  .content-wrapper {
-    padding: 0 24px;
-    gap: 40px;
-  }
-  
-  .character {
-    width: 260px;
-  }
-  
-  .speech-bubble {
-    right: -80px;
-    padding: 12px 18px;
-  }
-  
-  .greeting-text {
-    font-size: 20px;
-  }
-  
-  .login-section {
-    flex: 0 0 380px;
-  }
-  
-  .login-card {
-    padding: 40px 32px;
-  }
-}
 
-@media (max-width: 768px) {
+/* 1600px 이하 */
+@media (max-width: 1600px) {
   .content-wrapper {
-    flex-direction: column;
-    justify-content: center;
-    padding: 40px 20px;
-    gap: 40px;
+    padding: 40px 50px;
   }
   
   .character-section {
-    order: 2;
+    left: 50px;
+    bottom: 50px;
+  }
+  
+  .login-section {
+    margin-right: 50px;
+  }
+}
+
+/* 1440px 이하 */
+@media (max-width: 1440px) {
+  .content-wrapper {
+    padding: 40px;
+  }
+  
+  .character {
+    width: 240px;
+  }
+  
+  .speech-bubble {
+    min-width: 240px;
+    max-width: 340px;
+    padding: 18px 24px;
+  }
+  
+  .greeting-text {
+    font-size: 16px;
+  }
+  
+  .greeting-subtitle {
+    font-size: 13px;
+  }
+  
+  .login-section {
+    flex: 0 0 460px;
+    margin-right: 40px;
+  }
+  
+  .login-card {
+    max-width: 460px;
+    padding: 48px 40px;
+  }
+  
+  .login-title {
+    font-size: 32px;
+  }
+}
+
+/* 1200px 이하 */
+@media (max-width: 1200px) {
+  .content-wrapper {
+    padding: 30px;
+  }
+  
+  .character-section {
+    left: 30px;
+    bottom: 30px;
   }
   
   .character {
@@ -482,57 +526,166 @@
   }
   
   .speech-bubble {
-    top: -60px;
-    right: 50%;
-    transform: translateX(50%);
+    min-width: 200px;
+    max-width: 280px;
+    padding: 16px 20px;
   }
   
-  .speech-bubble::before {
-    bottom: -10px;
-    left: 50%;
-    transform: translateX(-50%);
-    border-width: 10px 10px 0 10px;
-    border-color: white transparent transparent transparent;
+  .greeting-text {
+    font-size: 14px;
+  }
+  
+  .greeting-subtitle {
+    font-size: 12px;
+    margin-top: 6px;
   }
   
   .login-section {
-    order: 1;
-    flex: none;
-    width: 100%;
-    max-width: 400px;
+    flex: 0 0 420px;
+    margin-right: 20px;
   }
   
   .login-card {
-    padding: 32px 24px;
-  }
-  
-  .login-title {
-    font-size: 28px;
+    max-width: 420px;
+    padding: 44px 36px;
   }
 }
 
-@media (max-width: 480px) {
+/* 1024px 이하 - 태블릿 */
+@media (max-width: 1024px) {
+  .content-wrapper {
+    flex-direction: column;
+    justify-content: flex-start;
+    padding: 30px 20px;
+    gap: 40px;
+  }
+  
+  .character-section {
+    position: static;
+    order: 2;
+    margin-top: auto;
+    padding-bottom: 20px;
+  }
+  
+  .character {
+    width: 180px;
+  }
+  
+  .speech-bubble {
+    position: static;
+    transform: none;
+    margin-bottom: 20px;
+    min-width: 220px;
+    max-width: 100%;
+  }
+  
+  .speech-bubble::before {
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  
+  .login-section {
+    position: static;
+    order: 1;
+    flex: none;
+    width: 100%;
+    max-width: 480px;
+    margin: 80px auto 0;
+  }
+  
+  .login-card {
+    max-width: 100%;
+  }
+}
+
+/* 768px 이하 - 모바일 */
+@media (max-width: 768px) {
+  .content-wrapper {
+    padding: 20px 16px;
+    gap: 30px;
+  }
+  
   .character {
     width: 160px;
   }
   
   .speech-bubble {
-    padding: 10px 16px;
+    min-width: 180px;
+    padding: 14px 18px;
   }
   
   .greeting-text {
-    font-size: 18px;
+    font-size: 13px;
+  }
+  
+  .greeting-subtitle {
+    font-size: 11px;
+  }
+  
+  .login-section {
+    max-width: 100%;
+    margin: 60px auto 0;
+  }
+  
+  .login-card {
+    padding: 36px 28px;
+    border-radius: 20px;
+  }
+  
+  .login-title {
+    font-size: 28px;
+    margin-bottom: 32px;
+  }
+  
+  .form-field input,
+  .login-button {
+    height: 52px;
+    font-size: 15px;
+  }
+}
+
+/* 480px 이하 - 작은 모바일 */
+@media (max-width: 480px) {
+  .content-wrapper {
+    padding: 16px 12px;
+  }
+  
+  .character {
+    width: 140px;
+  }
+  
+  .speech-bubble {
+    min-width: 160px;
+    padding: 12px 16px;
+  }
+  
+  .greeting-text {
+    font-size: 12px;
+  }
+  
+  .greeting-subtitle {
+    font-size: 10px;
+  }
+  
+  .login-section {
+    margin: 40px auto 0;
   }
   
   .login-card {
     padding: 28px 20px;
-    border-radius: 20px;
+    border-radius: 18px;
+  }
+  
+  .login-title {
+    font-size: 24px;
+    margin-bottom: 28px;
   }
   
   .form-field input,
   .login-button {
     height: 48px;
-    font-size: 15px;
+    font-size: 14px;
   }
 }
 
