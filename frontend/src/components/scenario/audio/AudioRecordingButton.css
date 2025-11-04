@@ -1,0 +1,18 @@
+.record-start {
+    width: 100px;
+    height: 100px;
+}
+
+.record-stop {
+    background-color: red;
+    color: white;
+}
+
+.recording-lottie {
+    width: 130px;
+    height: 130px;
+}
+
+.audio-play{
+    width: 400px;
+}
