@@ -1,17 +1,18 @@
 /** @format */
 
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom"; // 라우팅 연결 추가
-import type { Option, Scenario, Sequence } from "../types/Scenario";
-import api from "../apis/apiInstance";
-import OptionScreen from "../components/scenario/screen/OptionScreen";
-import StartScreen from "../components/scenario/screen/StartScreen";
-import SequenceScreen from "../components/scenario/screen/SequenceScreen";
-import EndScreen from "../components/scenario/screen/EndScreen";
-import FeedbackScreen from "../components/scenario/screen/FeedbackScreen";
-import ScenarioLayout from "../components/layout/ScenarioLayout";
+import { useParams } from "react-router-dom";
 
-// 이미지 추가
+import api from "../apis/apiInstance";
+
+import type { Option, GetScenario, Sequence } from "../types/Scenario";
+import ScenarioLayout from "../components/layout/ScenarioLayout";
+import StartScreen from "../components/simulation/screen/StartScreen";
+import SequenceScreen from "../components/simulation/screen/SequenceScreen";
+import OptionScreen from "../components/simulation/screen/OptionScreen";
+import EndScreen from "../components/simulation/screen/EndScreen";
+import FeedbackScreen from "../components/simulation/screen/FeedbackScreen";
+
 import bgCinema from "../assets/scenarios/cinema/cinema-ticket-bg-img.png";
 import girlNormal from "../assets/scenarios/cinema/cinema-girl-normal.png";
 
@@ -24,7 +25,7 @@ export default function SimulationPage() {
 
   //   시나리오 인터페이스 확장 위해 type alias 사용
   // TODO: 차후 확장 추가
-  type ScenariowithURL = Scenario & {
+  type ScenariowithURL = GetScenario & {
     backgroundUrl: string;
   };
 

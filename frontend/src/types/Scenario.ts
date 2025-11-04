@@ -4,16 +4,20 @@
  * @format
  */
 
-/** 시나리오 단일 조회 */
-export interface Scenario {
-  id: number;
+/** 시나리오 Base Interface */
+interface ScenarioBase {
   title: string;
   summary: string;
-  thumbnailUrl: string;
   categoryId: number;
-  categoryName: number;
   totalSequences: number;
   difficulty: string;
+}
+
+/** 시나리오 받아오기 */
+export interface GetScenario extends ScenarioBase {
+  id: number;
+  thumbnailUrl: string;
+  categoryName: string;
   createdAt: string;
   updatedAt: string;
 }
