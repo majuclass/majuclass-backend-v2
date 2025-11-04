@@ -19,14 +19,14 @@ export interface Scenario {
   updatedAt?: string; // ISO
 }
 
-// ✅ 스웨거 공통 래퍼
+// 스웨거 공통 래퍼
 interface ApiResponse<T> {
   status: "SUCCESS" | "ERROR";
   message?: string;
   data: T;
 }
 
-// ✅ 공통 언랩
+// 공통 언랩
 function unwrap<T>(res: ApiResponse<T>): T {
   if (res.status !== "SUCCESS") {
     throw new Error(res.message ?? "요청에 실패했습니다.");
