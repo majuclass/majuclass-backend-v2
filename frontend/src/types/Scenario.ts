@@ -22,6 +22,12 @@ export interface GetScenario extends ScenarioBase {
   updatedAt: string;
 }
 
+/** 시나리오 생성 */
+export interface CreateScenario extends ScenarioBase {
+  thumbnailImg: File | null;
+  backgroundImg: File | null;
+}
+
 /** 시나리오 시퀀스 단일 조회
  * hasNext?
  */
