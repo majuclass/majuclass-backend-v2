@@ -33,6 +33,7 @@ class AuthMiddleware(BaseHTTPMiddleware):
             "/openapi.json",
             "/redoc",
             "/health",
+            "/ai/stt-analyze",
         ]
 
         if request.url.path in public_path:
