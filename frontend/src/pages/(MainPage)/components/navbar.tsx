@@ -42,9 +42,9 @@ export default function NavBar() {
         </Link>
 
         <Link
-          to="/studentmanage"
+          to="/students"
           className={`nav-item ${
-            location.pathname === "/studentmanage" ? "active" : ""
+            location.pathname === "/students" ? "active" : ""
           }`}
         >
           <i className="nav-icon">
