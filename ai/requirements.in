@@ -1,13 +1,25 @@
+# ===== FastAPI & Server =====
 fastapi>=0.110
 uvicorn[standard]>=0.23
 python-multipart
 pydantic
-numpy
-# MySQL
+
+# ===== Database =====
 sqlalchemy>=2.0
 pymysql>=1.1
 cryptography
+asyncmy>=0.2.9  # SQLAlchemy 비동기 MySQL (필요시)
 
+# ===== Auth =====
 python-jose[cryptography]==3.4.0
 python-dotenv==1.0.1
-# 필요한 모델 추가
+
+# ===== Core =====
+numpy
+
+# ===== HTTP Client =====
+requests>=2.31.0
+
+# ===== ML & AI =====
+torch>=2.0.0
+sentence-transformers>=2.3.0
