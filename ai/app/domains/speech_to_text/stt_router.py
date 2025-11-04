@@ -69,18 +69,3 @@ async def stt_analyze(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"음성 분석 중 오류가 발생했습니다: {str(e)}"
         )
-
-@router.get(
-    "/health",
-    summary="서비스 상태 확인",
-    description="STT 서비스가 정상 작동하는지 확인합니다."
-)
-async def health_check():
-    return ApiResponse.success(
-        message="서비스가 정상 작동 중입니다",
-        data={
-            "status": "healthy",
-            "service": "STT Analysis",
-            "services": speech_analysis_service.get_service_info()
-        }
-    )
