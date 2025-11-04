@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import Lottie from "lottie-react";
 import "./startpage.css";
-import LoginCard from "./components/logincard";
+import LoginCard from "./components/LoginCard";
 import NormalCharacter from "./assets/normal.png";
 import HelloCharacter from "./assets/hello.png";
 import BackgroundAnimation from "./assets/Animated background - no balloon.json";
