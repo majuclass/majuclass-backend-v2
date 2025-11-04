@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useMemo, useState } from "react";
-import NavBar from "../(MainPage)/components/navbar"; // 네브바
-import ScenarioCard from "./components/scenariocard";
+import NavBar from "../(MainPage)/components/NavBar"; // 네브바
+import ScenarioCard from "./components/ScenarioCard";
 import { fetchScenarios, type Difficulty, type Scenario } from "./api";
 
 export default function ScenarioListPage() {

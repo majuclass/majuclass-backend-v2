@@ -3,7 +3,7 @@
 import axios from "axios";
 
 // .env에 설정된 환경 변수 사용
-const BASE_URL = import.meta.env.VITE_BASE_API_URL?.replace(/\/+$/, "") || "";
+const BASE_URL = import.meta.env.VITE_API_URL?.replace(/\/+$/, "") || "";
 
 // Axios 인스턴스 생성
 export const api = axios.create({

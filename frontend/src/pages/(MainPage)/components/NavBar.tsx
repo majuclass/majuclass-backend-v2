@@ -2,7 +2,7 @@
 
 // src/pages/(MainPage)/components/navbar.tsx
 import { Link, useLocation } from "react-router-dom";
-import "./navbar.css";
+import "./NavBar.css";
 import {
   HiOutlineHome,
   HiOutlineClock,
@@ -42,9 +42,9 @@ export default function NavBar() {
         </Link>
 
         <Link
-          to="/student"
+          to="/students"
           className={`nav-item ${
-            location.pathname === "/student" ? "active" : ""
+            location.pathname === "/students" ? "active" : ""
           }`}
         >
           <i className="nav-icon">

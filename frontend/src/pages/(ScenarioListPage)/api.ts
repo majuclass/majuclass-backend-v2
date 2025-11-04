@@ -27,7 +27,7 @@ interface ApiResponse<T> {
 
 // ✅ .env 사용 (끝 슬래시 제거)
 const BASE_URL =
-  import.meta.env.VITE_BASE_API_URL?.replace(/\/+$/, "") || "";
+  import.meta.env.VITE_API_URL?.replace(/\/+$/, "") || "";
 
 // ✅ axios 인스턴스 (시나리오 페이지 전용)
 const scenarioApi = axios.create({
