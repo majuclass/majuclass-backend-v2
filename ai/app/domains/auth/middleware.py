@@ -29,14 +29,19 @@ class AuthMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
 
         public_path = [
+            "/",
             "/docs",
             "/openapi.json",
             "/redoc",
             "/health",
+            "/openapi.json",
+            "/favicon.ico",
             "/ai/stt-analyze",
         ]
 
         if request.url.path in public_path:
+            return await call_next(request)
+        if request.method == "OPTIONS":
             return await call_next(request)
 
         auth_header = request.headers.get("Authorization")
