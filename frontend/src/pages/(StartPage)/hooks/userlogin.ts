@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // src/pages/(StartPage)/hooks/userlogin.ts
 import { useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -38,14 +39,29 @@ function isRecord(v: unknown): v is Record<string, unknown> {
 function pickErrorMessage(err: unknown): string | null {
   if (!isRecord(err)) return null;
 
-  // err.message
-  if (typeof err.message === "string") return err.message;
+  // // err.message
+  // // 아래 if ~ mag;는 사용자 입장에서 좋지 못한 구조
+  // if (typeof err.message === "string") return err.message;
 
-  // err.response?.data?.message (Axios 유사 구조)
+  // // err.response?.data?.message (Axios 유사 구조)
+  // const response = isRecord(err.response) ? (err.response as Record<string, unknown>) : null;
+  // const data = response && isRecord(response.data) ? (response.data as Record<string, unknown>) : null;
+  // const msg = data && typeof data.message === "string" ? data.message : null;
+  // return msg;
+
+  // 서버 응답 메시지를 먼저 확인 (Axios response.data.message)
   const response = isRecord(err.response) ? (err.response as Record<string, unknown>) : null;
   const data = response && isRecord(response.data) ? (response.data as Record<string, unknown>) : null;
-  const msg = data && typeof data.message === "string" ? data.message : null;
-  return msg;
+  if (data && typeof data.message === "string" && data.message.trim() !== "") {
+    return data.message;
+  }
+
+  // 그 다음 axios 기본 message 확인
+  if (typeof err.message === "string" && err.message.trim() !== "") {
+    return err.message;
+  }
+
+  return null;
 }
 
 export const useLogin = (): UseLoginReturn => {
@@ -97,7 +113,17 @@ export const useLogin = (): UseLoginReturn => {
 
         navigate("/main");
       } catch (err: unknown) {
-        setError(pickErrorMessage(err) ?? "로그인에 실패했습니다.");
+        // setError(pickErrorMessage(err) ?? "로그인에 실패했습니다.");
+        const maybeAxios = err as any;
+        const status = maybeAxios?.response?.status as number | undefined;
+
+        if (status === 401 || status === 400) {
+          setError("아이디 또는 비밀번호가 올바르지 않습니다.");
+        } else if (!maybeAxios?.response) {
+          setError("네트워크 오류가 발생했습니다. 인터넷 연결을 확인해주세요.");
+        } else {
+          setError(pickErrorMessage(err) ?? "로그인에 실패했습니다. 잠시 후 다시 시도해주세요.");
+        }
       } finally {
         setLoading(false);
       }
