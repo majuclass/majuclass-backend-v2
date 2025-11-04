@@ -1,10 +1,10 @@
 import { useState, useEffect, useMemo } from "react";
 import Lottie from "lottie-react";
-import "./startpage.css";
-import LoginCard from "./components/LoginCard";
-import NormalCharacter from "./assets/normal.png";
-import HelloCharacter from "./assets/hello.png";
-import BackgroundAnimation from "./assets/Animated background - no balloon.json";
+import "../styles/StartPage.css";
+import LoginCard from "../components/startpage/LoginCard";
+import NormalCharacter from "../assets/startpage/Normal.png"
+import HelloCharacter from "../assets/startpage/Hello.png";
+import BackgroundAnimation from "../assets/startpage/Animated background - no balloon.json";
 
 export default function StartPage() {
   const [showHello, setShowHello] = useState(false);

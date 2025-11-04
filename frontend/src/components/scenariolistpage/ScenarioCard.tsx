@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import type { Scenario } from "../api";
-import { fetchScenarioById } from "../api";
+import type { Scenario } from "../../apis/scenariolistpageApi";
+import { fetchScenarioById } from "../../apis/scenariolistpageApi";
 
 // 모듈 스코프 간단 캐시 (플립해서 상세 본 카드 재요청 방지)
 const scenarioDetailCache = new Map<number, Scenario>();

@@ -1,7 +1,7 @@
 // src/pages/(MainPage)/StudentDashboardPage.tsx
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import NavBar from "../(MainPage)/components/NavBar";
+import NavBar from "../components/NavBar";
 
 type Student = {
   id: number;
