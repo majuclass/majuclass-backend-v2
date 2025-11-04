@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom"; // 라우팅 연결 추가
 import type { Option, Scenario, Sequence } from "../types/Scenario";
-import api from "../apiInstance";
+import api from "../apis/apiInstance";
 import OptionScreen from "../components/scenario/screen/OptionScreen";
 import StartScreen from "../components/scenario/screen/StartScreen";
 import SequenceScreen from "../components/scenario/screen/SequenceScreen";

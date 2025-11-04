@@ -2,7 +2,7 @@
 // src/pages/(StartPage)/hooks/userlogin.ts
 import { useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { login as loginApi } from "../api"
+import { login as loginApi } from "../../apis/startpageApi"
 
 type UserInfo = {
   userId: number;

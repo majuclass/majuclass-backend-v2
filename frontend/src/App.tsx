@@ -2,12 +2,12 @@
 /** @format */
 
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import StartPage from "./pages/(StartPage)/StartPage";
-import MainPage from "./pages/(MainPage)/MainPage";
-import ScenarioListPage from "./pages/(ScenarioListPage)/ScenarioListPage";
+import StartPage from "./pages/StartPage";
+import MainPage from "./pages/MainPage";
+import ScenarioListPage from "./pages/ScenarioListPage";
 import SimulationPage from "./pages/SimulationPage";
-import StudentsPage from "./pages/(StudentsPage)/StudentsPage"
-import DashBoardPage from "./pages/(DashBoardPage)/DashBoardPage"
+import StudentsPage from "./pages/StudentsPage"
+import DashBoardPage from "./pages/DashBoardPage"
 
 export default function App() {
   return (

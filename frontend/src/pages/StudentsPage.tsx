@@ -1,7 +1,7 @@
 // src/pages/(MainPage)/StudentManagementPage.tsx
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import NavBar from "../(MainPage)/components/NavBar"
+import NavBar from "../components/NavBar"
 
 type Student = {
   id: number;
