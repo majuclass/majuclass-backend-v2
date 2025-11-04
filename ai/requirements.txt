@@ -1,3 +1,4 @@
+# ===== 기존 의존성 =====
 annotated-doc==0.0.3
 annotated-types==0.7.0
 anyio==4.11.0
@@ -10,7 +11,7 @@ fastapi==0.120.2
 h11==0.16.0
 httptools==0.7.1
 idna==3.11
-numpy==2.0.2
+numpy==1.26.4
 pyasn1==0.4.8
 pycparser==2.23
 pydantic==2.12.3
@@ -31,3 +32,25 @@ uvicorn==0.38.0
 uvloop==0.22.1
 watchfiles==1.1.1
 websockets==15.0.1
+asyncmy==0.2.9
+
+
+# ===== STT 및 음성 분석을 위한 새로운 의존성 =====
+
+# OpenAI API (Whisper STT 사용)
+openai==1.12.0
+
+# HTTP 요청 (S3 presigned URL에서 파일 다운로드)
+requests==2.31.0
+
+# 문장 임베딩 및 유사도 계산 (의미적 유사도 비교)
+sentence-transformers==2.3.1
+
+# PyTorch (sentence-transformers의 백엔드)
+# CPU 버전 (GPU가 없는 환경)
+torch>=2.0.0
+torchvision>=0.15.0
+torchaudio>=2.0.0
+
+# scikit-learn (유사도 계산 유틸리티)
+scikit-learn==1.5.0
