@@ -34,10 +34,14 @@ public enum SuccessCode {
     SCENARIO_DELETE_SUCCESS("시나리오가 성공적으로 삭제되었습니다"),
 
     // 시나리오 세션/시뮬레이션 관련
+    SESSION_START_SUCCESS("세션이 성공적으로 시작되었습니다"),
+    SESSION_COMPLETE_SUCCESS("세션이 성공적으로 완료되었습니다"),
+    AUDIO_UPLOAD_URL_GENERATED("음성 업로드 URL이 생성되었습니다"),
     SIMULATION_RETRIEVE_SUCCESS("시뮬레이션 조회가 완료되었습니다"),
     SEQUENCE_RETRIEVE_SUCCESS("시퀀스 조회가 완료되었습니다"),
     OPTIONS_RETRIEVE_SUCCESS("옵션 목록 조회가 완료되었습니다"),
-    ANSWER_CHECK_SUCCESS("답안 검증이 완료되었습니다");
+    ANSWER_CHECK_SUCCESS("답안 검증이 완료되었습니다"),
+    AUDIO_ANSWER_CHECK_SUCCESS("음성 답안 검증이 완료되었습니다");
 
     private final String message;
 }

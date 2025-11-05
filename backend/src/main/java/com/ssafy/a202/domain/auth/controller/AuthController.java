@@ -1,6 +1,11 @@
 package com.ssafy.a202.domain.auth.controller;
 
-import com.ssafy.a202.domain.auth.dto.*;
+import com.ssafy.a202.domain.auth.dto.request.LoginRequest;
+import com.ssafy.a202.domain.auth.dto.request.LogoutRequest;
+import com.ssafy.a202.domain.auth.dto.request.RefreshTokenRequest;
+import com.ssafy.a202.domain.auth.dto.request.SignupRequest;
+import com.ssafy.a202.domain.auth.dto.response.LoginResponse;
+import com.ssafy.a202.domain.auth.dto.response.SignupResponse;
 import com.ssafy.a202.domain.auth.service.AuthService;
 import com.ssafy.a202.global.constants.SuccessCode;
 import com.ssafy.a202.global.response.ApiResponse;

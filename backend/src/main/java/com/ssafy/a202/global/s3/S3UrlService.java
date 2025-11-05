@@ -60,30 +60,70 @@ public class S3UrlService {
     }
 
     /**
-     * Lambda API를 통한 Pre-signed URL 생성 (비공개 객체)
+     * Lambda API를 통한 Pre-signed URL 생성 (비공개 객체 - 조회용)
      */
     private String generatePresignedUrl(String s3Key) {
         try {
-            // Lambda API 호출 (동기 방식)
+            // Lambda API 호출 (조회용: getObject)
             Map<String, String> response = webClient.post()
                     .uri(lambdaApiUrl)
-                    .bodyValue(Map.of("s3Key", s3Key))
+                    .bodyValue(Map.of(
+                            "fileName", s3Key,
+                            "operation", "getObject"
+                    ))
                     .retrieve()
                     .bodyToMono(Map.class)
                     .block();  // 동기 처리
 
-            // 응답에서 Pre-signed URL 추출
-            if (response != null && response.containsKey("presignedUrl")) {
-                String presignedUrl = response.get("presignedUrl");
-                log.debug("Generated presigned URL via Lambda for key: {}", s3Key);
+            // 응답에서 Pre-signed URL 추출 (url 필드)
+            if (response != null && response.containsKey("url")) {
+                String presignedUrl = response.get("url");
+                log.debug("Generated presigned URL via Lambda for fileName: {}", s3Key);
                 return presignedUrl;
             } else {
-                log.error("Invalid response from Lambda API for key: {}", s3Key);
+                log.error("Invalid response from Lambda API for fileName: {}", s3Key);
                 throw new CustomException(ErrorCode.EXTERNAL_API_ERROR);
             }
 
         } catch (Exception e) {
-            log.error("Failed to generate presigned URL via Lambda for key: {}", s3Key, e);
+            log.error("Failed to generate presigned URL via Lambda for fileName: {}", s3Key, e);
+            throw new CustomException(ErrorCode.EXTERNAL_API_ERROR);
+        }
+    }
+
+    /**
+     * 업로드용 Pre-signed URL 생성
+     *
+     * @param fileName S3 파일 경로
+     * @param operation 작업 유형 (putObject)
+     * @param contentType 파일 컨텐츠 타입
+     * @return 업로드용 Pre-signed URL 응답 (url, fileName)
+     */
+    public Map<String, String> generateUploadPresignedUrl(String fileName, String operation, String contentType) {
+        try {
+            // Lambda API 호출 (업로드용)
+            Map<String, String> response = webClient.post()
+                    .uri(lambdaApiUrl)
+                    .bodyValue(Map.of(
+                            "fileName", fileName,
+                            "operation", operation,
+                            "contentType", contentType
+                    ))
+                    .retrieve()
+                    .bodyToMono(Map.class)
+                    .block();
+
+            // 응답 검증 (url과 fileName이 있어야 함)
+            if (response != null && response.containsKey("url") && response.containsKey("fileName")) {
+                log.debug("Generated upload presigned URL via Lambda for fileName: {}", fileName);
+                return response;
+            } else {
+                log.error("Invalid response from Lambda API for upload URL, fileName: {}", fileName);
+                throw new CustomException(ErrorCode.EXTERNAL_API_ERROR);
+            }
+
+        } catch (Exception e) {
+            log.error("Failed to generate upload presigned URL via Lambda for fileName: {}", fileName, e);
             throw new CustomException(ErrorCode.EXTERNAL_API_ERROR);
         }
     }

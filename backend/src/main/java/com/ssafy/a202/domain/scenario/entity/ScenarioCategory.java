@@ -21,6 +21,6 @@ public class ScenarioCategory {
     @OneToMany(mappedBy = "scenarioCategory")
     private List<Scenario> scenarios = new ArrayList<>();
 
-    @Column(nullable = false, length = 100)
+    @Column(name = "category_name", nullable = false, length = 100)
     private String categoryName;
 }

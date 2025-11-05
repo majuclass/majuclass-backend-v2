@@ -1,4 +1,4 @@
-package com.ssafy.a202.domain.auth.dto;
+package com.ssafy.a202.domain.auth.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;

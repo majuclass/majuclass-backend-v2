@@ -2,6 +2,7 @@ package com.ssafy.a202.domain.scenariosession.entity;
 
 import com.ssafy.a202.domain.scenario.entity.Scenario;
 import com.ssafy.a202.domain.user.entity.Student;
+import com.ssafy.a202.global.constants.Difficulty;
 import com.ssafy.a202.global.constants.SessionStatus;
 import com.ssafy.a202.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
@@ -34,9 +35,16 @@ public class ScenarioSession extends BaseTimeEntity {
     private Scenario scenario;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(name = "session_status", nullable = false)
     private SessionStatus sessionStatus;
 
-    @Column(nullable = false, columnDefinition = "TINYINT(1)")
+    @Column(name = "is_deleted", nullable = false, columnDefinition = "TINYINT(1)")
     private boolean isDeleted;
+
+    /**
+     * 세션을 완료 상태로 변경
+     */
+    public void complete() {
+        this.sessionStatus = SessionStatus.COMPLETED;
+    }
 }

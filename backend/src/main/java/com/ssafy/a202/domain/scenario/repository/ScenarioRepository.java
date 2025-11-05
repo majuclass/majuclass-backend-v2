@@ -19,14 +19,4 @@ public interface ScenarioRepository extends JpaRepository<Scenario, Long> {
      * 카테고리별 시나리오 조회
      */
     List<Scenario> findByScenarioCategoryIdAndIsDeletedFalse(Long categoryId);
-
-    /**
-     * 난이도별 시나리오 조회
-     */
-    List<Scenario> findByDifficultyAndIsDeletedFalse(Difficulty difficulty);
-
-    /**
-     * 카테고리 및 난이도별 시나리오 조회
-     */
-    List<Scenario> findByScenarioCategoryIdAndDifficultyAndIsDeletedFalse(Long categoryId, Difficulty difficulty);
 }

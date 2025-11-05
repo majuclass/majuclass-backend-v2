@@ -1,9 +1,9 @@
 package com.ssafy.a202.domain.auth.service;
 
-import com.ssafy.a202.domain.auth.dto.LoginRequest;
-import com.ssafy.a202.domain.auth.dto.LoginResponse;
-import com.ssafy.a202.domain.auth.dto.SignupRequest;
-import com.ssafy.a202.domain.auth.dto.SignupResponse;
+import com.ssafy.a202.domain.auth.dto.request.LoginRequest;
+import com.ssafy.a202.domain.auth.dto.response.LoginResponse;
+import com.ssafy.a202.domain.auth.dto.request.SignupRequest;
+import com.ssafy.a202.domain.auth.dto.response.SignupResponse;
 
 /**
  * 인증 서비스 인터페이스

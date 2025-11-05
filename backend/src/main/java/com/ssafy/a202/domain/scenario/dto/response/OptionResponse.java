@@ -1,4 +1,4 @@
-package com.ssafy.a202.domain.scenariosession.dto;
+package com.ssafy.a202.domain.scenario.dto.response;
 
 import com.ssafy.a202.domain.scenario.entity.SeqOption;
 import io.swagger.v3.oas.annotations.media.Schema;
