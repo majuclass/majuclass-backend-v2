@@ -1,4 +1,4 @@
-package com.ssafy.a202.domain.scenariosession.dto;
+package com.ssafy.a202.domain.scenario.dto.response;
 
 import com.ssafy.a202.domain.scenario.entity.ScenarioSequence;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -26,9 +26,6 @@ public class SequenceResponse {
     @Schema(description = "질문 내용", example = "주문 도와드릴까요?")
     private String question;
 
-    @Schema(description = "시퀀스 미디어 파일의 PreSigned URL", example = "https://s3.amazonaws.com/bucket/sequence1.mp4?signature=...")
-    private String mediaUrl;
-
     @Schema(description = "다음 시퀀스 존재 여부", example = "true")
     private boolean hasNext;
 
@@ -36,15 +33,13 @@ public class SequenceResponse {
      * ScenarioSequence 엔티티를 SequenceResponse로 변환
      *
      * @param scenarioSequence 시퀀스 엔티티
-     * @param mediaUrl 프리사인드 URL (Service에서 생성)
      * @param hasNext 다음 시퀀스 존재 여부
      */
-    public static SequenceResponse from(ScenarioSequence scenarioSequence, String mediaUrl, boolean hasNext) {
+    public static SequenceResponse from(ScenarioSequence scenarioSequence, boolean hasNext) {
         return SequenceResponse.builder()
                 .sequenceId(scenarioSequence.getId())
                 .sequenceNumber(scenarioSequence.getSeqNo())
                 .question(scenarioSequence.getQuestion())
-                .mediaUrl(mediaUrl)
                 .hasNext(hasNext)
                 .build();
     }

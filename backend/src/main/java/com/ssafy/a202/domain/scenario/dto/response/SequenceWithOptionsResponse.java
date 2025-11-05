@@ -1,4 +1,4 @@
-package com.ssafy.a202.domain.scenariosession.dto;
+package com.ssafy.a202.domain.scenario.dto.response;
 
 import com.ssafy.a202.domain.scenario.entity.ScenarioSequence;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -28,9 +28,6 @@ public class SequenceWithOptionsResponse {
     @Schema(description = "질문 내용", example = "주문 도와드릴까요?")
     private String question;
 
-    @Schema(description = "시퀀스 미디어 파일의 PreSigned URL", example = "https://s3.amazonaws.com/bucket/sequence1.mp4?signature=...")
-    private String mediaUrl;
-
     @Schema(description = "선택 옵션 목록")
     private List<OptionResponse> options;
 
@@ -38,9 +35,8 @@ public class SequenceWithOptionsResponse {
      * ScenarioSequence 엔티티를 SequenceWithOptionsResponse로 변환
      *
      * @param scenarioSequence 시퀀스 엔티티
-     * @param mediaUrl 프리사인드 URL (Service에서 생성)
      */
-    public static SequenceWithOptionsResponse from(ScenarioSequence scenarioSequence, String mediaUrl) {
+    public static SequenceWithOptionsResponse from(ScenarioSequence scenarioSequence) {
         List<OptionResponse> options = scenarioSequence.getOptions().stream()
                 .map(OptionResponse::from)
                 .toList();
@@ -49,7 +45,6 @@ public class SequenceWithOptionsResponse {
                 .sequenceId(scenarioSequence.getId())
                 .sequenceNumber(scenarioSequence.getSeqNo())
                 .question(scenarioSequence.getQuestion())
-                .mediaUrl(mediaUrl)
                 .options(options)
                 .build();
     }

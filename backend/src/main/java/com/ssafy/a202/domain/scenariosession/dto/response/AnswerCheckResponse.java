@@ -1,4 +1,4 @@
-package com.ssafy.a202.domain.scenariosession.dto;
+package com.ssafy.a202.domain.scenariosession.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -29,4 +29,7 @@ public class AnswerCheckResponse {
 
     @Schema(description = "정답 여부", example = "true")
     private boolean isCorrect;
+
+    @Schema(description = "시도 횟수", example = "2")
+    private int attemptNo;
 }

@@ -39,7 +39,7 @@ public class User extends BaseTimeEntity {
     @Column(nullable = false, length = 20)
     private Role role = Role.USER;
 
-    @Column(nullable = false, columnDefinition = "TINYINT(1)")
+    @Column(name = "is_deleted", nullable = false, columnDefinition = "TINYINT(1)")
     private boolean isDeleted = false;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)

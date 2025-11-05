@@ -1,12 +1,7 @@
 package com.ssafy.a202.domain.scenariosession.service;
 
-import com.ssafy.a202.domain.scenariosession.dto.AnswerCheckResponse;
-import com.ssafy.a202.domain.scenariosession.dto.AnswerSubmitRequest;
-import com.ssafy.a202.domain.scenariosession.dto.OptionResponse;
-import com.ssafy.a202.domain.scenariosession.dto.SequenceResponse;
-import com.ssafy.a202.domain.scenariosession.dto.SequenceWithOptionsResponse;
-
-import java.util.List;
+import com.ssafy.a202.domain.scenariosession.dto.request.*;
+import com.ssafy.a202.domain.scenariosession.dto.response.*;
 
 /**
  * 시나리오 세션 서비스 인터페이스
@@ -14,37 +9,43 @@ import java.util.List;
 public interface ScenarioSessionService {
 
     /**
-     * 시나리오의 모든 시퀀스와 옵션 조회
-     * 시나리오의 모든 시퀀스와 옵션을 프리사인드 URL 포함해서 반환
+     * 세션 시작
      *
-     * @param scenarioId 시나리오 ID
-     * @return 시퀀스 및 옵션 목록 (시나리오 정보 제외)
+     * @param request 세션 시작 요청
+     * @return 세션 시작 응답
      */
-    List<SequenceWithOptionsResponse> getScenarioSimulation(Long scenarioId);
+    SessionStartResponse startSession(SessionStartRequest request);
 
     /**
-     * 특정 시퀀스 조회 (옵션 제외)
+     * 음성 업로드 URL 생성
      *
-     * @param scenarioId 시나리오 ID
-     * @param sequenceNumber 시퀀스 번호 (1부터 시작)
-     * @return 시퀀스 응답 (다음 시퀀스 존재 여부 포함)
+     * @param request 음성 업로드 URL 요청 (세션 ID, 시퀀스 번호 포함)
+     * @return 음성 업로드 URL 응답
      */
-    SequenceResponse getSequence(Long scenarioId, int sequenceNumber);
+    AudioUploadUrlResponse generateAudioUploadUrl(AudioUploadUrlRequest request);
 
     /**
-     * 특정 시퀀스의 옵션 조회
-     *
-     * @param scenarioId 시나리오 ID
-     * @param sequenceNumber 시퀀스 번호 (1부터 시작)
-     * @return 옵션 응답 목록
-     */
-    List<OptionResponse> getSequenceOptions(Long scenarioId, int sequenceNumber);
-
-    /**
-     * 답안 제출 및 검증
+     * 답안 제출 및 검증 (난이도 하/중)
      *
      * @param request 답안 제출 요청
      * @return 답안 검증 결과
      */
     AnswerCheckResponse submitAnswer(AnswerSubmitRequest request);
+
+    /**
+     * 음성 답안 제출 및 검증 (난이도 상)
+     * FastAPI STT 분석 후 정답 여부 판정
+     *
+     * @param request 음성 답안 제출 요청
+     * @return 음성 답안 검증 결과
+     */
+    AudioSubmitResponse submitAudioAnswer(AudioSubmitRequest request);
+
+    /**
+     * 세션 완료 처리
+     *
+     * @param request 세션 완료 요청
+     * @return 세션 완료 응답
+     */
+    SessionCompleteResponse completeSession(SessionCompleteRequest request);
 }

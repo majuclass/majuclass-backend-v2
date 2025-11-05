@@ -20,15 +20,18 @@ public class SeqOption extends BaseTimeEntity {
     @JoinColumn(name = "seq_id")
     private ScenarioSequence scenarioSequence;
 
-    @Column(nullable = false)
+    @Column(name = "option_no", nullable = false)
     private int optionNo;
 
-    @Column(nullable = false)
+    @Column(name = "option_text", nullable = false)
     private String optionText;
 
-    @Column(nullable = false, columnDefinition = "TINYINT(1)")
+    @Column(name = "option_s3_key", nullable = false)
+    private String optionS3Key;
+
+    @Column(name = "is_answer", nullable = false, columnDefinition = "TINYINT(1)")
     private boolean isAnswer;
 
-    @Column(nullable = false, columnDefinition = "TINYINT(1)")
+    @Column(name = "is_deleted", nullable = false, columnDefinition = "TINYINT(1)")
     private boolean isDeleted;
 }

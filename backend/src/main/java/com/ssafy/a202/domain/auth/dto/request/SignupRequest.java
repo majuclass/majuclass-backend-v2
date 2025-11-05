@@ -1,4 +1,4 @@
-package com.ssafy.a202.domain.auth.dto;
+package com.ssafy.a202.domain.auth.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
@@ -20,8 +20,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class SignupRequest {
 
-    @Schema(description = "학교 ID", example = "1", requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotNull(message = "학교 ID는 필수입니다")
+    @Schema(description = "학교 ID", example = "1", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+//    @NotNull(message = "학교 ID는 필수입니다")
     private Long schoolId;
 
     @Schema(description = "사용자 ID", example = "teacher01", requiredMode = Schema.RequiredMode.REQUIRED)

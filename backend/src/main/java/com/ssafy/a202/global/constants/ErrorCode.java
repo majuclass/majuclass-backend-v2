@@ -32,13 +32,20 @@ public enum ErrorCode {
     USERNAME_DUPLICATE(HttpStatus.CONFLICT, "이미 사용 중인 사용자 ID입니다"),
     EMAIL_DUPLICATE(HttpStatus.CONFLICT, "이미 사용 중인 이메일입니다"),
     SCHOOL_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 학교입니다"),
+    STUDENT_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 학생입니다"),
 
     // 시나리오 관련 (SCENARIO)
     SCENARIO_NOT_FOUND(HttpStatus.NOT_FOUND, "요청한 시나리오를 찾을 수 없습니다"),
     SEQUENCE_NOT_FOUND(HttpStatus.NOT_FOUND, "요청한 시퀀스를 찾을 수 없습니다"),
     OPTION_NOT_FOUND(HttpStatus.NOT_FOUND, "요청한 옵션을 찾을 수 없습니다"),
     INVALID_OPTION_SELECTED(HttpStatus.BAD_REQUEST, "유효하지 않은 옵션이 선택되었습니다"),
-    CORRECT_OPTION_NOT_FOUND(HttpStatus.INTERNAL_SERVER_ERROR, "시퀀스의 정답을 찾을 수 없습니다");
+    CORRECT_OPTION_NOT_FOUND(HttpStatus.INTERNAL_SERVER_ERROR, "시퀀스의 정답을 찾을 수 없습니다"),
+    INVALID_DIFFICULTY(HttpStatus.BAD_REQUEST, "유효하지 않은 난이도입니다. EASY, NORMAL, HARD 중 하나를 선택해야 합니다"),
+
+    // 세션 관련 (SESSION)
+    SESSION_NOT_FOUND(HttpStatus.NOT_FOUND, "요청한 세션을 찾을 수 없습니다"),
+    SESSION_ALREADY_COMPLETED(HttpStatus.BAD_REQUEST, "이미 완료된 세션입니다"),
+    SESSION_ACCESS_DENIED(HttpStatus.FORBIDDEN, "해당 세션에 접근할 권한이 없습니다");
 
     private final HttpStatus status;
     private final String message;

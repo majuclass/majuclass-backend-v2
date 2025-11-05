@@ -26,18 +26,12 @@ public class ScenarioSequence extends BaseTimeEntity {
     @JoinColumn(name = "scenario_id")
     private Scenario scenario;
 
-    @Column(nullable = false)
+    @Column(name = "seq_no", nullable = false)
     private int seqNo;
-
-    @Column(nullable = false)
-    private String seqS3Bucket;
-
-    @Column(nullable = false)
-    private String seqS3Key;
 
     @Column(nullable = false)
     private String question;
 
-    @Column(nullable = false, columnDefinition = "TINYINT(1)")
+    @Column(name = "is_deleted", nullable = false, columnDefinition = "TINYINT(1)")
     private boolean isDeleted;
 }

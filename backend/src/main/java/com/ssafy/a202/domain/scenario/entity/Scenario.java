@@ -1,6 +1,5 @@
 package com.ssafy.a202.domain.scenario.entity;
 
-import com.ssafy.a202.global.constants.Difficulty;
 import com.ssafy.a202.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -33,19 +32,15 @@ public class Scenario extends BaseTimeEntity {
     @Column(nullable = false)
     private String summary;
 
-    @Column(nullable = false)
-    private String thumbnailS3Bucket;
-
-    @Column(nullable = false)
+    @Column(name = "thumbnail_s3_key", nullable = false)
     private String thumbnailS3Key;
 
-    @Column(nullable = false)
+    @Column(name = "background_s3_key", nullable = false)
+    private String backgroundS3Key;
+
+    @Column(name = "total_sequences", nullable = false)
     private int totalSequences;
 
-    @Enumerated(EnumType.STRING)
-    @Column(length = 20)
-    private Difficulty difficulty;
-
-    @Column(nullable = false, columnDefinition = "TINYINT(1)")
+    @Column(name = "is_deleted", nullable = false, columnDefinition = "TINYINT(1)")
     private boolean isDeleted;
 }

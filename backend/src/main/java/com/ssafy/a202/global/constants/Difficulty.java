@@ -9,8 +9,9 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum Difficulty {
-    EASY("쉬움"),
-    HARD("어려움");
+    EASY("하"),
+    NORMAL("중"),
+    HARD("상");
 
     private final String description;
 }
