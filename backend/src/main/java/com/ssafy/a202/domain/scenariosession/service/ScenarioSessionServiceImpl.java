@@ -210,6 +210,7 @@ public class ScenarioSessionServiceImpl implements ScenarioSessionService {
                 .build();
     }
 
+    /*
     @Override
     @Transactional
     public AudioSubmitResponse submitAudioAnswer(AudioSubmitRequest request) {
@@ -273,6 +274,7 @@ public class ScenarioSessionServiceImpl implements ScenarioSessionService {
                 .attemptNo(attemptNo)
                 .build();
     }
+     */
 
     @Override
     @Transactional
