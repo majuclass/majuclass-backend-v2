@@ -19,8 +19,7 @@ import girlNormal from "../assets/scenarios/cinema/cinema-girl-normal.png";
  * @param scenarioId - 불러올 시나리오 고유 ID
  */
 export default function SimulationPage() {
-  const { scenarioId: scenarioIdParam } = useParams<{ scenarioId: string }>(); // 연결 변수
-  const scenarioId = scenarioIdParam ? Number(scenarioIdParam) : 1; // 변경: 없으면 1로 fallback
+  const { scenarioId, difficulty } = useParams();
 
   const [gameState, setGameState] = useState<
     "loading" | "error" | "playing" | "end"
@@ -35,8 +34,7 @@ export default function SimulationPage() {
   const [isCorrect, setIsCorrect] = useState<boolean>(false);
   const [sessionId, setSessionId] = useState<number>();
 
-  //   TODO: difficulty & studentId 연결
-  const difficulty = "NORMAL";
+  //   TODO: studentId 연결
   const studentId = 1;
 
   // 시나리오는 최초 로딩 1회
