@@ -1,14 +1,30 @@
-<!-- @format -->
-
 <!DOCTYPE html>
 <html lang="ko">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/png" sizes="16x16"  href="/favicons/favicon-16x16.png">
-    <meta name="msapplication-TileColor" content="#ffffff">
-    <meta name="theme-color" content="#ffffff">
     <title>마주교실</title>
+
+    <!-- 파비콘 -->
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicons/favicon-16x16.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicons/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="64x64" href="/favicons/favicon-64x64.png" />
+    <meta name="theme-color" content="#ffffff" />
+
+    <!-- OG (링크 미리보기용) -->
+    <meta property="og:title" content="마주교실" />
+    <meta property="og:description" content="시나리오 기반 사회성 학습 플랫폼" />
+    <meta property="og:image" content="https://eeb425caf5eb.ngrok-free.app/og-image.png" /> <!-- 🔹 개발 테스트용 (테스트 주소로 수정해야 함)--> 
+    <meta property="og:image" content="https://www.majuclass.com/og-image.png" /> <!-- 🔹 배포용 -->
+    <meta property="og:url" content="https://www.majuclass.com" />
+    <meta property="og:type" content="website" />
+
+    <!-- SNS용 -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="마주교실" />
+    <meta name="twitter:description" content="시나리오 기반 사회성 학습 플랫폼" />
+    <meta name="twitter:image" content="https://www.majuclass.com/og-image.png" />
   </head>
+
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
