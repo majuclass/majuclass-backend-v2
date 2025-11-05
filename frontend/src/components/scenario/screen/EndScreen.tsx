@@ -4,9 +4,10 @@ import { useNavigate } from "react-router-dom";
 
 type EndScreenProps = {
   onRestart: () => void;
+  onExit: () => void;
 };
 
-export default function EndScreen({ onRestart }: EndScreenProps) {
+export default function EndScreen({ onRestart, onExit }: EndScreenProps) {
   const navigator = useNavigate();
   return (
     <div className="h-screen w-screen flex items-center justify-center bg-[url('/snack-bg.jpg')] bg-cover bg-center">
@@ -21,7 +22,10 @@ export default function EndScreen({ onRestart }: EndScreenProps) {
           </button>
           <button
             className="bg-gray-400 text-white py-2 px-6 rounded-md font-semibold hover:bg-gray-500 transition"
-            onClick={() => navigator(-1)}
+            onClick={() => {
+              onExit();
+              navigator(-1);
+            }}
           >
             나가기
           </button>
