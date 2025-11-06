@@ -5,8 +5,6 @@ import com.ssafy.a202.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.math.BigDecimal;
-
 @Entity
 @Getter
 @Builder
@@ -37,7 +35,7 @@ public class SessionSttAnswer extends BaseTimeEntity {
     private String answerText;
 
     @Column(nullable = false, name = "similarity_score")
-    private BigDecimal similarityScore;
+    private Double similarityScore;
 
     @Column(nullable = false, name = "is_correct", columnDefinition = "TINYINT(1)")
     private boolean isCorrect;
