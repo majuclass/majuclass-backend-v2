@@ -1,5 +1,4 @@
 /** @format */
-import { useState } from "react";
 import TextInput from "../TextInput";
 import type { Option } from "../../types/Scenario";
 import { useOptionStore } from "../../stores/useScenarioCreateStore";
@@ -22,10 +21,8 @@ export default function SequenceInput() {
   //   const store = useOptionStore();
   //   const options = store.options;
   // selector로 options, addoption subscribe
-  const { options, addOption } = useOptionStore((state) => ({
-    options: state.options,
-    addOption: state.addOption,
-  }));
+  const options = useOptionStore((state) => state.options);
+  const addOption = useOptionStore((state) => state.addOption);
 
   //   새 id 추적
   const newOptionId = options.length + 1;
@@ -39,8 +36,7 @@ export default function SequenceInput() {
       isAnswer: false,
     };
     addOption(newOption);
-
-    // setOptions((prevOptions) => [...prevOptions, newOption]);
+    console.log(options);
   };
 
   return (

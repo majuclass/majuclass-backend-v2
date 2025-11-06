@@ -7,24 +7,30 @@ interface TextInputProps {
   name?: string;
   placeholder?: string;
   type?: string;
+  onChange?: (value: string) => void;
 }
 
-/** CreateScenario 생성에 사용되는 TextInput
+/** CreateScenario에 주로 사용되는 TextInput
  * @prop {React.ReactNode} children - 레이블
  * @prop {string} [name] - input 구분하는 이름
  * @prop {string} [placeholder] - input에 사용되는 이름
  * @prop {string} [type='text'] - input의 타입 (기본 text)
+ * @prop {function(string): void} [onChange] - 바뀐 텍스트 lift up용 함수
  */
 export default function TextInput({
   children,
   name,
   placeholder,
   type = "text",
+  onChange,
 }: TextInputProps) {
   const [inputValue, setInputValue] = useState("");
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // 내부 update
     setInputValue(e.target.value);
+    // lift up
+    if (onChange) onChange(e.target.value);
   };
 
   const handleClear = () => {
