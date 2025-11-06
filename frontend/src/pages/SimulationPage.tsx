@@ -11,34 +11,37 @@ import EndScreen from "../components/scenario/screen/EndScreen";
 import FeedbackScreen from "../components/scenario/screen/FeedbackScreen";
 import ScenarioLayout from "../components/layout/ScenarioLayout";
 
-// 이미지 추가 
+// 이미지 추가
 import bgCinema from "../assets/scenarios/cinema/cinema-ticket-bg-img.png";
 import girlNormal from "../assets/scenarios/cinema/cinema-girl-normal.png";
-
 
 /** 시뮬레이션 실행 제어 컨트롤러
  * @param scenarioId - 불러올 시나리오 고유 ID
  */
 export default function SimulationPage() {
-  const { scenarioId: scenarioIdParam } = useParams<{ scenarioId: string }>(); // 연결 변수 
-  const scenarioId = scenarioIdParam ? Number(scenarioIdParam) : 1; // 변경: 없으면 1로 fallback
+  const { scenarioId, difficulty } = useParams();
 
+  //   시나리오 인터페이스 확장 위해 type alias 사용
+  // TODO: 차후 확장 추가
+  type ScenariowithURL = Scenario & {
+    backgroundUrl: string;
+  };
 
-  const [gameState, setGameState] = useState<"loading" | "error" | "playing">(
-    "loading"
-  );
+  const [gameState, setGameState] = useState<
+    "loading" | "error" | "playing" | "end"
+  >("loading");
   const [screen, setScreen] = useState<
     "start" | "question" | "option" | "feedback" | "end"
   >("start");
-  const [scenario, setScenario] = useState<Scenario>();
+  const [scenario, setScenario] = useState<ScenariowithURL>();
   const [sequence, setSequence] = useState<Sequence>();
   const [options, setOptions] = useState<Option[]>([]);
   const [sequenceNumber, setSequenceNumber] = useState(1);
   const [isCorrect, setIsCorrect] = useState<boolean>(false);
+  const [sessionId, setSessionId] = useState<number>();
 
-  // TODO: 에러 처리
-  //   TODO: id 분리
-  // const scenarioId = 1;
+  //   TODO: studentId 연결
+  const studentId = 1;
 
   // 시나리오는 최초 로딩 1회
   useEffect(() => {
@@ -62,7 +65,7 @@ export default function SimulationPage() {
       setGameState("loading");
       try {
         const resp = await api.get(
-          `scenario-sessions/${scenarioId}/sequences/${sequenceNumber}`
+          `scenarios/${scenarioId}/sequences/${sequenceNumber}`
         );
         const data = resp.data.data;
         setSequence(data);
@@ -81,7 +84,7 @@ export default function SimulationPage() {
     const fetchOptions = async () => {
       try {
         const resp = await api.get(
-          `scenario-sessions/${scenarioId}/sequences/${sequenceNumber}/options`
+          `scenarios/${scenarioId}/sequences/${sequenceNumber}/options?difficulty=${difficulty}`
         );
         setOptions(resp.data.data);
       } catch (error) {
@@ -90,14 +93,29 @@ export default function SimulationPage() {
       }
     };
     fetchOptions();
-  }, [sequence, scenarioId, sequenceNumber]);
+  }, [sequence, scenarioId, sequenceNumber, difficulty]);
 
   // 이벤트 핸들러: 시작 / 옵션 선택 / 다음 문제 / 초기화
-  const handleGameStart = () => {
-    setGameState("playing");
-    setScreen("question");
-    setIsCorrect(false);
+  const handleGameStart = async () => {
+    try {
+      const resp = await api.post(`scenario-sessions/start`, {
+        studentId,
+        scenarioId,
+      });
+      const sessionId = resp.data.data.sessionId;
+      setSessionId(sessionId);
+      console.log(sessionId + "session start");
+
+      //   session 시작된 경우만 다음 화면으로
+      setGameState("playing");
+      setScreen("question");
+      setIsCorrect(false);
+    } catch (error) {
+      console.error(error);
+      setGameState("error");
+    }
   };
+
   // 옵션 선택 화면으로 전환
   const handleSelectOption = () => {
     setScreen("option");
@@ -108,6 +126,7 @@ export default function SimulationPage() {
   const handleFeedback = async (selectedOption: Option) => {
     try {
       const resp = await api.post(`scenario-sessions/submit-answer`, {
+        sessionId,
         scenarioId,
         sequenceNumber,
         selectedOptionId: selectedOption.optionId,
@@ -128,6 +147,7 @@ export default function SimulationPage() {
         const isLastSequence =
           sequenceNumber >= (scenario?.totalSequences || 0);
 
+        // TODO: END logic 통일
         if (isLastSequence) {
           setScreen("end");
         } else {
@@ -148,6 +168,23 @@ export default function SimulationPage() {
     setIsCorrect(false);
   };
 
+  const handleEnd = async () => {
+    try {
+      const resp = await api.post(`scenario-sessions/complete`, {
+        sessionId,
+      });
+      if (resp.data.status !== "SUCCESS") {
+        throw new Error();
+      }
+      console.log(sessionId + "session end");
+      setGameState("end");
+      setScreen("end");
+    } catch (error) {
+      console.error(error);
+      setGameState("error");
+    }
+  };
+
   // 화면 렌더링 조건 분기
   const renderContent = () => {
     // 시나리오별
@@ -160,7 +197,11 @@ export default function SimulationPage() {
         switch (screen) {
           case "start":
             return scenario ? (
-              <StartScreen scenario={scenario} onStart={handleGameStart} />
+              <StartScreen
+                scenario={scenario}
+                difficulty={difficulty ?? ""}
+                onStart={handleGameStart}
+              />
             ) : null;
           case "question":
             return sequence ? (
@@ -177,18 +218,18 @@ export default function SimulationPage() {
           case "feedback":
             return <FeedbackScreen isCorrect={isCorrect} />;
           case "end":
-            return <EndScreen onRestart={handleRestart} />;
+            return <EndScreen onRestart={handleRestart} onExit={handleEnd} />;
         }
     }
   };
   //   실 렌더링
-  //   TODO: img 확장
+  //   TODO: 캐릭터 기본 이미지 생성
+  //   TODO: 백그라운드 기본 이미지 생성
+  // 현재 s3 업로드된 이미지 받아올 수는 있으나 카테고리 미구현 상태
   return (
     <ScenarioLayout
-      backgroundImg={
-        // scenario?.backgroundImage ||
-        bgCinema
-      }
+      defaultBackgroundImg={bgCinema}
+      backgroundUrl={scenario?.backgroundUrl ?? bgCinema}
       characterImg={
         // scenario?.characterImage ||
         girlNormal
