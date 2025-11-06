@@ -21,13 +21,19 @@ import girlNormal from "../assets/scenarios/cinema/cinema-girl-normal.png";
 export default function SimulationPage() {
   const { scenarioId, difficulty } = useParams();
 
+  //   시나리오 인터페이스 확장 위해 type alias 사용
+  // TODO: 차후 확장 추가
+  type ScenariowithURL = Scenario & {
+    backgroundUrl: string;
+  };
+
   const [gameState, setGameState] = useState<
     "loading" | "error" | "playing" | "end"
   >("loading");
   const [screen, setScreen] = useState<
     "start" | "question" | "option" | "feedback" | "end"
   >("start");
-  const [scenario, setScenario] = useState<Scenario>();
+  const [scenario, setScenario] = useState<ScenariowithURL>();
   const [sequence, setSequence] = useState<Sequence>();
   const [options, setOptions] = useState<Option[]>([]);
   const [sequenceNumber, setSequenceNumber] = useState(1);
@@ -191,7 +197,11 @@ export default function SimulationPage() {
         switch (screen) {
           case "start":
             return scenario ? (
-              <StartScreen scenario={scenario} onStart={handleGameStart} />
+              <StartScreen
+                scenario={scenario}
+                difficulty={difficulty ?? ""}
+                onStart={handleGameStart}
+              />
             ) : null;
           case "question":
             return sequence ? (
@@ -213,13 +223,13 @@ export default function SimulationPage() {
     }
   };
   //   실 렌더링
-  //   TODO: img 확장
+  //   TODO: 캐릭터 기본 이미지 생성
+  //   TODO: 백그라운드 기본 이미지 생성
+  // 현재 s3 업로드된 이미지 받아올 수는 있으나 카테고리 미구현 상태
   return (
     <ScenarioLayout
-      backgroundImg={
-        // scenario?.backgroundImage ||
-        bgCinema
-      }
+      defaultBackgroundImg={bgCinema}
+      backgroundUrl={scenario?.backgroundUrl ?? bgCinema}
       characterImg={
         // scenario?.characterImage ||
         girlNormal

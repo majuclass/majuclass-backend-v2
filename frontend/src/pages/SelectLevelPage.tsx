@@ -5,30 +5,35 @@
  */
 
 import blackboard from "../assets/scenarios/common/blackboard.png";
-import backgroundImg from "../assets/scenarios/cinema/cinema-ticket-bg-img.png";
+import defaultBackgroundImg from "../assets/scenarios/cinema/cinema-ticket-bg-img.png";
 import api from "../apis/apiInstance";
 import { useEffect, useState } from "react";
 import type { Scenario } from "../types/Scenario";
 import { useNavigate, useParams } from "react-router-dom";
 
 export default function SelectLevelPage() {
-  const [scenario, setScenario] = useState<Scenario | null>(null);
+  //   시나리오 인터페이스 확장 위해 type alias 사용
+  // TODO: 차후 확장 추가
+  type ScenariowithURL = Scenario & {
+    backgroundUrl: string;
+  };
+
+  const [scenario, setScenario] = useState<ScenariowithURL | null>(null);
   const navigate = useNavigate();
   const { scenarioId } = useParams();
 
-  const fetchScenario = async () => {
-    try {
-      const resp = await api.get(`scenarios/${scenarioId}`);
-      const data = resp.data.data;
-      setScenario(data);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
   useEffect(() => {
+    const fetchScenario = async () => {
+      try {
+        const resp = await api.get(`scenarios/${scenarioId}`);
+        const data = resp.data.data;
+        setScenario(data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
     fetchScenario();
-  });
+  }, [scenarioId]);
 
   const handleStart = (difficulty: string) => {
     if (scenario) {
@@ -36,12 +41,35 @@ export default function SelectLevelPage() {
     }
   };
 
+  // s3 로드 실패시 기본 이미지로 대체
+  //   TODO: scenariolayout과 확장 가능하게 설계..?
+  const handleBackgroundError = (
+    e: React.SyntheticEvent<HTMLImageElement, Event>
+  ) => {
+    e.currentTarget.src = defaultBackgroundImg;
+    e.currentTarget.onerror = null;
+    e.currentTarget.style.objectFit = "cover";
+  };
+
+  // 기본 이미지 먼저 사용
+  const currentBackgroundUrl = scenario?.backgroundUrl || defaultBackgroundImg;
+
   return (
     <div className="relative min-h-screen flex items-center justify-center">
       <div
-        className="absolute w-full h-screen bg-cover bg-center font-shark z-0"
-        style={{ backgroundImage: `url(${backgroundImg})` }}
-      ></div>
+        onClick={() => navigate(-1)}
+        className="absolute top-4 left-10 z-50 text-2xl cursor-pointer select-none font-shark"
+      >
+        {"< 뒤로가기"}
+      </div>
+
+      {/* 배경 img 태그 변경 */}
+      <img
+        src={currentBackgroundUrl}
+        alt="배경이미지"
+        onError={handleBackgroundError}
+        className="absolute w-full h-screen object-cover bg-center font-shark z-0"
+      />
       <div className="relative z-10 w-full max-w-5xl px-4">
         <img src={blackboard} alt="칠판" className="w-full h-auto" />
         {scenario ? (
