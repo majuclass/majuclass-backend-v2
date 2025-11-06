@@ -24,7 +24,7 @@ export default function EndScreen({ onRestart, onExit }: EndScreenProps) {
             className="bg-gray-400 text-white py-2 px-6 rounded-md font-semibold hover:bg-gray-500 transition"
             onClick={() => {
               onExit();
-              navigator(-1);
+              navigator(`/scenarios`);
             }}
           >
             나가기
