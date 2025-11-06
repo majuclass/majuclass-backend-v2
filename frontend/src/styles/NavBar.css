@@ -57,3 +57,19 @@
 }
 
 .nav-icon svg, .profile-icon svg { width: 1em; height: 1em; display: block; }
+
+/* 로고 컨테이너 */
+.nav-logo {
+  display: flex;
+  align-items: center;
+  margin-right: 20px;
+}
+
+/* 로고 이미지 스타일 */
+.nav-logo-img {
+  height: 40px;           /* 네비바 높이에 맞게 조정 */
+  width: auto;            /* 비율 유지 */
+  object-fit: contain;    /* 여백 포함해 비율 유지 */
+  border-radius: 8px;     /* (선택) 살짝 둥근 모서리 */
+  background: transparent; /* 혹시 흰 배경일 때 대비 */
+}

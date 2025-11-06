@@ -17,11 +17,15 @@ export default function NavBar() {
   return (
     <nav className="navbar">
       <div className="navbar-left">
+
+        <img src="/src/assets/logo.png" alt="로고" className="nav-logo-img" />
+
         <Link
           to="/main"
           className={`nav-item ${
             location.pathname === "/main" ? "active" : ""
-          }`}
+            }`
+          }
         >
           <i className="nav-icon">
             <HiOutlineHome />

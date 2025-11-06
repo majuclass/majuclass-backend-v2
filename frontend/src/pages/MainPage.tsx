@@ -1,5 +1,6 @@
 // src/pages/(MainPage)/mainpage.tsx
-import { useMemo, useState } from "react";
+import { useMemo, useState, useRef } from "react";
+import PictogramPopover, { type PictogramItem } from "../components/PictogramPopover";
 import { useNavigate } from "react-router-dom";
 import NavBar from "../components/NavBar";
 
@@ -14,6 +15,9 @@ type Activity = {
 
 export default function MainPage() {
   const navigate = useNavigate();
+  const [iconOpen, setIconOpen] = useState(false);
+  const [pickedIcon, setPickedIcon] = useState<PictogramItem | null>(null);
+  const pickBtnRef = useRef<HTMLButtonElement>(null);
 
   // ── Mock (임시 데이터)
   const students: Student[] = useMemo(
@@ -99,6 +103,14 @@ export default function MainPage() {
           </div>
 
           <div className="flex gap-2">
+            {/* 테스트: 픽토그램 선택 팝오버 트리거 */}
+            <button
+              ref={pickBtnRef}
+              className="rounded-xl bg-white px-4 py-2 text-sm font-semibold text-gray-800 ring-1 ring-gray-300 hover:bg-gray-50"
+              onClick={() => setIconOpen(true)}
+            >
+              아이콘 선택 (테스트)
+            </button>
             <button
               className="rounded-xl bg-indigo-600 px-5 py-2 text-sm font-semibold text-white hover:bg-indigo-700 active:scale-[0.99]"
               onClick={handleStart}
@@ -113,6 +125,17 @@ export default function MainPage() {
             </button>
           </div>
         </div>
+        {/* 선택 결과 미니 프리뷰 */}
+        {pickedIcon && (
+          <div className="mx-auto max-w-6xl px-4 pb-3">
+            <div className="mt-1 inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-1.5">
+              <img src={pickedIcon.src} alt={pickedIcon.name} className="h-5 w-5 object-contain" />
+              <span className="text-xs text-gray-600">
+                {pickedIcon.category} / {pickedIcon.name}
+              </span>
+            </div>
+          </div>
+        )}
       </section>
 
       {/* 본문: 좌(최근 활동) / 우(KPI 요약)만 남김 */}
@@ -224,6 +247,16 @@ export default function MainPage() {
         </div>
       )}
     </div>
+    {/* 픽토그램 팝오버 */}
+    <PictogramPopover
+     open={iconOpen}
+     onClose={() => setIconOpen(false)}
+     onSelect={(item) => {
+       setPickedIcon(item);
+       setIconOpen(false);
+     }}
+     anchorRef={pickBtnRef}
+    />
     </>
   );
 }
