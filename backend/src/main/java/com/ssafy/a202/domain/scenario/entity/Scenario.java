@@ -43,4 +43,12 @@ public class Scenario extends BaseTimeEntity {
 
     @Column(name = "is_deleted", nullable = false, columnDefinition = "TINYINT(1)")
     private boolean isDeleted;
+
+    /**
+     * S3 키 업데이트 (이미지 업로드 후 호출)
+     */
+    public void updateS3Keys(String thumbnailS3Key, String backgroundS3Key) {
+        this.thumbnailS3Key = thumbnailS3Key;
+        this.backgroundS3Key = backgroundS3Key;
+    }
 }

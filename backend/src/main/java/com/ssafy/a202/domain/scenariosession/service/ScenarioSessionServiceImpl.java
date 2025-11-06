@@ -76,7 +76,7 @@ public class ScenarioSessionServiceImpl implements ScenarioSessionService {
     @Override
     @Transactional
     public AudioUploadUrlResponse generateAudioUploadUrl(AudioUploadUrlRequest request) {
-        log.info("Generating audio upload URL for session ID: {}, sequence number: {}",
+        log.info("Generating audio upload URL for sessionId: {}, sequenceNumber: {}",
                 request.getSessionId(), request.getSequenceNumber());
 
         // 세션 조회 및 검증
@@ -117,16 +117,12 @@ public class ScenarioSessionServiceImpl implements ScenarioSessionService {
                 request.getContentType()
         );
 
-        String uploadUrl = lambdaResponse.get("url");
-        String fileName = lambdaResponse.get("fileName");
+        String presignedUrl = lambdaResponse.get("url");
+        String returnedS3Key = lambdaResponse.get("fileName");
 
-        log.info("Generated audio upload URL for session ID: {}, S3 key: {}",
-                request.getSessionId(), fileName);
+        log.info("Generated audio upload URL: s3Key={}", returnedS3Key);
 
-        return AudioUploadUrlResponse.builder()
-                .url(uploadUrl)
-                .fileName(fileName)
-                .build();
+        return AudioUploadUrlResponse.of(presignedUrl, returnedS3Key);
     }
 
     /**

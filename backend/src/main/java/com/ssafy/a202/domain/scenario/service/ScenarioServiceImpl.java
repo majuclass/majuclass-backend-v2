@@ -1,8 +1,17 @@
 package com.ssafy.a202.domain.scenario.service;
 
+import com.ssafy.a202.domain.scenario.dto.request.ImageUploadUrlRequest;
+import com.ssafy.a202.domain.scenario.dto.request.OptionCreateRequest;
+import com.ssafy.a202.domain.scenario.dto.request.ScenarioCreateRequest;
+import com.ssafy.a202.domain.scenario.dto.request.SequenceCreateRequest;
+import com.ssafy.a202.domain.scenario.dto.response.ImageUploadUrlResponse;
+import com.ssafy.a202.domain.scenario.dto.response.ScenarioCreateResponse;
 import com.ssafy.a202.domain.scenario.dto.response.ScenarioResponse;
 import com.ssafy.a202.domain.scenario.entity.Scenario;
+import com.ssafy.a202.domain.scenario.entity.ScenarioCategory;
 import com.ssafy.a202.domain.scenario.entity.ScenarioSequence;
+import com.ssafy.a202.domain.scenario.entity.SeqOption;
+import com.ssafy.a202.domain.scenario.repository.ScenarioCategoryRepository;
 import com.ssafy.a202.domain.scenario.repository.ScenarioRepository;
 import com.ssafy.a202.domain.scenario.dto.response.OptionResponse;
 import com.ssafy.a202.domain.scenario.dto.response.OptionWithImageResponse;
@@ -17,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 시나리오 서비스 구현
@@ -28,7 +38,134 @@ import java.util.List;
 public class ScenarioServiceImpl implements ScenarioService {
 
     private final ScenarioRepository scenarioRepository;
+    private final ScenarioCategoryRepository scenarioCategoryRepository;
     private final S3UrlService s3UrlService;
+
+    @Override
+    public ImageUploadUrlResponse generateImageUploadUrl(ImageUploadUrlRequest request) {
+        log.info("Generating image upload URL for imageType: {}", request.getImageType());
+
+        // 1. 이미지 타입에 따라 S3UrlService.ScenarioImageType 매핑
+        S3UrlService.ScenarioImageType imageType;
+        switch (request.getImageType()) {
+            case THUMBNAIL:
+                imageType = S3UrlService.ScenarioImageType.THUMBNAIL;
+                break;
+            case BACKGROUND:
+                imageType = S3UrlService.ScenarioImageType.BACKGROUND;
+                break;
+            case OPTION:
+                imageType = S3UrlService.ScenarioImageType.OPTION;
+                break;
+            default:
+                throw new CustomException(ErrorCode.INVALID_REQUEST, "유효하지 않은 이미지 타입입니다.");
+        }
+
+        // 2. S3 키 자동 생성 (UUID + 확장자)
+        String s3Key = s3UrlService.generateScenarioImageKey(imageType, request.getContentType());
+
+        log.info("Generated S3 key: {}", s3Key);
+
+        // 3. Lambda를 통해 업로드용 Presigned URL 발급
+        Map<String, String> uploadUrlResponse = s3UrlService.generateUploadPresignedUrl(
+                s3Key,
+                "putObject",
+                request.getContentType()
+        );
+
+        String presignedUrl = uploadUrlResponse.get("url");
+        String returnedS3Key = uploadUrlResponse.get("fileName");
+
+        log.info("Generated image upload URL: s3Key={}", returnedS3Key);
+
+        // 4. 응답 생성
+        return ImageUploadUrlResponse.of(presignedUrl, returnedS3Key);
+    }
+
+    @Override
+    @Transactional
+    public ScenarioCreateResponse createScenario(ScenarioCreateRequest request) {
+        // 1. 카테고리 검증
+        ScenarioCategory category = scenarioCategoryRepository.findById(request.getCategoryId())
+                .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
+
+        // 2. S3 키 검증 및 설정
+        String thumbnailS3Key = validateAndGetS3Key(request.getThumbnailS3Key(), "thumbnails");
+        String backgroundS3Key = validateAndGetS3Key(request.getBackgroundS3Key(), "backgrounds");
+
+        // 3. 시나리오 엔티티 생성 및 저장
+        Scenario scenario = Scenario.builder()
+                .scenarioCategory(category)
+                .title(request.getTitle())
+                .summary(request.getSummary())
+                .thumbnailS3Key(thumbnailS3Key)
+                .backgroundS3Key(backgroundS3Key)
+                .totalSequences(request.getSequences().size())
+                .isDeleted(false)
+                .build();
+
+        Scenario savedScenario = scenarioRepository.save(scenario);
+        log.info("Scenario created with ID: {}", savedScenario.getId());
+
+        // 4. 시퀀스 및 옵션 생성
+        for (SequenceCreateRequest seqReq : request.getSequences()) {
+            ScenarioSequence sequence = ScenarioSequence.builder()
+                    .scenario(savedScenario)
+                    .seqNo(seqReq.getSeqNo())
+                    .question(seqReq.getQuestion())
+                    .isDeleted(false)
+                    .build();
+
+            // 옵션 생성 (옵션 S3 키 검증)
+            for (OptionCreateRequest optReq : seqReq.getOptions()) {
+                // 옵션 S3 키 검증
+                String optionS3Key = optReq.getOptionS3Key();
+                if (optionS3Key == null || !optionS3Key.startsWith("scenarios/options/")) {
+                    throw new CustomException(ErrorCode.INVALID_S3_KEY,
+                            String.format("유효하지 않은 옵션 S3 키입니다: %s", optionS3Key));
+                }
+
+                SeqOption option = SeqOption.builder()
+                        .scenarioSequence(sequence)
+                        .optionNo(optReq.getOptionNo())
+                        .optionText(optReq.getOptionText())
+                        .optionS3Key(optionS3Key)
+                        .isAnswer(optReq.getIsAnswer())
+                        .isDeleted(false)
+                        .build();
+            }
+
+            // CascadeType.ALL로 시퀀스와 옵션이 자동 저장됨
+            savedScenario.getScenarioSequences().add(sequence);
+        }
+
+        log.info("Scenario created successfully with {} sequences", request.getSequences().size());
+
+        // 5. 응답 생성
+        String thumbnailUrl = s3UrlService.generateUrl(thumbnailS3Key);
+        String backgroundUrl = s3UrlService.generateUrl(backgroundS3Key);
+
+        return ScenarioCreateResponse.from(savedScenario, thumbnailUrl, backgroundUrl);
+    }
+
+    /**
+     * S3 키 검증 (선택 필드)
+     */
+    private String validateAndGetS3Key(String s3Key, String expectedPrefix) {
+        // null이거나 빈 문자열이면 빈 문자열 반환 (선택 필드)
+        if (s3Key == null || s3Key.trim().isEmpty()) {
+            return "";
+        }
+
+        // scenarios/{expectedPrefix}/ 로 시작하는지 검증
+        String expectedPath = "scenarios/" + expectedPrefix + "/";
+        if (!s3Key.startsWith(expectedPath)) {
+            throw new CustomException(ErrorCode.INVALID_S3_KEY,
+                    String.format("유효하지 않은 S3 키입니다. 예상: %s, 실제: %s", expectedPath, s3Key));
+        }
+
+        return s3Key;
+    }
 
     @Override
     public List<ScenarioResponse> getAllScenarios(Long categoryId) {

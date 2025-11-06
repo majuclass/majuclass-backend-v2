@@ -36,11 +36,17 @@ public enum ErrorCode {
 
     // 시나리오 관련 (SCENARIO)
     SCENARIO_NOT_FOUND(HttpStatus.NOT_FOUND, "요청한 시나리오를 찾을 수 없습니다"),
+    CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "요청한 카테고리를 찾을 수 없습니다"),
     SEQUENCE_NOT_FOUND(HttpStatus.NOT_FOUND, "요청한 시퀀스를 찾을 수 없습니다"),
     OPTION_NOT_FOUND(HttpStatus.NOT_FOUND, "요청한 옵션을 찾을 수 없습니다"),
     INVALID_OPTION_SELECTED(HttpStatus.BAD_REQUEST, "유효하지 않은 옵션이 선택되었습니다"),
     CORRECT_OPTION_NOT_FOUND(HttpStatus.INTERNAL_SERVER_ERROR, "시퀀스의 정답을 찾을 수 없습니다"),
     INVALID_DIFFICULTY(HttpStatus.BAD_REQUEST, "유효하지 않은 난이도입니다. EASY, NORMAL, HARD 중 하나를 선택해야 합니다"),
+
+    // 파일 관련 (FILE)
+    FILE_READ_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "파일을 읽는 중 오류가 발생했습니다"),
+    FILE_UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "파일 업로드에 실패했습니다"),
+    INVALID_S3_KEY(HttpStatus.BAD_REQUEST, "유효하지 않은 S3 키입니다"),
 
     // 세션 관련 (SESSION)
     SESSION_NOT_FOUND(HttpStatus.NOT_FOUND, "요청한 세션을 찾을 수 없습니다"),
