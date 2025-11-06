@@ -1,5 +1,9 @@
 package com.ssafy.a202.domain.scenario.controller;
 
+import com.ssafy.a202.domain.scenario.dto.request.ImageUploadUrlRequest;
+import com.ssafy.a202.domain.scenario.dto.request.ScenarioCreateRequest;
+import com.ssafy.a202.domain.scenario.dto.response.ImageUploadUrlResponse;
+import com.ssafy.a202.domain.scenario.dto.response.ScenarioCreateResponse;
 import com.ssafy.a202.domain.scenario.dto.response.ScenarioResponse;
 import com.ssafy.a202.domain.scenario.service.ScenarioService;
 import com.ssafy.a202.domain.scenario.dto.response.SequenceResponse;
@@ -9,6 +13,7 @@ import com.ssafy.a202.global.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -26,6 +31,22 @@ import java.util.List;
 public class ScenarioController {
 
     private final ScenarioService scenarioService;
+
+    @Operation(summary = "이미지 업로드 URL 생성", description = "시나리오 이미지 업로드를 위한 Presigned URL을 생성합니다.")
+    @PostMapping("/image-upload-url")
+    public ApiResponse<ImageUploadUrlResponse> generateImageUploadUrl(
+            @RequestBody @Valid ImageUploadUrlRequest request) {
+        ImageUploadUrlResponse response = scenarioService.generateImageUploadUrl(request);
+        return ApiResponse.success(SuccessCode.IMAGE_UPLOAD_URL_GENERATED, response);
+    }
+
+    @Operation(summary = "시나리오 생성", description = "새로운 시나리오를 생성합니다.")
+    @PostMapping("/create")
+    public ApiResponse<ScenarioCreateResponse> createScenario(
+            @RequestBody @Valid ScenarioCreateRequest request) {
+        ScenarioCreateResponse response = scenarioService.createScenario(request);
+        return ApiResponse.success(SuccessCode.SCENARIO_CREATE_SUCCESS, response);
+    }
 
     @Operation(summary = "시나리오 목록 조회", description = "시나리오 목록을 조회합니다. 카테고리로 필터링할 수 있습니다. 썸네일 URL을 포함합니다.")
     @GetMapping

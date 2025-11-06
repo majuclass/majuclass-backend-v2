@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 /**
  * 음성 답안 제출 응답 DTO (난이도 상)
  */
+/*
 @Getter
 @Builder
 @NoArgsConstructor
@@ -34,3 +35,4 @@ public class AudioSubmitResponse {
     @Schema(description = "시도 번호 (1부터 시작)", example = "1")
     private Integer attemptNo;
 }
+ */

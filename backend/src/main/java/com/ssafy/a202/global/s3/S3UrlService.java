@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * S3 URL 생성 서비스
@@ -125,6 +126,55 @@ public class S3UrlService {
         } catch (Exception e) {
             log.error("Failed to generate upload presigned URL via Lambda for fileName: {}", fileName, e);
             throw new CustomException(ErrorCode.EXTERNAL_API_ERROR);
+        }
+    }
+
+    /**
+     * 시나리오 이미지 S3 키 생성 (UUID 기반)
+     *
+     * @param imageType 이미지 타입 (thumbnail, background, option)
+     * @param contentType 파일 Content-Type (확장자 추출용)
+     * @return S3 키 (예: scenarios/thumbnails/uuid.jpg)
+     */
+    public String generateScenarioImageKey(ScenarioImageType imageType, String contentType) {
+        String uuid = UUID.randomUUID().toString();
+        String fileExtension = getImageFileExtension(contentType);
+        String s3Key = String.format("%s/%s%s", imageType.getPrefix(), uuid, fileExtension);
+        log.debug("Generated S3 key: {} for imageType: {}", s3Key, imageType);
+        return s3Key;
+    }
+
+    /**
+     * Content-Type으로부터 이미지 파일 확장자 추출
+     */
+    private String getImageFileExtension(String contentType) {
+        return switch (contentType.toLowerCase()) {
+            case "image/jpeg", "image/jpg" -> ".jpg";
+            case "image/png" -> ".png";
+            case "image/gif" -> ".gif";
+            case "image/webp" -> ".webp";
+            case "image/svg+xml" -> ".svg";
+            case "image/bmp" -> ".bmp";
+            default -> ".jpg";  // 기본값
+        };
+    }
+
+    /**
+     * 시나리오 이미지 타입
+     */
+    public enum ScenarioImageType {
+        THUMBNAIL("scenarios/thumbnails"),
+        BACKGROUND("scenarios/backgrounds"),
+        OPTION("scenarios/options");
+
+        private final String prefix;
+
+        ScenarioImageType(String prefix) {
+            this.prefix = prefix;
+        }
+
+        public String getPrefix() {
+            return prefix;
         }
     }
 }

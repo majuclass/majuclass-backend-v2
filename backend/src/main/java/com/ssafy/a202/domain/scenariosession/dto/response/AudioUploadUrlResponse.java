@@ -17,10 +17,17 @@ import lombok.NoArgsConstructor;
 public class AudioUploadUrlResponse {
 
     @Schema(description = "업로드용 Presigned URL",
-            example = "https://ssafy-sai-project.s3.amazonaws.com/session_answers/test.jpg?X-Amz-Algorithm=...")
-    private String url;
+            example = "https://ssafy-sai-project.s3.amazonaws.com/students/1/sessions/1/seq_1_attempt_1.wav?X-Amz-Algorithm=...")
+    private String presignedUrl;
 
-    @Schema(description = "S3에 요청한 경로",
-            example = "session_answers/3/test.jpg")
-    private String fileName;
+    @Schema(description = "S3 키 (음성 답안 제출 시 전달해야 함)",
+            example = "students/1/sessions/1/seq_1_attempt_1.wav")
+    private String s3Key;
+
+    public static AudioUploadUrlResponse of(String presignedUrl, String s3Key) {
+        return AudioUploadUrlResponse.builder()
+                .presignedUrl(presignedUrl)
+                .s3Key(s3Key)
+                .build();
+    }
 }

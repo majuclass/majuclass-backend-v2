@@ -47,6 +47,7 @@ public class ScenarioSessionController {
         return ApiResponse.success(SuccessCode.ANSWER_CHECK_SUCCESS, response);
     }
 
+    /*
     @Operation(summary = "음성 답안 제출 및 검증 (난이도 상)", description = "음성 파일을 FastAPI로 분석하여 정답 여부를 확인합니다.")
     @PostMapping("/submit-audio")
     public ApiResponse<AudioSubmitResponse> submitAudioAnswer(
@@ -54,6 +55,7 @@ public class ScenarioSessionController {
         AudioSubmitResponse response = scenarioSessionService.submitAudioAnswer(request);
         return ApiResponse.success(SuccessCode.AUDIO_ANSWER_CHECK_SUCCESS, response);
     }
+     */
 
     @Operation(summary = "세션 완료", description = "진행 중인 세션을 완료 상태로 변경합니다.")
     @PostMapping("/complete")

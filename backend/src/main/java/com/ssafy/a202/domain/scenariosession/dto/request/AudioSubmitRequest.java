@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 /**
  * 음성 답안 제출 요청 DTO (난이도 상)
  */
+/*
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -34,3 +35,4 @@ public class AudioSubmitRequest {
             required = true)
     private String audioS3Key;
 }
+ */

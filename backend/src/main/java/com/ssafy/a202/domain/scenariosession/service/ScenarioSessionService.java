@@ -39,7 +39,7 @@ public interface ScenarioSessionService {
      * @param request 음성 답안 제출 요청
      * @return 음성 답안 검증 결과
      */
-    AudioSubmitResponse submitAudioAnswer(AudioSubmitRequest request);
+//    AudioSubmitResponse submitAudioAnswer(AudioSubmitRequest request);
 
     /**
      * 세션 완료 처리
