@@ -2,7 +2,6 @@
  * 백그라운드 asset으로 설정
  *
  */
-
 import type { Scenario } from "../../../types/Scenario";
 
 type StartScreenProps = {
@@ -38,7 +37,7 @@ export default function StartScreen({
         >
           실행하기
         </button>
-      </div>
+      </div>  
     </div>
   );
 }

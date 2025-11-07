@@ -21,6 +21,7 @@ import girlNormal from "../assets/scenarios/cinema/cinema-girl-normal.png";
 export default function SimulationPage() {
   const { scenarioId, difficulty } = useParams();
 
+
   //   시나리오 인터페이스 확장 위해 type alias 사용
   // TODO: 차후 확장 추가
   type ScenariowithURL = Scenario & {
@@ -205,14 +206,20 @@ export default function SimulationPage() {
             ) : null;
           case "question":
             return sequence ? (
-              <SequenceScreen sequence={sequence} onNext={handleSelectOption} />
+              <SequenceScreen 
+              sequence={sequence} 
+              onNext={handleSelectOption} 
+              />
             ) : null;
           case "option":
-            return options && sequence ? (
+            return options && sequence ? (       
               <OptionScreen
                 options={options}
                 sequence={sequence}
                 onSelect={handleFeedback}
+                sessionId={sessionId}
+                sequenceNumber={sequenceNumber} 
+                difficulty={difficulty ?? ""}
               />
             ) : null;
           case "feedback":
