@@ -12,12 +12,13 @@ import { create } from "zustand";
  * 컴포넌트는 action만 호출
  */
 
-interface OptionData {
+export interface OptionData {
   optionNumber?: number;
   optionText: string;
   answer: boolean;
 }
-interface SequenceData {
+
+export interface SequenceData {
   sequenceNumber?: number;
   question: string;
   hasNext: boolean;
@@ -25,13 +26,13 @@ interface SequenceData {
 }
 
 // 최종적인 Scenario States
-interface ScenarioData {
+export interface ScenarioData {
   title: string;
   summary: string;
   thumbnail: File | null;
   background: File | null;
   categoryId: number;
-  totalSequences: number;
+  totalSequences: number; // totalSequences 꼭 필요할지?
   sequences: SequenceData[];
 }
 
@@ -54,26 +55,45 @@ export const useScenarioCreateStore = create<ScenarioCreateStore>((set) => ({
   thumbnail: null,
   background: null,
   categoryId: 0,
-  totalSequences: 0,
-  sequences: [],
+  totalSequences: 1,
+  sequences: [
+    {
+      sequenceNumber: 1,
+      question: "",
+      hasNext: true,
+      options: [
+        { optionNumber: 1, optionText: "", answer: true },
+        { optionNumber: 2, optionText: "", answer: false },
+      ],
+    },
+  ], // 시퀀스 최소 1개 두고 시작
 
   // actions defined in the props
   setScenarioInfo: (info) => {
     set((state) => ({ ...state, ...info }));
   },
   addSequence: () => {
-    set((state) => ({
-      sequences: [
-        ...state.sequences,
-        {
-          sequenceNumber: state.sequences.length + 1,
-          question: "",
-          hasNext: false,
-          options: [],
-        },
-      ],
-      totalSequences: state.totalSequences + 1,
-    }));
+    set((state) => {
+      const newSeqNum = state.sequences.length + 1;
+      const defaultOptions = [
+        { optionNumber: 1, optionText: "", answer: true },
+        { optionNumber: 2, optionText: "", answer: false },
+      ];
+
+      return {
+        ...state,
+        sequences: [
+          ...state.sequences,
+          {
+            sequenceNumber: newSeqNum,
+            question: "",
+            hasNext: true,
+            options: defaultOptions,
+          },
+        ],
+        totalSequences: state.totalSequences + 1,
+      };
+    });
   },
   updateSequence: (seqNum, updatedData) => {
     set((state) => ({
