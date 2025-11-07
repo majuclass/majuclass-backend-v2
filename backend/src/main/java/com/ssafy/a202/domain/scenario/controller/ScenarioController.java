@@ -2,9 +2,11 @@ package com.ssafy.a202.domain.scenario.controller;
 
 import com.ssafy.a202.domain.scenario.dto.request.ImageUploadUrlRequest;
 import com.ssafy.a202.domain.scenario.dto.request.ScenarioCreateRequest;
+import com.ssafy.a202.domain.scenario.dto.request.ScenarioUpdateRequest;
 import com.ssafy.a202.domain.scenario.dto.response.ImageUploadUrlResponse;
 import com.ssafy.a202.domain.scenario.dto.response.ScenarioCreateResponse;
 import com.ssafy.a202.domain.scenario.dto.response.ScenarioResponse;
+import com.ssafy.a202.domain.scenario.dto.response.ScenarioUpdateResponse;
 import com.ssafy.a202.domain.scenario.service.ScenarioService;
 import com.ssafy.a202.domain.scenario.dto.response.SequenceResponse;
 import com.ssafy.a202.domain.scenario.dto.response.SequenceWithOptionsResponse;
@@ -97,5 +99,24 @@ public class ScenarioController {
             @RequestParam String difficulty) {
         List<?> options = scenarioService.getSequenceOptions(scenarioId, sequenceNumber, difficulty);
         return ApiResponse.success(SuccessCode.OPTIONS_RETRIEVE_SUCCESS, options);
+    }
+
+    @Operation(summary = "시나리오 수정", description = "시나리오의 기본 정보, 이미지, 시퀀스, 옵션을 수정합니다. 시퀀스/옵션 ID가 있으면 수정, 없으면 신규 생성, 요청에 없는 기존 데이터는 삭제됩니다.")
+    @PutMapping("/{scenarioId}/update")
+    public ApiResponse<ScenarioUpdateResponse> updateScenario(
+            @Parameter(description = "시나리오 ID", example = "1")
+            @PathVariable Long scenarioId,
+            @RequestBody @Valid ScenarioUpdateRequest request) {
+        ScenarioUpdateResponse response = scenarioService.updateScenario(scenarioId, request);
+        return ApiResponse.success(SuccessCode.SCENARIO_UPDATE_SUCCESS, response);
+    }
+
+    @Operation(summary = "시나리오 삭제", description = "시나리오를 삭제합니다. (Soft Delete)")
+    @DeleteMapping("/{scenarioId}/delete")
+    public ApiResponse<Void> deleteScenario(
+            @Parameter(description = "시나리오 ID", example = "1")
+            @PathVariable Long scenarioId) {
+        scenarioService.deleteScenario(scenarioId);
+        return ApiResponse.success(SuccessCode.SCENARIO_DELETE_SUCCESS);
     }
 }
