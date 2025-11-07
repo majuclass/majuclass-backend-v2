@@ -54,4 +54,17 @@ public interface ScenarioService {
      * 특정 시퀀스의 옵션 조회 (개별 조회 방식, 난이도에 따라 다른 응답)
      */
     List<?> getSequenceOptions(Long scenarioId, int sequenceNumber, String difficulty);
+
+    /**
+     * 시나리오 수정
+     * @param scenarioId 시나리오 ID
+     * @param request 시나리오 수정 요청 데이터 (시퀀스/옵션 포함)
+     */
+    com.ssafy.a202.domain.scenario.dto.response.ScenarioUpdateResponse updateScenario(Long scenarioId, com.ssafy.a202.domain.scenario.dto.request.ScenarioUpdateRequest request);
+
+    /**
+     * 시나리오 삭제 (soft delete)
+     * @param scenarioId 시나리오 ID
+     */
+    void deleteScenario(Long scenarioId);
 }
