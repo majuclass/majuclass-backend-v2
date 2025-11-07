@@ -1,13 +1,13 @@
 /** @format */
 
 import { useState } from "react";
-import type { CreateScenario } from "../types/Scenario";
-import ScenarioForm from "../components/create/ScenarioForm";
+
 import SequenceForm from "../components/create/SequenceForm";
+import ScenarioForm from "../components/create/ScenarioForm";
 
 export default function ScenarioCreatePage() {
   const [step, setStep] = useState(1);
-  const [scenarioData, setScenarioData] = useState<CreateScenario | null>(null);
+  //   const [scenarioData, setScenarioData] = useState<CreateScenario | null>(null);
 
   const handleGotoNext = () => {
     setStep((prev) => prev + 1);
@@ -21,9 +21,7 @@ export default function ScenarioCreatePage() {
       {/* TODO: visualize to Progress bar */}
       <p>current Step: {step}</p>
       {/* 실제 렌더링 */}
-      {step == 1 && (
-        <ScenarioForm scenarioData={scenarioData} onNext={handleGotoNext} />
-      )}
+      {step == 1 && <ScenarioForm onNext={handleGotoNext} />}
       {step == 2 && <SequenceForm onPrev={handleGotoPrev} />}
     </div>
   );

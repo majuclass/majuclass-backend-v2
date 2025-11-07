@@ -1,6 +1,6 @@
 /** @format */
 
-import { useState } from "react";
+// import { useState } from "react";
 
 interface TextInputProps {
   children: React.ReactNode;
@@ -8,14 +8,16 @@ interface TextInputProps {
   placeholder?: string;
   type?: string;
   onChange?: (value: string) => void;
+  value: string;
 }
 
-/** CreateScenario에 주로 사용되는 TextInput
+/** CreateScenario에 주로 사용되는 TextInput (store 사용용)
  * @prop {React.ReactNode} children - 레이블
  * @prop {string} [name] - input 구분하는 이름
  * @prop {string} [placeholder] - input에 사용되는 이름
  * @prop {string} [type='text'] - input의 타입 (기본 text)
- * @prop {function(string): void} [onChange] - 바뀐 텍스트 lift up용 함수
+ * @prop {function(string): void} [onChange] -
+ * @prop {string} value
  */
 export default function TextInput({
   children,
@@ -23,18 +25,21 @@ export default function TextInput({
   placeholder,
   type = "text",
   onChange,
+  value,
 }: TextInputProps) {
-  const [inputValue, setInputValue] = useState("");
-
+  // const [inputValue, setInputValue] = useState("");
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // 내부 update
-    setInputValue(e.target.value);
+    // 내부 update 제거: 전역변수 사용
+    // setInputValue(e.target.value);
     // lift up
     if (onChange) onChange(e.target.value);
   };
 
   const handleClear = () => {
-    setInputValue("");
+    // 내부 업데이트 제거
+    // setInputValue("");
+    // 외부로 빈 문자열 전달 (store 리셋)
+    if (onChange) onChange("");
   };
 
   return (
@@ -43,7 +48,7 @@ export default function TextInput({
       <div className="relative flex items-center">
         <input
           type={type}
-          value={inputValue}
+          value={value}
           onChange={handleInputChange}
           name={name}
           placeholder={placeholder}
@@ -51,7 +56,7 @@ export default function TextInput({
         />
 
         {/* input 있을때만 x버튼 렌더링 */}
-        {inputValue && (
+        {value && (
           <button
             onClick={handleClear}
             className="absolute right-2 p-1 text-gray-400 hover:text-gray-600 focus:outline-none"
