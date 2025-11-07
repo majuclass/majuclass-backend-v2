@@ -2,7 +2,6 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import NavBar from "../components/NavBar";
-import Record from "../components/scenario/audio/AudioRecordingButton";
 
 type Student = { id: number; name: string; className?: string };
 type Activity = {
@@ -224,9 +223,6 @@ export default function MainPage() {
           </div>
         </div>
       )}
-    </div> 
-    <div>
-    <Record />
     </div>
     </>
   );
