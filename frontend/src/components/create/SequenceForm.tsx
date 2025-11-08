@@ -44,7 +44,6 @@ export default function SequenceForm({ onPrev }: SequenceFormProps) {
 
   return (
     <>
-      <h1>시퀀스 생성</h1>
       {/* TODO: 개수 제한  */}
       <div className="flex flex-row">
         {sequences.map((sequence) => (
@@ -68,7 +67,7 @@ export default function SequenceForm({ onPrev }: SequenceFormProps) {
           </div>
         </div>
         {/* 버튼 */}
-        <div className="flex flex-row">
+        <div className="flex flex-row justify-between">
           <TextButton onClick={onPrev}>이전</TextButton>
           <TextButton onClick={handleCreateScenario}>저장</TextButton>
         </div>
