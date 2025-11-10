@@ -131,6 +131,8 @@ public class ScenarioServiceImpl implements ScenarioService {
                         .isAnswer(optReq.getIsAnswer())
                         .isDeleted(false)
                         .build();
+
+                sequence.getOptions().add(option);
             }
 
             // CascadeType.ALL로 시퀀스와 옵션이 자동 저장됨
@@ -377,6 +379,8 @@ public class ScenarioServiceImpl implements ScenarioService {
                             .isAnswer(optReq.getIsAnswer())
                             .isDeleted(false)
                             .build();
+
+                    newSequence.getOptions().add(newOption);
                 }
 
                 scenario.getScenarioSequences().add(newSequence);
