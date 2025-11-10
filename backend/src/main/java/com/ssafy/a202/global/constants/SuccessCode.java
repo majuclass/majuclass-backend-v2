@@ -22,9 +22,17 @@ public enum SuccessCode {
     // 사용자 관련
     USER_PROFILE_SUCCESS("프로필 조회가 완료되었습니다"),
     USER_LIST_SUCCESS("사용자 목록 조회가 완료되었습니다"),
+    USER_DETAIL_SUCCESS("사용자 상세 조회가 완료되었습니다"),
     USER_CREATE_SUCCESS("사용자가 성공적으로 생성되었습니다"),
     USER_UPDATE_SUCCESS("사용자 정보가 성공적으로 수정되었습니다"),
     USER_DELETE_SUCCESS("사용자가 성공적으로 삭제되었습니다"),
+
+    // 학생 관련
+    STUDENT_LIST_SUCCESS("학생 목록 조회가 완료되었습니다"),
+    STUDENT_DETAIL_SUCCESS("학생 상세 조회가 완료되었습니다"),
+    STUDENT_CREATE_SUCCESS("학생이 성공적으로 추가되었습니다"),
+    STUDENT_UPDATE_SUCCESS("학생 정보가 성공적으로 수정되었습니다"),
+    STUDENT_DELETE_SUCCESS("학생이 성공적으로 삭제되었습니다"),
 
     // 시나리오 관련
     SCENARIO_LIST_SUCCESS("시나리오 목록 조회가 완료되었습니다"),
