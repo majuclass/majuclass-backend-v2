@@ -46,10 +46,10 @@ public class Student extends BaseTimeEntity {
     // ================================
 
     /**
-     * 담당 선생님 설정
+     * 담당 선생님 설정 (내부 사용)
      * 양방향 관계를 안전하게 설정
      */
-    public void setUser(User user) {
+    private void setUser(User user) {
         // 기존 선생님과의 관계 제거
         if (this.user != null) {
             this.user.removeStudent(this);
@@ -62,5 +62,30 @@ public class Student extends BaseTimeEntity {
         if (user != null && !user.getStudents().contains(this)) {
             user.addStudent(this);
         }
+    }
+
+    // ================================
+    // 비즈니스 로직
+    // ================================
+
+    /**
+     * 학생 이름 수정
+     */
+    public void updateName(String name) {
+        this.name = name;
+    }
+
+    /**
+     * 담당 선생님 변경
+     */
+    public void changeTeacher(User newTeacher) {
+        setUser(newTeacher);
+    }
+
+    /**
+     * 학생 삭제 (soft delete)
+     */
+    public void delete() {
+        this.isDeleted = true;
     }
 }

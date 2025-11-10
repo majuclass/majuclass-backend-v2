@@ -211,7 +211,7 @@ public class ScenarioServiceImpl implements ScenarioService {
             throw new CustomException(ErrorCode.SCENARIO_NOT_FOUND);
         }
 
-        log.info("Retrieved all sequences and options for scenario ID: {}", scenarioId);
+        log.debug("Retrieved all sequences and options for scenario ID: {}", scenarioId);
 
         // 시퀀스를 순서대로 정렬해서 DTO로 변환
         return scenario.getScenarioSequences().stream()
@@ -242,7 +242,7 @@ public class ScenarioServiceImpl implements ScenarioService {
         boolean hasNext = scenario.getScenarioSequences().stream()
                 .anyMatch(seq -> seq.getSeqNo() == sequenceNumber + 1 && !seq.isDeleted());
 
-        log.info("Retrieved sequence {} for scenario ID: {}", sequenceNumber, scenarioId);
+        log.debug("Retrieved sequence {} for scenario ID: {}", sequenceNumber, scenarioId);
 
         return SequenceResponse.from(sequence, hasNext);
     }
@@ -269,7 +269,7 @@ public class ScenarioServiceImpl implements ScenarioService {
                 .findFirst()
                 .orElseThrow(() -> new CustomException(ErrorCode.SEQUENCE_NOT_FOUND));
 
-        log.info("Retrieved options for sequence {} in scenario ID: {} with difficulty: {}",
+        log.debug("Retrieved options for sequence {} in scenario ID: {} with difficulty: {}",
                 sequenceNumber, scenarioId, difficulty);
 
         // EASY 난이도: 이미지 URL 포함
