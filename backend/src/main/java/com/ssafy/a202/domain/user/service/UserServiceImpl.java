@@ -2,6 +2,7 @@ package com.ssafy.a202.domain.user.service;
 
 import com.ssafy.a202.domain.auth.service.TokenBlacklistService;
 import com.ssafy.a202.domain.user.dto.request.UserUpdateRequest;
+import com.ssafy.a202.domain.user.dto.response.UserResponse;
 import com.ssafy.a202.domain.user.dto.response.UserUpdateResponse;
 import com.ssafy.a202.domain.user.entity.User;
 import com.ssafy.a202.domain.user.repository.UserRepository;
@@ -14,6 +15,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 사용자 서비스 구현
@@ -28,6 +32,52 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final TokenBlacklistService tokenBlacklistService;
     private final JwtProvider jwtProvider;
+
+    /**
+     * 같은 학교 사용자 목록 조회
+     */
+    @Override
+    public List<UserResponse> getUsers(Long userId) {
+        // 1. 사용자 조회
+        User user = userRepository.findByIdAndIsDeletedFalse(userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        // 2. 같은 학교 사용자 목록 조회
+        List<User> users = userRepository.findBySchoolAndIsDeletedFalse(user.getSchool());
+
+        log.debug("User list retrieved: userId={}, schoolId={}, count={}",
+                userId, user.getSchool().getId(), users.size());
+
+        // 3. 응답 생성
+        return users.stream()
+                .map(UserResponse::from)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * 사용자 상세 조회
+     */
+    @Override
+    public UserResponse getUser(Long userId, Long targetUserId) {
+        // 1. 요청 사용자 조회
+        User user = userRepository.findByIdAndIsDeletedFalse(userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        // 2. 대상 사용자 조회
+        User targetUser = userRepository.findByIdAndIsDeletedFalse(targetUserId)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        // 3. 같은 학교인지 확인
+        if (!user.getSchool().getId().equals(targetUser.getSchool().getId())) {
+            throw new CustomException(ErrorCode.ACCESS_DENIED);
+        }
+
+        log.debug("User detail retrieved: userId={}, targetUserId={}",
+                userId, targetUserId);
+
+        // 4. 응답 생성
+        return UserResponse.from(targetUser);
+    }
 
     /**
      * 회원 정보 수정 (본인만 가능)

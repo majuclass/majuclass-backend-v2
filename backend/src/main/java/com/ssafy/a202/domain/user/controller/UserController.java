@@ -2,6 +2,7 @@ package com.ssafy.a202.domain.user.controller;
 
 import com.ssafy.a202.domain.user.dto.request.UserUpdateRequest;
 import com.ssafy.a202.domain.user.dto.request.WithdrawRequest;
+import com.ssafy.a202.domain.user.dto.response.UserResponse;
 import com.ssafy.a202.domain.user.dto.response.UserUpdateResponse;
 import com.ssafy.a202.domain.user.service.UserService;
 import com.ssafy.a202.global.constants.ErrorCode;
@@ -20,6 +21,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 /**
  * 사용자 컨트롤러
  */
@@ -31,6 +34,24 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final UserService userService;
+
+    @Operation(summary = "사용자 목록 조회", description = "같은 학교에 속한 사용자 목록을 조회합니다.")
+    @GetMapping
+    public ApiResponse<List<UserResponse>> getUsers(
+            @AuthenticationPrincipal UserPrincipal userPrincipal) {
+        List<UserResponse> users = userService.getUsers(userPrincipal.getUserId());
+        return ApiResponse.success(SuccessCode.USER_LIST_SUCCESS, users);
+    }
+
+    @Operation(summary = "사용자 상세 조회", description = "특정 사용자의 상세 정보를 조회합니다. (같은 학교만 가능)")
+    @GetMapping("/{userId}")
+    public ApiResponse<UserResponse> getUser(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @Parameter(description = "조회할 사용자 ID", example = "1")
+            @PathVariable Long userId) {
+        UserResponse user = userService.getUser(userPrincipal.getUserId(), userId);
+        return ApiResponse.success(SuccessCode.USER_DETAIL_SUCCESS, user);
+    }
 
     @Operation(summary = "회원 정보 수정", description = "본인의 회원 정보(이름, 이메일, 비밀번호)를 수정합니다.")
     @PutMapping("/update")
@@ -67,7 +88,7 @@ public class UserController {
 
     @Operation(summary = "사용자 삭제 (관리자)", description = "관리자가 특정 사용자를 삭제합니다. (Soft Delete)")
     @PreAuthorize("hasRole('ADMIN')")
-    @DeleteMapping("/{userId}/delete")
+    @DeleteMapping("/delete/{userId}")
     public ApiResponse<Void> deleteUserByAdmin(
             @Parameter(description = "삭제할 사용자 ID", example = "1")
             @PathVariable Long userId) {
