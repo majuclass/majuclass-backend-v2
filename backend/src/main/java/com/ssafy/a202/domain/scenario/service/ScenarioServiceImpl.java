@@ -15,6 +15,7 @@ import com.ssafy.a202.domain.scenario.dto.response.OptionResponse;
 import com.ssafy.a202.domain.scenario.dto.response.OptionWithImageResponse;
 import com.ssafy.a202.domain.scenario.dto.response.SequenceResponse;
 import com.ssafy.a202.domain.scenario.dto.response.SequenceWithOptionsResponse;
+import com.ssafy.a202.global.constants.Difficulty;
 import com.ssafy.a202.global.exception.CustomException;
 import com.ssafy.a202.global.constants.ErrorCode;
 import com.ssafy.a202.global.s3.S3UrlService;
@@ -241,12 +242,7 @@ public class ScenarioServiceImpl implements ScenarioService {
     }
 
     @Override
-    public List<?> getSequenceOptions(Long scenarioId, int sequenceNumber, String difficulty) {
-        // 난이도 검증
-        if (!difficulty.equals("EASY") && !difficulty.equals("NORMAL") && !difficulty.equals("HARD")) {
-            throw new CustomException(ErrorCode.INVALID_DIFFICULTY);
-        }
-
+    public List<?> getSequenceOptions(Long scenarioId, int sequenceNumber, Difficulty difficulty) {
         // 시나리오 조회
         Scenario scenario = scenarioRepository.findById(scenarioId)
                 .orElseThrow(() -> new CustomException(ErrorCode.SCENARIO_NOT_FOUND));
@@ -266,7 +262,7 @@ public class ScenarioServiceImpl implements ScenarioService {
                 sequenceNumber, scenarioId, difficulty);
 
         // EASY 난이도: 이미지 URL 포함
-        if (difficulty.equals("EASY")) {
+        if (difficulty == Difficulty.EASY) {
             return sequence.getOptions().stream()
                     .filter(option -> !option.isDeleted())
                     .sorted((a, b) -> Integer.compare(a.getOptionNo(), b.getOptionNo()))

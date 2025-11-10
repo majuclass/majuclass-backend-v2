@@ -53,7 +53,7 @@ public interface ScenarioService {
     /**
      * 특정 시퀀스의 옵션 조회 (개별 조회 방식, 난이도에 따라 다른 응답)
      */
-    List<?> getSequenceOptions(Long scenarioId, int sequenceNumber, String difficulty);
+    List<?> getSequenceOptions(Long scenarioId, int sequenceNumber, com.ssafy.a202.global.constants.Difficulty difficulty);
 
     /**
      * 시나리오 수정

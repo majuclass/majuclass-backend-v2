@@ -95,8 +95,8 @@ public class ScenarioController {
             @PathVariable Long scenarioId,
             @Parameter(description = "시퀀스 번호 (1부터 시작)", example = "1")
             @PathVariable int sequenceNumber,
-            @Parameter(description = "난이도 (EASY, NORMAL, HARD)", example = "EASY", required = true)
-            @RequestParam String difficulty) {
+            @Parameter(description = "난이도 (EASY: 하, NORMAL: 중, HARD: 상)", example = "EASY", required = true)
+            @RequestParam com.ssafy.a202.global.constants.Difficulty difficulty) {
         List<?> options = scenarioService.getSequenceOptions(scenarioId, sequenceNumber, difficulty);
         return ApiResponse.success(SuccessCode.OPTIONS_RETRIEVE_SUCCESS, options);
     }
