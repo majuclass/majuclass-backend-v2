@@ -72,7 +72,7 @@ class SessionSTTAnswer(Base):
     seq_id = Column(BigInteger, nullable=False)
     audio_s3_key = Column(String(255), nullable=True)
     transcribed_text = Column(Text, nullable=True, comment="STT 변환된 텍스트")
-    expected_text = Column(Text, nullable=True, comment="정답 텍스트")
+    answer_text = Column(Text, nullable=True, comment="정답 텍스트")
     similarity_score = Column(DECIMAL(5, 4), nullable=True, comment="유사도 점수 (0.0000~1.0000)")
     is_correct = Column(Boolean, nullable=True)
     attempt_no = Column(Integer, nullable=True)
