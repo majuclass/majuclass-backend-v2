@@ -6,6 +6,7 @@ import { useScenarioCreateStore } from "../../stores/useScenarioCreateStore";
 import TextButton from "../TextButton";
 import TextInput from "../TextInput";
 import boyHead from "../../assets/scenarios/cinema/cinema-boy-head.png";
+import { useNavigate } from "react-router-dom";
 
 interface ScenarioFormProps {
   onNext: () => void;
@@ -25,6 +26,8 @@ export default function ScenarioForm({ onNext }: ScenarioFormProps) {
         background: s.background,
       }))
     );
+
+  const navigator = useNavigate();
 
   const setScenarioInfo = useScenarioCreateStore((s) => s.setScenarioInfo);
   const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -180,7 +183,7 @@ export default function ScenarioForm({ onNext }: ScenarioFormProps) {
         </div>
       </div>
       <div className="flex flex-row justify-between mt-6">
-        <TextButton>취소</TextButton>
+        <TextButton onClick={() => navigator(-1)}>취소</TextButton>
         <TextButton onClick={onNext}>다음</TextButton>
       </div>
     </div>

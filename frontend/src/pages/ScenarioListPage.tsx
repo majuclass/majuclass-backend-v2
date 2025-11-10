@@ -1,8 +1,18 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+/**
+ * eslint-disable @typescript-eslint/no-explicit-any
+ *
+ * @format
+ */
+
 import { useEffect, useMemo, useState } from "react";
 import NavBar from "../components/NavBar"; // 네브바
 import ScenarioCard from "../components/scenariolistpage/ScenarioCard";
-import { fetchScenarios, type Difficulty, type Scenario } from "../apis/scenariolistpageApi";
+import {
+  fetchScenarios,
+  type Difficulty,
+  type Scenario,
+} from "../apis/scenariolistpageApi";
+import { useNavigate } from "react-router-dom";
 
 export default function ScenarioListPage() {
   const [items, setItems] = useState<Scenario[]>([]);
@@ -17,6 +27,8 @@ export default function ScenarioListPage() {
   // 선택 필터 (지금은 단순히 타입만 준비)
   const [categoryId] = useState<number | undefined>(undefined);
   const [difficulty] = useState<Difficulty | undefined>(undefined);
+
+  const navigate = useNavigate();
 
   // 시나리오 목록 로드
   useEffect(() => {
@@ -59,6 +71,14 @@ export default function ScenarioListPage() {
         <h1 className="text-2xl font-semibold mb-6 text-gray-800">
           시나리오 목록
         </h1>
+
+        {/* 시나리오 추가 */}
+        <button
+          className="mb-3 bg-pink-200 border border-pink-200 rounded-xl p-2 font-bold"
+          onClick={() => navigate("create")}
+        >
+          + 시나리오 만들기
+        </button>
 
         {/* 로딩 */}
         {loading && <GridSkeleton />}

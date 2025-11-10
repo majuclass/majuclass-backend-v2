@@ -5,6 +5,8 @@ import {
   type SequenceData,
 } from "../../stores/useScenarioCreateStore";
 import boyHead from "../../assets/scenarios/cinema/cinema-boy-head.png";
+import axios from "axios";
+import api from "../../apis/apiInstance";
 
 interface SequenceInputProps {
   activeSeq: SequenceData;
@@ -13,7 +15,7 @@ interface SequenceInputProps {
 export default function SequenceInput({ activeSeq }: SequenceInputProps) {
   // 현재 sequence
   const activeSequenceData = useScenarioCreateStore((s) =>
-    s.sequences.find((seq) => seq.sequenceNumber === activeSeq.sequenceNumber)
+    s.sequences.find((seq) => seq.seqNo === activeSeq.seqNo)
   );
 
   const addOption = useScenarioCreateStore((s) => s.addOption);
@@ -29,7 +31,7 @@ export default function SequenceInput({ activeSeq }: SequenceInputProps) {
     const newOptions = [...options];
     newOptions[idx] = { ...newOptions[idx], optionText: text };
 
-    updateSequence(activeSequenceData.sequenceNumber!, {
+    updateSequence(activeSequenceData.seqNo!, {
       options: newOptions,
     });
   };
@@ -40,13 +42,35 @@ export default function SequenceInput({ activeSeq }: SequenceInputProps) {
     const newOption = {
       optionNumber: options.length + 1,
       optionText: "",
-      answer: false,
+      isAnswer: false,
     };
 
-    addOption(activeSequenceData.sequenceNumber!, newOption);
+    addOption(activeSequenceData.seqNo!, newOption);
   };
 
-  const handleIconUpload = (
+  const handleUpload = async (file: File, imageType: string) => {
+    // presignedurl 요청
+    try {
+      const { data } = await api.post("scenarios/image-upload-url", {
+        imageType: imageType,
+        contentType: file.type,
+      });
+      console.log(data);
+
+      const { presignedUrl, s3Key } = data.data;
+
+      // s3 업로드
+      const resp = await axios.put(presignedUrl, file, {
+        headers: { "Content-Type": file.type },
+      });
+
+      if (resp.status === 200 || resp.status === 204) return s3Key;
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleIconUpload = async (
     e: React.ChangeEvent<HTMLInputElement>,
     idx: number
   ) => {
@@ -56,12 +80,35 @@ export default function SequenceInput({ activeSeq }: SequenceInputProps) {
     const previewUrl = URL.createObjectURL(file);
 
     const updated = options.map((opt, i) =>
-      i === idx ? { ...opt, icon: previewUrl, iconFile: file } : opt
+      i === idx ? { ...opt, previewUrl } : opt
     );
 
-    updateSequence(activeSequenceData.sequenceNumber!, {
+    updateSequence(activeSequenceData.seqNo!, {
       options: updated,
     });
+
+    // s3 업로드 비동기로 시도
+    try {
+      const s3Key = await handleUpload(file, "OPTION");
+
+      const cleanedUpdated = options.map((opt, i) =>
+        i === idx
+          ? {
+              optionNo: opt.optionNo,
+              optionText: opt.optionText,
+              optionS3Key: s3Key,
+              isAnswer: opt.isAnswer,
+              //   previewUrl, // UI 표시용 (보내지는 않음)
+            }
+          : opt
+      );
+
+      updateSequence(activeSequenceData.seqNo!, { options: cleanedUpdated });
+      console.log("업로드 완료: " + options);
+      console.log("업로드 완료" + s3Key);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -77,7 +124,7 @@ export default function SequenceInput({ activeSeq }: SequenceInputProps) {
           placeholder="어떻게 질문할까요?"
           value={activeSequenceData.question}
           onChange={(val) =>
-            updateSequence(activeSequenceData.sequenceNumber!, {
+            updateSequence(activeSequenceData.seqNo!, {
               question: val,
             })
           }
@@ -93,22 +140,22 @@ export default function SequenceInput({ activeSeq }: SequenceInputProps) {
         <div className="flex flex-wrap gap-4 justify-start">
           {options!.map((option, idx) => (
             <div
-              key={option.optionNumber}
+              key={option.optionNo}
               className="border p-4 rounded-lg bg-pink-200"
             >
               {/* 정답 묶음 */}
               <div className="flex items-center gap-3">
                 <input
                   type="radio"
-                  name={`isAnswer-${activeSequenceData.sequenceNumber}`}
-                  checked={option.answer}
+                  name={`isAnswer-${activeSequenceData.seqNo}`}
+                  checked={option.isAnswer}
                   onChange={() => {
                     // 정답 바꾸기
                     const updated = options.map((opt, i) => ({
                       ...opt,
-                      answer: i === idx, // 해당 인덱스만 true
+                      isAnswer: i === idx, // 해당 인덱스만 true
                     }));
-                    updateSequence(activeSequenceData.sequenceNumber!, {
+                    updateSequence(activeSequenceData.seqNo!, {
                       options: updated,
                     });
                   }}

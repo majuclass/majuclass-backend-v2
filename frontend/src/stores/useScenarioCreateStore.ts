@@ -13,16 +13,16 @@ import { create } from "zustand";
  */
 
 export interface OptionData {
-  optionNumber?: number;
+  optionNo?: number;
   optionText: string;
   optionPic?: File | null;
-  answer: boolean;
+  isAnswer: boolean;
 }
 
 export interface SequenceData {
-  sequenceNumber?: number;
+  seqNo?: number;
   question: string;
-  hasNext: boolean;
+  hasNext?: boolean; // TODO: REMOVE
   options: OptionData[];
 }
 
@@ -62,12 +62,11 @@ export const useScenarioCreateStore = create<ScenarioCreateStore>((set) => ({
   totalSequences: 1,
   sequences: [
     {
-      sequenceNumber: 1,
+      seqNo: 1,
       question: "",
-      hasNext: true,
       options: [
-        { optionNumber: 1, optionText: "", optionPic: null, answer: true },
-        { optionNumber: 2, optionText: "", optionPic: null, answer: false },
+        { optionNo: 1, optionText: "", optionPic: null, isAnswer: true },
+        { optionNo: 2, optionText: "", optionPic: null, isAnswer: false },
       ],
     },
   ], // 시퀀스 최소 1개 두고 시작
@@ -80,8 +79,8 @@ export const useScenarioCreateStore = create<ScenarioCreateStore>((set) => ({
     set((state) => {
       const newSeqNum = state.sequences.length + 1;
       const defaultOptions = [
-        { optionNumber: 1, optionText: "", optionPic: null, answer: true },
-        { optionNumber: 2, optionText: "", optionPic: null, answer: false },
+        { optionNo: 1, optionText: "", optionPic: null, isAnswer: true },
+        { optionNo: 2, optionText: "", optionPic: null, isAnswer: false },
       ];
 
       return {
@@ -89,9 +88,8 @@ export const useScenarioCreateStore = create<ScenarioCreateStore>((set) => ({
         sequences: [
           ...state.sequences,
           {
-            sequenceNumber: newSeqNum,
+            seqNo: newSeqNum,
             question: "",
-            hasNext: true,
             options: defaultOptions,
           },
         ],
@@ -102,16 +100,14 @@ export const useScenarioCreateStore = create<ScenarioCreateStore>((set) => ({
   updateSequence: (seqNum, updatedData) => {
     set((state) => ({
       sequences: state.sequences.map((s) =>
-        s.sequenceNumber === seqNum ? { ...s, ...updatedData } : s
+        s.seqNo === seqNum ? { ...s, ...updatedData } : s
       ),
     }));
   },
 
   deleteSequence: (seqNum) => {
     set((state) => {
-      const filtered = state.sequences.filter(
-        (s) => s.sequenceNumber !== seqNum
-      );
+      const filtered = state.sequences.filter((s) => s.seqNo !== seqNum);
       // 번호 재정렬 (sequenceNumber 1부터 다시)
       const resequenced = filtered.map((s, idx) => ({
         ...s,
@@ -129,12 +125,12 @@ export const useScenarioCreateStore = create<ScenarioCreateStore>((set) => ({
   addOption: (seqNum, newOption) => {
     set((state) => ({
       sequences: state.sequences.map((s) =>
-        s.sequenceNumber === seqNum
+        s.seqNo === seqNum
           ? {
               ...s,
               options: [
                 ...s.options,
-                { optionNumber: s.options.length + 1, ...newOption },
+                { optionNo: s.options.length + 1, ...newOption },
               ],
             }
           : s
@@ -147,11 +143,11 @@ export const useScenarioCreateStore = create<ScenarioCreateStore>((set) => ({
   deleteOption: (seqNum, optionNum) => {
     set((state) => ({
       sequences: state.sequences.map((s) =>
-        s.sequenceNumber === seqNum
+        s.seqNo === seqNum
           ? {
               ...s,
               options: s.options
-                .filter((o) => o.optionNumber !== optionNum)
+                .filter((o) => o.optionNo !== optionNum)
                 .map((o, idx) => ({
                   ...o,
                   optionNumber: idx + 1, // 번호 다시 붙이기
@@ -166,10 +162,10 @@ export const useScenarioCreateStore = create<ScenarioCreateStore>((set) => ({
     set({
       title: "",
       summary: "",
+      categoryId: 1,
       thumbnail: null,
       background: null,
-      categoryId: 0,
-      totalSequences: 0,
+      totalSequences: 1,
       sequences: [],
     });
   },
