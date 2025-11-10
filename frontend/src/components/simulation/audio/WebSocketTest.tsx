@@ -1,18 +1,19 @@
+/** @format */
+
 import { useEffect, useRef, useState } from "react";
-import './AudioRecordingButton.css';
+import "./AudioRecordingButton.css";
 
 import Lottie from "lottie-react";
 import micRecording from "../../../assets/scenarios/animations/recording.json";
 import startrecord from "../../../assets/scenarios/animations/start-record.json";
 
-type Record= {
-  sessionId: number;        // 시나리오 세션 ID
-  sequenceNumber: number;   // 현재 시퀀스 번호
+type Record = {
+  sessionId: number; // 시나리오 세션 ID
+  sequenceNumber: number; // 현재 시퀀스 번호
 };
 
-
 export default function Record({ sessionId, sequenceNumber }: Record) {
-  const [isRecording, setIsRecording] = useState(false);  
+  const [isRecording, setIsRecording] = useState(false);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
   const [ready, setReady] = useState(false);
 
@@ -23,7 +24,7 @@ export default function Record({ sessionId, sequenceNumber }: Record) {
 
   const SAMPLE_RATE = 16000;
 
-  // AudioWorklet 모듈 
+  // AudioWorklet 모듈
   useEffect(() => {
     const prepare = async () => {
       try {
@@ -74,7 +75,10 @@ export default function Record({ sessionId, sequenceNumber }: Record) {
       const float32len = float32.length;
       for (let i = 0; i < float32len; i++) {
         const sample = Math.max(-1, Math.min(1, float32[i]));
-        pcm16[i] = sample < 0 ? Math.round(sample * 0x8000) : Math.round(sample * 0x7fff);
+        pcm16[i] =
+          sample < 0
+            ? Math.round(sample * 0x8000)
+            : Math.round(sample * 0x7fff);
       }
       pcmRef.current.push(pcm16);
     };
@@ -126,24 +130,38 @@ export default function Record({ sessionId, sequenceNumber }: Record) {
     const view = new DataView(buffer);
 
     const writeStr = (off: number, str: string) => {
-      const strlen = str.length
-      for (let i = 0; i < strlen; i++) view.setUint8(off + i, str.charCodeAt(i));
+      const strlen = str.length;
+      for (let i = 0; i < strlen; i++)
+        view.setUint8(off + i, str.charCodeAt(i));
     };
 
     let offset = 0;
-    writeStr(offset, "RIFF"); offset += 4;
-    view.setUint32(offset, 36 + total * 2, true); offset += 4;
-    writeStr(offset, "WAVE"); offset += 4;
-    writeStr(offset, "fmt "); offset += 4;
-    view.setUint32(offset, 16, true); offset += 4;
-    view.setUint16(offset, 1, true); offset += 2;
-    view.setUint16(offset, 1, true); offset += 2;
-    view.setUint32(offset, sampleRate, true); offset += 4;
-    view.setUint32(offset, sampleRate * 2, true); offset += 4;
-    view.setUint16(offset, 2, true); offset += 2;
-    view.setUint16(offset, 16, true); offset += 2;
-    writeStr(offset, "data"); offset += 4;
-    view.setUint32(offset, total * 2, true); offset += 4;
+    writeStr(offset, "RIFF");
+    offset += 4;
+    view.setUint32(offset, 36 + total * 2, true);
+    offset += 4;
+    writeStr(offset, "WAVE");
+    offset += 4;
+    writeStr(offset, "fmt ");
+    offset += 4;
+    view.setUint32(offset, 16, true);
+    offset += 4;
+    view.setUint16(offset, 1, true);
+    offset += 2;
+    view.setUint16(offset, 1, true);
+    offset += 2;
+    view.setUint32(offset, sampleRate, true);
+    offset += 4;
+    view.setUint32(offset, sampleRate * 2, true);
+    offset += 4;
+    view.setUint16(offset, 2, true);
+    offset += 2;
+    view.setUint16(offset, 16, true);
+    offset += 2;
+    writeStr(offset, "data");
+    offset += 4;
+    view.setUint32(offset, total * 2, true);
+    offset += 4;
 
     let idx = 44;
     for (const chunk of chunks) {
@@ -154,29 +172,31 @@ export default function Record({ sessionId, sequenceNumber }: Record) {
     return new Blob([buffer], { type: "audio/wav" });
   };
 
-  
   // Presigned URL 요청
   const getPresignedUrl = async (): Promise<string> => {
     const token = localStorage.getItem("accessToken");
-    const res = await fetch("http://k13a202.p.ssafy.io:8080/api/scenario-sessions/audio-upload-url", {
-      method: "POST",
-      headers: { 
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`, 
-      },
-      body: JSON.stringify({
-        sessionId,
-        sequenceNumber,
-        contentType: "audio/wav",
-      }),
-    });
+    const res = await fetch(
+      "http://k13a202.p.ssafy.io:8080/api/scenario-sessions/audio-upload-url",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          sessionId,
+          sequenceNumber,
+          contentType: "audio/wav",
+        }),
+      }
+    );
 
     if (!res.ok) throw new Error(`Presigned URL 발급 실패 (${res.status})`);
     const json = await res.json();
     const presignedUrl = json?.data?.presignedUrl;
     const s3Key = json?.data?.s3Key;
     console.log("Presigned URL 발급 성공:", presignedUrl);
-    console.log("파일 경로:", s3Key); 
+    console.log("파일 경로:", s3Key);
     return json.data.presignedUrl;
   };
 
@@ -199,34 +219,23 @@ export default function Record({ sessionId, sequenceNumber }: Record) {
     console.log("S3 업로드 성공:", url.split("?")[0]);
   };
 
-
-
   return (
-  <div className="wrap">
-    {!isRecording ? (
-      <button
-        onClick={start}
-        disabled={!ready}
-        className="record-start"
-      >
-       <Lottie animationData={startrecord} loop={true} />
-      </button>
+    <div className="wrap">
+      {!isRecording ? (
+        <button onClick={start} disabled={!ready} className="record-start">
+          <Lottie animationData={startrecord} loop={true} />
+        </button>
+      ) : (
+        <div className="recording-lottie" onClick={stop}>
+          <Lottie animationData={micRecording} loop={true} />
+        </div>
+      )}
 
-    ) : (
-      <div
-        className="recording-lottie"
-        onClick={stop}
-      >
-        <Lottie animationData={micRecording} loop={true} />
-      </div>
-
-    )}
-
-    {audioUrl && (
-      <div className="audio-play">
-        <audio controls src={audioUrl} />
-      </div>
-    )}
-  </div>
-);
+      {audioUrl && (
+        <div className="audio-play">
+          <audio controls src={audioUrl} />
+        </div>
+      )}
+    </div>
+  );
 }
