@@ -5,6 +5,7 @@ from sentence_transformers import SentenceTransformer, util
 
 class SimilarityService:
     def __init__(self, model_name: str = "jhgan/ko-sroberta-multitask"):
+    # def __init__(self, model_name: str = "snunlp/KR-SBERT-V40K-klueNLI-augSTS"):
 
         print(f"[SimilarityService] 모델 로딩 중: {model_name}")
         self.model = SentenceTransformer(model_name)
