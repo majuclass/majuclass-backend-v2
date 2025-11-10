@@ -8,13 +8,13 @@ import blackboard from "../assets/scenarios/common/blackboard.png";
 import defaultBackgroundImg from "../assets/scenarios/cinema/cinema-ticket-bg-img.png";
 import api from "../apis/apiInstance";
 import { useEffect, useState } from "react";
-import type { Scenario } from "../types/Scenario";
+import type { GetScenario } from "../types/Scenario";
 import { useNavigate, useParams } from "react-router-dom";
 
 export default function SelectLevelPage() {
   //   시나리오 인터페이스 확장 위해 type alias 사용
   // TODO: 차후 확장 추가
-  type ScenariowithURL = Scenario & {
+  type ScenariowithURL = GetScenario & {
     backgroundUrl: string;
   };
 
