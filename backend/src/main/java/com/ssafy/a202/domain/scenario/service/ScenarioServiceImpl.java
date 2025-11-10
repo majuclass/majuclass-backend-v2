@@ -44,20 +44,11 @@ public class ScenarioServiceImpl implements ScenarioService {
         log.info("Generating image upload URL for imageType: {}", request.getImageType());
 
         // 1. 이미지 타입에 따라 S3UrlService.ScenarioImageType 매핑
-        S3UrlService.ScenarioImageType imageType;
-        switch (request.getImageType()) {
-            case THUMBNAIL:
-                imageType = S3UrlService.ScenarioImageType.THUMBNAIL;
-                break;
-            case BACKGROUND:
-                imageType = S3UrlService.ScenarioImageType.BACKGROUND;
-                break;
-            case OPTION:
-                imageType = S3UrlService.ScenarioImageType.OPTION;
-                break;
-            default:
-                throw new CustomException(ErrorCode.INVALID_REQUEST, "유효하지 않은 이미지 타입입니다.");
-        }
+        S3UrlService.ScenarioImageType imageType = switch (request.getImageType()) {
+            case THUMBNAIL -> S3UrlService.ScenarioImageType.THUMBNAIL;
+            case BACKGROUND -> S3UrlService.ScenarioImageType.BACKGROUND;
+            case OPTION -> S3UrlService.ScenarioImageType.OPTION;
+        };
 
         // 2. S3 키 자동 생성 (UUID + 확장자)
         String s3Key = s3UrlService.generateScenarioImageKey(imageType, request.getContentType());
