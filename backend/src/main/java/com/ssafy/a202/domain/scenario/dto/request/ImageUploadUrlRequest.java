@@ -20,6 +20,7 @@ public class ImageUploadUrlRequest {
     @NotNull(message = "이미지 타입은 필수입니다")
     @Schema(description = "이미지 타입 (THUMBNAIL: 썸네일, BACKGROUND: 배경, OPTION: 옵션)",
             example = "THUMBNAIL",
+            allowableValues = {"THUMBNAIL", "BACKGROUND", "OPTION"},
             required = true)
     private ImageType imageType;
 
