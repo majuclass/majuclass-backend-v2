@@ -39,6 +39,10 @@ class AuthMiddleware(BaseHTTPMiddleware):
             "/ai/stt-analyze",
         ]
 
+        # WebSocket 경로는 자체 인증 로직 사용
+        if request.url.path.startswith("/ws/"):
+            return await call_next(request)
+
         if request.url.path in public_path:
             return await call_next(request)
         if request.method == "OPTIONS":
