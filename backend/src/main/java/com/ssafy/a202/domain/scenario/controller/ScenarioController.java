@@ -18,6 +18,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -111,7 +112,8 @@ public class ScenarioController {
         return ApiResponse.success(SuccessCode.SCENARIO_UPDATE_SUCCESS, response);
     }
 
-    @Operation(summary = "시나리오 삭제", description = "시나리오를 삭제합니다. (Soft Delete)")
+    @Operation(summary = "시나리오 삭제", description = "관리자가 특정 시나리오를 삭제합니다. (Soft Delete)")
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{scenarioId}/delete")
     public ApiResponse<Void> deleteScenario(
             @Parameter(description = "시나리오 ID", example = "1")
