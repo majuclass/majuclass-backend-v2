@@ -1,6 +1,8 @@
 package com.ssafy.a202.global.security;
 
 import com.ssafy.a202.domain.auth.service.TokenBlacklistService;
+import com.ssafy.a202.domain.user.entity.User;
+import com.ssafy.a202.domain.user.repository.UserRepository;
 import com.ssafy.a202.global.constants.Role;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
@@ -17,6 +19,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * JWT 인증 필터
@@ -29,6 +32,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtProvider jwtProvider;
     private final TokenBlacklistService tokenBlacklistService;
+    private final UserRepository userRepository;
 
     @Override
     protected void doFilterInternal(
@@ -65,6 +69,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 Long userId = jwtProvider.getUserIdFromToken(token);
                 String username = jwtProvider.getUsernameFromToken(token);
                 Role role = jwtProvider.getRoleFromToken(token);
+
+                // 사용자 삭제 여부 확인 (회원 탈퇴 또는 관리자에 의한 삭제)
+                Optional<User> userOptional = userRepository.findById(userId);
+                if (userOptional.isEmpty() || userOptional.get().isDeleted()) {
+                    log.debug("User is deleted or not found: userId={}", userId);
+                    SecurityContextHolder.clearContext();
+                    filterChain.doFilter(request, response);
+                    return;
+                }
 
                 // UserPrincipal 생성
                 UserPrincipal userPrincipal = new UserPrincipal(userId, username, role);
