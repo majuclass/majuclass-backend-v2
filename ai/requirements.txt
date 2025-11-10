@@ -1,7 +1,7 @@
 annotated-doc==0.0.3
 annotated-types==0.7.0
 anyio==4.11.0
-asyncmy==0.2.9
+asyncmy==0.2.9; platform_system != "Windows"
 certifi==2025.10.5
 cffi==2.0.0
 charset-normalizer==3.4.4
@@ -16,7 +16,7 @@ fsspec==2025.10.0
 h11==0.16.0
 hf-xet==1.2.0
 httpcore==1.0.9
-httptools==0.7.1
+httptools==0.7.1; platform_system != "Windows"
 httpx==0.28.1
 huggingface-hub==0.36.0
 idna==3.11
@@ -64,6 +64,6 @@ typing-inspection==0.4.2
 typing_extensions==4.15.0
 urllib3==2.5.0
 uvicorn==0.38.0
-uvloop==0.22.1
+uvloop==0.22.1; platform_system != "Windows"
 watchfiles==1.1.1
 websockets==15.0.1

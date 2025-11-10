@@ -1,4 +1,3 @@
-# app/domains/text_to_speech/tts_router.py
 import io
 import os
 import requests
