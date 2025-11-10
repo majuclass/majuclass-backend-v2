@@ -1,12 +1,30 @@
 package com.ssafy.a202.domain.user.service;
 
 import com.ssafy.a202.domain.user.dto.request.UserUpdateRequest;
+import com.ssafy.a202.domain.user.dto.response.UserResponse;
 import com.ssafy.a202.domain.user.dto.response.UserUpdateResponse;
+
+import java.util.List;
 
 /**
  * 사용자 서비스 인터페이스
  */
 public interface UserService {
+
+    /**
+     * 같은 학교 사용자 목록 조회
+     * @param userId 조회 요청한 사용자 ID
+     * @return 같은 학교 사용자 목록
+     */
+    List<UserResponse> getUsers(Long userId);
+
+    /**
+     * 사용자 상세 조회
+     * @param userId 조회 요청한 사용자 ID
+     * @param targetUserId 조회할 대상 사용자 ID
+     * @return 사용자 상세 정보
+     */
+    UserResponse getUser(Long userId, Long targetUserId);
 
     /**
      * 회원 정보 수정 (본인만 가능)
