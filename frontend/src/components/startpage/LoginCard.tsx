@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-// src/pages/(StartPage)/components/logincard.tsx
+// src/components/startpage/LoginCard.tsx
 import React, { useMemo, useState } from "react";
 import { useLogin } from "../../hooks/startpage/UserLogin";
 

@@ -1,3 +1,4 @@
+// src/pages/StartPage.tsx
 import { useState, useEffect, useMemo } from "react";
 import Lottie from "lottie-react";
 import "../styles/StartPage.css";
