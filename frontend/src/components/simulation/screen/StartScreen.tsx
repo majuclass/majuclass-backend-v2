@@ -2,10 +2,11 @@
  * 백그라운드 asset으로 설정
  *
  */
-import type { Scenario } from "../../../types/Scenario";
+
+import type { GetScenario } from "../../../types/Scenario";
 
 type StartScreenProps = {
-  scenario: Scenario;
+  scenario: GetScenario;
   difficulty: string;
   onStart: () => void;
 };
@@ -37,7 +38,7 @@ export default function StartScreen({
         >
           실행하기
         </button>
-      </div>  
+      </div>
     </div>
   );
 }
