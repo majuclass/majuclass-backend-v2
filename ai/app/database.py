@@ -6,13 +6,7 @@ from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sess
 # 환경 변수 로드
 load_dotenv()
 
-USER = os.getenv("DB_USERNAME")
-PASS = os.getenv("DB_PASSWORD")
-HOST = os.getenv("DB_HOST")
-PORT = os.getenv("DB_PORT")
-NAME = os.getenv("DB_NAME")
-
-DATABASE_URL = f"mysql+asyncmy://{USER}:{PASS}@{HOST}:{PORT}/{NAME}"
+DATABASE_URL = "mysql+asyncmy://maju_user:db_secret_password_for_maju_ssafy_2025@k13a202.p.ssafy.io:3306/a202?charset=utf8mb4"
 
 engine = create_async_engine(
     DATABASE_URL,
