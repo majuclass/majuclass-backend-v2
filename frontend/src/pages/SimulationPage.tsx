@@ -5,7 +5,11 @@ import { useParams } from "react-router-dom";
 
 import api from "../apis/apiInstance";
 
-import type { Option, GetScenario, Sequence } from "../types/Scenario";
+import type {
+  GetScenario,
+  Sequence,
+  TransformedOption,
+} from "../types/Scenario";
 import ScenarioLayout from "../components/layout/ScenarioLayout";
 import StartScreen from "../components/simulation/screen/StartScreen";
 import SequenceScreen from "../components/simulation/screen/SequenceScreen";
@@ -15,13 +19,13 @@ import FeedbackScreen from "../components/simulation/screen/FeedbackScreen";
 
 import bgCinema from "../assets/scenarios/cinema/cinema-ticket-bg-img.png";
 import girlNormal from "../assets/scenarios/cinema/cinema-girl-normal.png";
+import { transformOptions } from "../utils/format";
 
 /** 시뮬레이션 실행 제어 컨트롤러
  * @param scenarioId - 불러올 시나리오 고유 ID
  */
 export default function SimulationPage() {
   const { scenarioId, difficulty } = useParams();
-
 
   //   시나리오 인터페이스 확장 위해 type alias 사용
   // TODO: 차후 확장 추가
@@ -37,7 +41,7 @@ export default function SimulationPage() {
   >("start");
   const [scenario, setScenario] = useState<ScenariowithURL>();
   const [sequence, setSequence] = useState<Sequence>();
-  const [options, setOptions] = useState<Option[]>([]);
+  const [options, setOptions] = useState<TransformedOption[]>([]);
   const [sequenceNumber, setSequenceNumber] = useState(1);
   const [isCorrect, setIsCorrect] = useState<boolean>(false);
   const [sessionId, setSessionId] = useState<number>();
@@ -85,10 +89,14 @@ export default function SimulationPage() {
     if (!sequence) return;
     const fetchOptions = async () => {
       try {
+        if (!difficulty) return;
+
         const resp = await api.get(
           `scenarios/${scenarioId}/sequences/${sequenceNumber}/options?difficulty=${difficulty}`
         );
-        setOptions(resp.data.data);
+        const rawData = resp.data.data;
+        const transformedData = transformOptions(difficulty, rawData);
+        setOptions(transformedData);
       } catch (error) {
         console.error(error);
         setGameState("error");
@@ -125,13 +133,13 @@ export default function SimulationPage() {
   };
 
   // 피드백 처리 & 다음 시퀀스로 이동
-  const handleFeedback = async (selectedOption: Option) => {
+  const handleFeedback = async (selectedOption: TransformedOption) => {
     try {
       const resp = await api.post(`scenario-sessions/submit-answer`, {
         sessionId,
         scenarioId,
         sequenceNumber,
-        selectedOptionId: selectedOption.optionId,
+        selectedOptionId: selectedOption.id,
       });
 
       const { correct } = resp.data.data;
@@ -207,19 +215,16 @@ export default function SimulationPage() {
             ) : null;
           case "question":
             return sequence ? (
-              <SequenceScreen 
-              sequence={sequence} 
-              onNext={handleSelectOption} 
-              />
+              <SequenceScreen sequence={sequence} onNext={handleSelectOption} />
             ) : null;
           case "option":
-            return options && sequence ? (       
+            return options && sequence ? (
               <OptionScreen
                 options={options}
                 sequence={sequence}
                 onSelect={handleFeedback}
                 sessionId={sessionId}
-                sequenceNumber={sequenceNumber} 
+                sequenceNumber={sequenceNumber}
                 difficulty={difficulty ?? ""}
               />
             ) : null;
