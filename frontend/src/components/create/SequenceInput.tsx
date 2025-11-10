@@ -4,6 +4,7 @@ import {
   useScenarioCreateStore,
   type SequenceData,
 } from "../../stores/useScenarioCreateStore";
+import boyHead from "../../assets/scenarios/cinema/cinema-boy-head.png";
 
 interface SequenceInputProps {
   activeSeq: SequenceData;
@@ -45,13 +46,35 @@ export default function SequenceInput({ activeSeq }: SequenceInputProps) {
     addOption(activeSequenceData.sequenceNumber!, newOption);
   };
 
+  const handleIconUpload = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    idx: number
+  ) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const previewUrl = URL.createObjectURL(file);
+
+    const updated = options.map((opt, i) =>
+      i === idx ? { ...opt, icon: previewUrl, iconFile: file } : opt
+    );
+
+    updateSequence(activeSequenceData.sequenceNumber!, {
+      options: updated,
+    });
+  };
+
   return (
-    <div>
-      <p>질문답변 set</p>
-      <div>
+    <div className="flex flex-col bg-pink-50 rounded-2xl p-6 shadow-sm">
+      <div className="flex items-center gap-3 mb-6 justify-center">
+        <img
+          src={boyHead}
+          alt="캐릭터"
+          className="w-10 h-10 object-contain flex-shrink-0"
+        />
         <TextInput
           name="question"
-          placeholder="질문을 입력하세요"
+          placeholder="어떻게 질문할까요?"
           value={activeSequenceData.question}
           onChange={(val) =>
             updateSequence(activeSequenceData.sequenceNumber!, {
@@ -62,14 +85,18 @@ export default function SequenceInput({ activeSeq }: SequenceInputProps) {
           질문
         </TextInput>
       </div>
+
+      {/* 답변 */}
       <div>
-        <p>답변(최대 4개)</p>
+        <h3 className="font-semibold mb-3">답변 만들기(최대 4개)</h3>
+        {/* 옵션 란 */}
         <div className="flex flex-wrap gap-4 justify-start">
           {options!.map((option, idx) => (
             <div
               key={option.optionNumber}
-              className="w-[48%] min-w-[300px] border p-4 rounded-lg"
+              className="border p-4 rounded-lg bg-pink-200"
             >
+              {/* 정답 묶음 */}
               <div className="flex items-center gap-3">
                 <input
                   type="radio"
@@ -85,15 +112,61 @@ export default function SequenceInput({ activeSeq }: SequenceInputProps) {
                       options: updated,
                     });
                   }}
+                  className="accent-pink-400"
                 />
-                <TextInput
-                  name={`answer-${idx}`}
-                  placeholder="정답을 입력하세요"
-                  value={option.optionText}
-                  onChange={(val) => handleOptionChange(idx, val)}
-                >
-                  정답 여부
-                </TextInput>
+
+                {/* 아이콘 미리보기 */}
+                {/* <div className="flex items-center justify-center w-32 h-32 bg-white rounded-xl border border-gray-200 overflow-hidden">
+                  {option.icon ? (
+                    <img
+                      src={option.icon}
+                      alt="아이콘 미리보기"
+                      className="object-contain w-full h-full"
+                    />
+                  ) : (
+                    <span className="text-gray-400 text-sm">이미지 없음</span>
+                  )}
+                </div> */}
+
+                {/* TODO: option pic 미리보기 전역에 추가 */}
+                {/* <div className="flex items-center justify-center w-32 h-32 bg-white rounded-xl border border-gray-200 overflow-hidden">
+                  {option.optionPic ? (
+                    <img
+                      src={option.optionPic}
+                      alt="아이콘 미리보기"
+                      className="object-contain w-full h-full"
+                    />
+                  ) : (
+                    <span className="text-gray-400 text-sm">이미지 없음</span>
+                  )}
+                </div> */}
+
+                {/* 아이콘 업로드 + 답변 입력 */}
+                <div className="flex flex-col flex-1 gap-2 bg-white rounded-xl p-3 border border-gray-200">
+                  {/* 파일 업로드 */}
+                  <label className="flex items-center justify-between px-3 py-2 border border-gray-300 rounded-lg cursor-pointer hover:bg-pink-50 transition">
+                    <span className="font-medium">아이콘</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => handleIconUpload(e, idx)}
+                    />
+                    <span className="text-sm text-gray-500">파일 선택</span>
+                  </label>
+
+                  {/* 답변 입력 */}
+                  <div className="flex items-center justify-between px-3 py-2 border border-gray-300 rounded-lg">
+                    <span className="font-medium">답변</span>
+                    <input
+                      type="text"
+                      placeholder="답변을 입력하세요"
+                      value={option.optionText}
+                      onChange={(e) => handleOptionChange(idx, e.target.value)}
+                      className="flex-1 ml-2 outline-none"
+                    />
+                  </div>
+                </div>
               </div>
             </div>
           ))}

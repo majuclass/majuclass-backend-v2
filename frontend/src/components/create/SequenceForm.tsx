@@ -13,6 +13,7 @@ interface SequenceFormProps {
 export default function SequenceForm({ onPrev }: SequenceFormProps) {
   const sequences = useScenarioCreateStore((s) => s.sequences);
   const { addSequence } = useScenarioCreateStore();
+  const { deleteSequence } = useScenarioCreateStore();
 
   //   현재 활성 시퀀스
   const [activeSeqNum, setActiveSeqNum] = useState(1);
@@ -45,24 +46,33 @@ export default function SequenceForm({ onPrev }: SequenceFormProps) {
   return (
     <>
       {/* TODO: 개수 제한  */}
-      <div className="flex flex-row">
+      {/* Header */}
+      <div className="flex flex-row flex-wrap items-center gap-2 rounded-2xl p-3">
         {sequences.map((sequence) => (
           <div key={sequence.sequenceNumber}>
             <SequenceTabHeader
               num={sequence.sequenceNumber}
               isActive={activeSeqNum === sequence.sequenceNumber}
               onClick={() => setActiveSeqNum(sequence.sequenceNumber!)}
+              onDelete={() => deleteSequence(sequence.sequenceNumber!)}
             />
           </div>
         ))}
         <div>
-          <button onClick={addSequence}>추가하기</button>
+          <button
+            onClick={addSequence}
+            className="ml-2 px-3 py-1 rounded-full bg-pink-100 text-pink-600 border border-pink-300 hover:bg-pink-200 transition-all text-sm"
+          >
+            추가하기
+          </button>
         </div>
       </div>
+
+      {/* 시퀀스 */}
       <div>
         {/* 시퀀스 생성 */}
         <div>
-          <div>
+          <div className="flex flex-row items-center gap-2 mb-4 bg-pink-50 rounded-2xl justify-center min-h-[600px] transition-all duration-300">
             <SequenceInput activeSeq={activeSequence!}></SequenceInput>
           </div>
         </div>

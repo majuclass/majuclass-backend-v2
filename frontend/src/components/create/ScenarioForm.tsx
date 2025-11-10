@@ -91,6 +91,7 @@ export default function ScenarioForm({ onNext }: ScenarioFormProps) {
             </TextInput>
           </div>
           <div className="flex items-center gap-3 mb-3">
+            <p>썸네일 이미지</p>
             <input
               type="file"
               name="thumbnailImg"

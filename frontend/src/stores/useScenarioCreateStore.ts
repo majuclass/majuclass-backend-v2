@@ -15,6 +15,7 @@ import { create } from "zustand";
 export interface OptionData {
   optionNumber?: number;
   optionText: string;
+  optionPic?: File | null;
   answer: boolean;
 }
 
@@ -43,8 +44,11 @@ export interface ScenarioCreateStore extends ScenarioData {
   // 자동 증가
   addSequence: () => void;
   updateSequence: (seqNum: number, updatedData: Partial<SequenceData>) => void;
+  deleteSequence: (seqNum: number) => void;
   // 외부에서 받아 증가
   addOption: (seqNum: number, newOption: OptionData) => void;
+  updateOption: () => void;
+  deleteOption: (seqNum: number, optNum: number) => void;
   resetScenario: () => void;
 }
 
@@ -62,8 +66,8 @@ export const useScenarioCreateStore = create<ScenarioCreateStore>((set) => ({
       question: "",
       hasNext: true,
       options: [
-        { optionNumber: 1, optionText: "", answer: true },
-        { optionNumber: 2, optionText: "", answer: false },
+        { optionNumber: 1, optionText: "", optionPic: null, answer: true },
+        { optionNumber: 2, optionText: "", optionPic: null, answer: false },
       ],
     },
   ], // 시퀀스 최소 1개 두고 시작
@@ -76,8 +80,8 @@ export const useScenarioCreateStore = create<ScenarioCreateStore>((set) => ({
     set((state) => {
       const newSeqNum = state.sequences.length + 1;
       const defaultOptions = [
-        { optionNumber: 1, optionText: "", answer: true },
-        { optionNumber: 2, optionText: "", answer: false },
+        { optionNumber: 1, optionText: "", optionPic: null, answer: true },
+        { optionNumber: 2, optionText: "", optionPic: null, answer: false },
       ];
 
       return {
@@ -102,6 +106,26 @@ export const useScenarioCreateStore = create<ScenarioCreateStore>((set) => ({
       ),
     }));
   },
+
+  deleteSequence: (seqNum) => {
+    set((state) => {
+      const filtered = state.sequences.filter(
+        (s) => s.sequenceNumber !== seqNum
+      );
+      // 번호 재정렬 (sequenceNumber 1부터 다시)
+      const resequenced = filtered.map((s, idx) => ({
+        ...s,
+        sequenceNumber: idx + 1,
+      }));
+
+      return {
+        ...state,
+        sequences: resequenced,
+        totalSequences: resequenced.length,
+      };
+    });
+  },
+
   addOption: (seqNum, newOption) => {
     set((state) => ({
       sequences: state.sequences.map((s) =>
@@ -112,6 +136,26 @@ export const useScenarioCreateStore = create<ScenarioCreateStore>((set) => ({
                 ...s.options,
                 { optionNumber: s.options.length + 1, ...newOption },
               ],
+            }
+          : s
+      ),
+    }));
+  },
+
+  updateOption: () => {},
+
+  deleteOption: (seqNum, optionNum) => {
+    set((state) => ({
+      sequences: state.sequences.map((s) =>
+        s.sequenceNumber === seqNum
+          ? {
+              ...s,
+              options: s.options
+                .filter((o) => o.optionNumber !== optionNum)
+                .map((o, idx) => ({
+                  ...o,
+                  optionNumber: idx + 1, // 번호 다시 붙이기
+                })),
             }
           : s
       ),
