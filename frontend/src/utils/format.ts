@@ -28,6 +28,9 @@ export const transformOptions = (
     } else if (difficulty === "NORMAL" && option.optionText) {
       label = option.optionText;
       type = "text";
+    } else if (difficulty === "HARD" && option.optionText) {
+      label = option.optionText;
+      type = "text";
     }
 
     return {
