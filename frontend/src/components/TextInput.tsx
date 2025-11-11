@@ -27,7 +27,6 @@ export default function TextInput({
   onChange,
   value,
 }: TextInputProps) {
-  // const [inputValue, setInputValue] = useState("");
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     // 내부 update 제거: 전역변수 사용
     // setInputValue(e.target.value);
@@ -43,23 +42,23 @@ export default function TextInput({
   };
 
   return (
-    <div className="flex flex-row gap-3 items-center">
-      <p>{children}</p>
-      <div className="relative flex items-center">
+    <div className="flex gap-3 items-center">
+      <label className="text-sm font-medium text-gray-700">{children}</label>
+      <div className="flex items-center">
         <input
           type={type}
           value={value}
           onChange={handleInputChange}
           name={name}
           placeholder={placeholder}
-          className="pr-10 py-2 border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full pr-10 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-pink-300"
         />
 
         {/* input 있을때만 x버튼 렌더링 */}
         {value && (
           <button
             onClick={handleClear}
-            className="absolute right-2 p-1 text-gray-400 hover:text-gray-600 focus:outline-none"
+            className="p-2 text-gray-400 hover:text-gray-600 focus:outline-none"
           >
             X
           </button>

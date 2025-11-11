@@ -7,12 +7,47 @@ import TextButton from "../TextButton";
 import TextInput from "../TextInput";
 import boyHead from "../../assets/scenarios/cinema/cinema-boy-head.png";
 import { useNavigate } from "react-router-dom";
+import api from "../../apis/apiInstance";
+import { useQuery } from "@tanstack/react-query";
 
 interface ScenarioFormProps {
   onNext: () => void;
 }
 
+type category = {
+  id: number;
+  categoryName: string;
+};
+
+// TODO: 정해지면 매핑 시작
+// const categoryDefaultImg: Record<number, string> = {
+//     1:
+//     2:
+//     3:
+// }
+
+// 실제 API 호출 함수 -> useQuery 사용 위함
+const fetchCategory = async () => {
+  const resp = await api.get(`categories`);
+  return resp.data.data as category[];
+};
+
 export default function ScenarioForm({ onNext }: ScenarioFormProps) {
+  // category에 tanstack query 작성
+  const {
+    data: categories,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["categories"],
+    queryFn: fetchCategory,
+    // 24시간동안 stale로 간주, refetch 없음
+    staleTime: 1000 * 60 * 60 * 24,
+  });
+
+  // category 로드 시 배열에 할당
+  const categoryList = categories || [];
+
   // 리렌더링 방지 위한 selector + shallow pattern
   // TODO: onChange 방식으로 관리 시, 매번 모든 전역스토어 리렌더링 문제?
   // 이렇게 관리하는게 잘한건지 몰르겠슈
@@ -53,6 +88,22 @@ export default function ScenarioForm({ onNext }: ScenarioFormProps) {
   //   미리보기
   const thumbnailUrl = thumbnail ? URL.createObjectURL(thumbnail) : null;
 
+  // TODO: 카테고리 default image mapping
+
+  //   카테고리용 로딩 / 에러 상태 처리
+  if (isLoading) {
+    return (
+      <div className="p-8 text-center">카테고리 정보 불러오는 중 ... </div>
+    );
+  }
+  if (isError) {
+    return (
+      <div className="p-8 text-center text-red-500">
+        카테고리 로드 중 에러 발생
+      </div>
+    );
+  }
+
   return (
     <div className="w-full">
       <div className="flex flex-row gap-5">
@@ -61,18 +112,21 @@ export default function ScenarioForm({ onNext }: ScenarioFormProps) {
           <h2 className="text-lg font-bold mb-4">시나리오 정보 입력하기</h2>
 
           <div className="flex items-center gap-3 mb-4">
-            {/* TODO: 카테고리 불러오기*/}
             <p className="w-24 text-md">카테고리</p>
             <select
               name="category"
               id="scenario-category"
-              value={categoryId}
+              value={categoryId ?? ""}
               onChange={handleCategoryChange}
               className="flex-1 border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-pink-300"
             >
-              <option value={1}>카테1</option>
-              <option value={2}>카테2</option>
-              <option value={3}>카테3</option>
+              <option value="">카테고리를 선택하세요</option>
+              {/* useQuery data 바로 매핑 */}
+              {categoryList.map((cate) => (
+                <option key={cate.id} value={cate.id}>
+                  {cate.categoryName}
+                </option>
+              ))}
             </select>
           </div>
           <div className="space-y-4 mb-4">
@@ -95,47 +149,71 @@ export default function ScenarioForm({ onNext }: ScenarioFormProps) {
           </div>
           <div className="flex items-center gap-3 mb-3">
             <p>썸네일 이미지</p>
+            <label
+              htmlFor="thumbnailInput"
+              className="cursor-pointer bg-gray-100 px-3 py-1.5 rounded-md border border-gray-300 text-gray-700 text-sm hover:bg-gray-200 transition"
+            >
+              파일 선택
+            </label>
             <input
+              id="thumbnailInput"
               type="file"
               name="thumbnailImg"
               accept="image/*"
               onChange={(e) => handleFileChange(e, "thumbnail")}
-              className="text-sm text-gray-600"
+              className="hidden"
             />
 
             {/* 파일 생겼을 때만 표시&삭제 */}
             {thumbnail && (
-              <div className="text-sm flex items-center gap-2">
-                <span>파일: {thumbnail.name} </span>
-                <button
-                  type="button"
-                  onClick={() => handleClearFile("thumbnail")}
-                  className="text-red-500 hover:text-red-600 font-bold"
-                >
-                  X
-                </button>
+              <div className="flex items-center gap-2 bg-gray-50 px-2 py-1 rounded-md">
+                <span className="text-xs text-gray-500 truncate max-w-[120px]">
+                  {thumbnail.name}
+                </span>
+                <div className="text-sm flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => handleClearFile("thumbnail")}
+                    className="text-red-500 hover:text-red-600 font-bold"
+                  >
+                    X
+                  </button>
+                </div>
               </div>
             )}
           </div>
           <div className="flex flex-row items-center gap-3 mb-4">
             <p>배경화면 이미지</p>
+            <label
+              htmlFor="backgroundInput"
+              className="cursor-pointer bg-gray-100 px-3 py-1.5 rounded-md border border-gray-300 text-gray-700 text-sm hover:bg-gray-200 transition"
+            >
+              파일 선택
+            </label>
             <input
+              id="backgroundInput"
               type="file"
               name="backgroundImg"
               accept="image/*"
               onChange={(e) => handleFileChange(e, "background")}
-              className="text-sm text-gray-600"
+              className="hidden"
             />
+
+            {/* 파일 생겼을 때만 표시&삭제 */}
             {background && (
-              <div className="text-sm flex items-center gap-2">
-                <span>파일: {background.name}</span>
-                <button
-                  type="button"
-                  onClick={() => handleClearFile("background")}
-                  className="text-red-500 hover:text-red-600 font-bold"
-                >
-                  X
-                </button>
+              <div className="flex items-center gap-2 bg-gray-50 px-2 py-1 rounded-md">
+                <span className="text-xs text-gray-500 truncate max-w-[120px]">
+                  {background.name}
+                </span>
+                <div className="text-sm flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => handleClearFile("background")}
+                    className="text-red-500 hover:text-red-600 font-bold"
+                  >
+                    X
+                  </button>
+                </div>
               </div>
             )}
           </div>

@@ -41,9 +41,9 @@ export default function OptionScreen({
             sendPCMChunk={sendPCMChunk}
             sendEndStream={sendEndStream}
           />
+          <WebSocketResponse messageData={wsMessage} />
         </div>
       )}
-      <WebSocketResponse messageData={wsMessage} />
 
       <div className="flex items-center">
         {/* 머리머리 */}
@@ -55,15 +55,32 @@ export default function OptionScreen({
 
       {/* 선택지 */}
       <div className="flex flex-wrap justify-center gap-4 p-6 font-shark font-normal text-2xl">
-        {options.map((option, index) => (
-          <OptionButton
-            key={option.id}
-            color={colors[index % colors.length]}
-            onClick={() => onSelect(option)}
-          >
-            {option.label}
-          </OptionButton>
-        ))}
+        {options.map((option, index) => {
+          if (option.type === "image") {
+            return (
+              <OptionButton
+                key={option.id}
+                color={colors[index % colors.length]}
+                onClick={() => onSelect(option)}
+              >
+                <img src={option.label} alt="옵션 미리보기" />
+              </OptionButton>
+            );
+          }
+
+          if (option.type === "text") {
+            return (
+              <OptionButton
+                key={option.id}
+                color={colors[index % colors.length]}
+                onClick={() => onSelect(option)}
+              >
+                {option.label}
+              </OptionButton>
+            );
+          }
+          return null;
+        })}
       </div>
     </div>
   );
