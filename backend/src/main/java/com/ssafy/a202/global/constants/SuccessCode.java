@@ -34,6 +34,11 @@ public enum SuccessCode {
     STUDENT_UPDATE_SUCCESS("학생 정보가 성공적으로 수정되었습니다"),
     STUDENT_DELETE_SUCCESS("학생이 성공적으로 삭제되었습니다"),
 
+    // 대시보드 관련
+    CATEGORY_STATS_SUCCESS("카테고리별 통계 조회가 완료되었습니다"),
+    MONTHLY_SESSION_LIST_SUCCESS("월별 세션 목록 조회가 완료되었습니다"),
+    SESSION_SEQUENCE_STATS_SUCCESS("세션 시퀀스별 통계 조회가 완료되었습니다"),
+
     // 카테고리 관련
     CATEGORY_LIST_SUCCESS("카테고리 목록 조회가 완료되었습니다"),
 

@@ -1,6 +1,7 @@
-package com.ssafy.a202.domain.user.entity;
+package com.ssafy.a202.domain.student.entity;
 
 import com.ssafy.a202.domain.school.entity.School;
+import com.ssafy.a202.domain.user.entity.User;
 import com.ssafy.a202.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;

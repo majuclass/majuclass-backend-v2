@@ -1,4 +1,4 @@
-package com.ssafy.a202.domain.user.dto.request;
+package com.ssafy.a202.domain.student.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;

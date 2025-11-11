@@ -1,7 +1,7 @@
-package com.ssafy.a202.domain.user.repository;
+package com.ssafy.a202.domain.student.repository;
 
 import com.ssafy.a202.domain.school.entity.School;
-import com.ssafy.a202.domain.user.entity.Student;
+import com.ssafy.a202.domain.student.entity.Student;
 import com.ssafy.a202.domain.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
