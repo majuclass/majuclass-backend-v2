@@ -12,6 +12,7 @@ interface SequenceFormProps {
   onPrev: () => void;
 }
 
+
 export default function SequenceForm({ onPrev }: SequenceFormProps) {
   const sequences = useScenarioCreateStore((s) => s.sequences);
   const { addSequence } = useScenarioCreateStore();
@@ -26,6 +27,39 @@ export default function SequenceForm({ onPrev }: SequenceFormProps) {
     const { title, summary, thumbnail, background, categoryId, sequences } =
       useScenarioCreateStore.getState();
 
+    // 구체적인 검증 로직
+    // 1. 카테고리 확인
+    if (!categoryId || categoryId === 0) {
+      alert('카테고리를 선택해주세요.');
+      return;
+    }
+
+    // 2. 각 시퀀스별 검증
+    for (let i = 0; i < sequences.length; i++) {
+      const seq = sequences[i];
+      
+      // 질문 확인
+      if (!seq.question || !seq.question.trim()) {
+        alert(`시퀀스 ${i + 1}번: 질문을 입력해주세요.`);
+        return;
+      }
+
+      // 옵션 확인
+      for (let j = 0; j < seq.options.length; j++) {
+        const opt = seq.options[j];
+        
+        if (!opt.optionText || !opt.optionText.trim()) {
+          alert(`시퀀스 ${i + 1}번, 옵션 ${j + 1}번: 답변 텍스트를 입력해주세요.`);
+          return;
+        }
+        
+        if (!opt.optionS3Key) {
+          alert(`시퀀스 ${i + 1}번, 옵션 ${j + 1}번: 아이콘을 선택해주세요.`);
+          return;
+        }
+      }
+    }
+      
     let thumbnailS3Key: string = "";
     let backgroundS3Key: string = "";
 
@@ -41,15 +75,57 @@ export default function SequenceForm({ onPrev }: SequenceFormProps) {
     } catch (error) {
       console.error(error);
     }
+    // sequences 데이터 정체 추가
+    // 변경: API 스키마에 맞게 필드명 매핑
+    // - sequenceNumber/optionNumber 로 변환
+    // - optionText/optionS3Key는 값이 있을 때만 포함
+    const cleanedSequences = sequences.map((seq, sIdx) => ({
+      seqNo: seq.seqNo ?? sIdx + 1,
+      question: seq.question,
+      options: seq.options.map((opt, oIdx) => ({
+        optionNo: opt.optionNo ?? oIdx + 1,
+        optionText: opt.optionText,
+        optionS3Key: opt.optionS3Key,
+        isAnswer: !!opt.isAnswer,
+      })),
+    }));
 
-    const scenarioData = {
-      title: title,
-      summary: summary,
-      categoryId: categoryId,
-      thumbnailS3Key: thumbnailS3Key,
-      backgroundS3Key: backgroundS3Key,
-      sequences: sequences,
+    // 변경: 최상위 필드 보강 및 선택 필드 조건 포함
+    // - totalSequences 추가
+    // - difficulty 기본값 추가 (TODO: UI에서 선택값으로 대체)
+    // - thumbnail/background 키는 값이 있을 때만 전송
+    // any 사용 금지: 명시적 타입 정의 추가
+    type CreateScenarioPayload = {
+      title: string;
+      summary: string;
+      categoryId: number;
+      // difficulty: "EASY" | "NORMAL" | "HARD";
+      // totalSequences: number;
+      sequences: {
+        seqNo: number;
+        question: string;
+        options: {
+          optionNo: number;
+          isAnswer: boolean;
+          optionText: string;
+          optionS3Key: string;
+        }[];
+      }[];
+      thumbnailS3Key?: string;
+      backgroundS3Key?: string;
     };
+    const scenarioData: CreateScenarioPayload = {
+      title,
+      summary,
+      categoryId,
+      // difficulty: "EASY", // TODO: ScenarioForm에서 난이도 선택값 반영
+      // totalSequences: cleanedSequences.length,
+      sequences: cleanedSequences,
+      ...(thumbnailS3Key && { thumbnailS3Key }), // 조건부 프로퍼티
+      ...(backgroundS3Key && { backgroundS3Key }), // 조건부 프로퍼티
+    };
+    // if (thumbnailS3Key) scenarioData.thumbnailS3Key = thumbnailS3Key;
+    // if (backgroundS3Key) scenarioData.backgroundS3Key = backgroundS3Key;
 
     // const json = JSON.stringify(scenarioData);
     // console.log(json);
@@ -58,11 +134,24 @@ export default function SequenceForm({ onPrev }: SequenceFormProps) {
     // 생성 post
     try {
       const resp = await api.post(`scenarios/create`, scenarioData);
+      // 변경: 요청/응답 로깅 추가
+      console.log("[create-scenario] request payload:", scenarioData);
+      console.log("[create-scenario] response:", resp.status, resp.data);
       if (resp.data.status === "SUCCESS") {
         console.log("생성 성공");
       }
     } catch (error) {
-      console.log(error);
+      // 변경: 에러 상세 로그 (상태/본문/URL)
+      if (axios.isAxiosError(error)) {
+        console.error("[create-scenario] request failed", {
+          status: error.response?.status,
+          data: error.response?.data,
+          url: error.config?.url,
+          method: error.config?.method,
+        });
+      } else {
+        console.error(error);
+      }
     }
   };
 

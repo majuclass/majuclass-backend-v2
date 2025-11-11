@@ -15,7 +15,9 @@ import { create } from "zustand";
 export interface OptionData {
   optionNo?: number;
   optionText: string;
-  optionPic?: File | null;
+  optionPic?: File | null; // 우선 유지
+  optionS3Key: string; // S3 업로드 후 받은 키 저장 추가
+  optionIconUrl?: string // 추가
   isAnswer: boolean;
 }
 
@@ -58,15 +60,15 @@ export const useScenarioCreateStore = create<ScenarioCreateStore>((set) => ({
   summary: "",
   thumbnail: null,
   background: null,
-  categoryId: 0,
+  categoryId: 1,
   totalSequences: 1,
   sequences: [
     {
       seqNo: 1,
       question: "",
       options: [
-        { optionNo: 1, optionText: "", optionPic: null, isAnswer: true },
-        { optionNo: 2, optionText: "", optionPic: null, isAnswer: false },
+        { optionNo: 1, optionText: "", optionPic: null, optionS3Key: "", isAnswer: true },
+        { optionNo: 2, optionText: "", optionPic: null, optionS3Key: "", isAnswer: false },
       ],
     },
   ], // 시퀀스 최소 1개 두고 시작
@@ -79,8 +81,8 @@ export const useScenarioCreateStore = create<ScenarioCreateStore>((set) => ({
     set((state) => {
       const newSeqNum = state.sequences.length + 1;
       const defaultOptions = [
-        { optionNo: 1, optionText: "", optionPic: null, isAnswer: true },
-        { optionNo: 2, optionText: "", optionPic: null, isAnswer: false },
+        { optionNo: 1, optionText: "", optionPic: null, optionS3Key: "", isAnswer: true },
+        { optionNo: 2, optionText: "", optionPic: null, optionS3Key: "", isAnswer: false },
       ];
 
       return {
@@ -111,7 +113,7 @@ export const useScenarioCreateStore = create<ScenarioCreateStore>((set) => ({
       // 번호 재정렬 (sequenceNumber 1부터 다시)
       const resequenced = filtered.map((s, idx) => ({
         ...s,
-        sequenceNumber: idx + 1,
+        seqNo: idx + 1,
       }));
 
       return {
@@ -150,7 +152,7 @@ export const useScenarioCreateStore = create<ScenarioCreateStore>((set) => ({
                 .filter((o) => o.optionNo !== optionNum)
                 .map((o, idx) => ({
                   ...o,
-                  optionNumber: idx + 1, // 번호 다시 붙이기
+                  optionNo: idx + 1, // 번호 다시 붙이기
                 })),
             }
           : s

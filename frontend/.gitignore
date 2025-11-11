@@ -58,3 +58,7 @@ dist-ssr
 
 # mac 
 .DS_Store
+
+# Codex
+AGENTS.md
+tmp_mark.txt
