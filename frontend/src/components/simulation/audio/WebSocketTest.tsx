@@ -189,7 +189,7 @@ export default function AudioRecorder({
   const getPresignedUrl = async (): Promise<{ url: string; s3Key: string }> => {
     const token = localStorage.getItem("accessToken");
     const res = await fetch(
-      `${baseUrl}scenario-sessions/audio-upload-url`,
+      `${baseUrl}/scenario-sessions/audio-upload-url`,
       {
         method: "POST",
         headers: {
