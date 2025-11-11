@@ -5,7 +5,6 @@ import StartPage from "./pages/StartPage";
 import MainPage from "./pages/MainPage";
 import ScenarioListPage from "./pages/ScenarioListPage";
 import SimulationPage from "./pages/SimulationPage";
-import StudentsPage from "./pages/StudentsPage";
 import DashBoardPage from "./pages/DashBoardPage";
 import SelectLevelPage from "./pages/SelectLevelPage";
 import ScenarioCreatePage from "./pages/ScenarioCreatePage";
@@ -35,7 +34,7 @@ export default function App() {
           element={<SimulationPage />}
         />
         {/* 학생 목록 페이지 */}
-        <Route path="/students" element={<StudentsPage />} />
+        {/*<Route path="/students" element={<StudentsPage />} />*/}
         {/* 학생 대시보드 페이지 */}
         <Route path="/students/:id" element={<DashBoardPage />}/>
         {/* 테스트 페이지 */}
