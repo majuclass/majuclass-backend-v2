@@ -7,12 +7,27 @@ import TextButton from "../TextButton";
 import TextInput from "../TextInput";
 import boyHead from "../../assets/scenarios/cinema/cinema-boy-head.png";
 import { useNavigate } from "react-router-dom";
+import api from "../../apis/apiInstance";
+import { useEffect, useState } from "react";
 
 interface ScenarioFormProps {
   onNext: () => void;
 }
 
+type category = {
+  id: number;
+  categoryName: string;
+};
+
+// TODO: 정해지면 매핑 시작
+// const categoryDefaultImg: Record<number, string> = {
+//     1:
+//     2:
+//     3:
+// }
+
 export default function ScenarioForm({ onNext }: ScenarioFormProps) {
+  const [categories, setCategories] = useState<category[]>([]);
   // 리렌더링 방지 위한 selector + shallow pattern
   // TODO: onChange 방식으로 관리 시, 매번 모든 전역스토어 리렌더링 문제?
   // 이렇게 관리하는게 잘한건지 몰르겠슈
@@ -36,6 +51,20 @@ export default function ScenarioForm({ onNext }: ScenarioFormProps) {
     setScenarioInfo({ categoryId: newCategoryId });
   };
 
+  //   TODO: React Query로 전역 caching돌리기
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const resp = await api.get(`categories`);
+        const data = resp.data.data;
+        setCategories(data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchCategories();
+  }, []);
+
   const handleFileChange = (
     e: React.ChangeEvent<HTMLInputElement>,
     fieldName: "thumbnail" | "background"
@@ -53,6 +82,8 @@ export default function ScenarioForm({ onNext }: ScenarioFormProps) {
   //   미리보기
   const thumbnailUrl = thumbnail ? URL.createObjectURL(thumbnail) : null;
 
+  // 카테고리 default image mapping
+
   return (
     <div className="w-full">
       <div className="flex flex-row gap-5">
@@ -61,18 +92,20 @@ export default function ScenarioForm({ onNext }: ScenarioFormProps) {
           <h2 className="text-lg font-bold mb-4">시나리오 정보 입력하기</h2>
 
           <div className="flex items-center gap-3 mb-4">
-            {/* TODO: 카테고리 불러오기*/}
             <p className="w-24 text-md">카테고리</p>
             <select
               name="category"
               id="scenario-category"
-              value={categoryId}
+              value={categoryId ?? ""}
               onChange={handleCategoryChange}
               className="flex-1 border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-pink-300"
             >
-              <option value={1}>카테1</option>
-              <option value={2}>카테2</option>
-              <option value={3}>카테3</option>
+              <option value="">카테고리를 선택하세요</option>
+              {categories.map((cate) => (
+                <option key={cate.id} value={cate.id}>
+                  {cate.categoryName}
+                </option>
+              ))}
             </select>
           </div>
           <div className="space-y-4 mb-4">
