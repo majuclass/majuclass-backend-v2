@@ -44,7 +44,7 @@ class SessionSTTAnswerRepository:
         session_id: int,
         seq_id: int,
         transcribed_text: str,
-        expected_text: str,
+        answer_text: str,
         similarity_score: float,
         is_correct: bool,
         audio_s3_key: Optional[str] = None
@@ -56,7 +56,7 @@ class SessionSTTAnswerRepository:
             session_id: 세션 ID
             seq_id: 시퀀스 ID
             transcribed_text: STT 변환된 텍스트
-            expected_text: 정답 텍스트
+            answer_text: 정답 텍스트
             similarity_score: 유사도 점수 (0.0 ~ 1.0)
             is_correct: 정답 여부
             audio_s3_key: S3 녹음 파일 키 (선택사항)
@@ -77,7 +77,7 @@ class SessionSTTAnswerRepository:
                 seq_id=seq_id,
                 audio_s3_key=audio_s3_key,
                 transcribed_text=transcribed_text,
-                expected_text=expected_text,
+                answer_text=answer_text,
                 similarity_score=similarity_score,
                 is_correct=is_correct,
                 attempt_no=attempt_no
