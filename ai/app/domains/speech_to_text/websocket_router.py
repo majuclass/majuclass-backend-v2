@@ -23,7 +23,7 @@ router = APIRouter(prefix="/ws", tags=["WebSocket STT"])
 # 환경 변수
 SECRET_KEY = os.getenv("JWT_SECRET")
 ALGORITHM = "HS256"
-CHUNK_DURATION = float(os.getenv("WS_CHUNK_DURATION", "1.0"))
+CHUNK_DURATION = 3.0
 SIMILARITY_THRESHOLD = float(os.getenv("SIMILARITY_THRESHOLD", "0.7"))
 
 
@@ -148,7 +148,7 @@ async def websocket_stt_endpoint(
         # 4. 시퀀스 ID 및 정답 조회
         try:
             seq_id = await session_repo.get_seq_id(scenario_id, seq_no)
-            expected_text = await session_repo.get_answer_text(seq_id)
+            answer_text = await session_repo.get_answer_text(seq_id)
             print(f"[WebSocket] 정답 조회 완료: seq_id={seq_id}")
         except SequenceNotFoundError as e:
             await websocket.send_json({
@@ -222,11 +222,11 @@ async def websocket_stt_endpoint(
                     full_transcript = full_transcript.strip()
 
                     print(f"[WebSocket] 전체 텍스트: {full_transcript}")
-                    print(f"[WebSocket] 정답 텍스트: {expected_text}")
+                    print(f"[WebSocket] 정답 텍스트: {answer_text}")
 
                     # 텍스트 정규화
                     normalized_user = streaming_stt.normalize_text(full_transcript)
-                    normalized_expected = streaming_stt.normalize_text(expected_text)
+                    normalized_expected = streaming_stt.normalize_text(answer_text)
 
                     # 유사도 계산
                     similarity = similarity_service.calculate_similarity(
@@ -246,7 +246,7 @@ async def websocket_stt_endpoint(
                         session_id=session_id,
                         seq_id=seq_id,
                         transcribed_text=full_transcript,
-                        expected_text=expected_text,
+                        answer_text=answer_text,
                         similarity_score=float(similarity),
                         is_correct=is_correct,
                         audio_s3_key=audio_s3_key
@@ -259,7 +259,7 @@ async def websocket_stt_endpoint(
                         "type": "final_result",
                         "session_stt_answer_id": saved_answer.id,
                         "transcribed_text": full_transcript,
-                        "answer_text": expected_text,
+                        "answer_text": answer_text,
                         "similarity_score": float(similarity),
                         "is_correct": is_correct,
                         "attempt_no": saved_answer.attempt_no
