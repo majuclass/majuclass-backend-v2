@@ -6,6 +6,7 @@ import Lottie from "lottie-react";
 import micRecording from "../../../assets/scenarios/animations/recording.json";
 import startrecord from "../../../assets/scenarios/animations/start-record.json";
 
+
 type AudioRecorderProps = {
   sessionId: number;
   sequenceNumber: number;
@@ -28,6 +29,7 @@ export default function AudioRecorder({
   const pcmRef = useRef<Int16Array[]>([]);
   const streamRef = useRef<MediaStream | null>(null);
   const SAMPLE_RATE = 16000;
+  const baseUrl = import.meta.env.VITE_BASE_API_URL;
 
   // AudioWorklet 준비
   useEffect(() => {
@@ -187,7 +189,7 @@ export default function AudioRecorder({
   const getPresignedUrl = async (): Promise<{ url: string; s3Key: string }> => {
     const token = localStorage.getItem("accessToken");
     const res = await fetch(
-      "http://k13a202.p.ssafy.io:8080/api/scenario-sessions/audio-upload-url",
+      `${baseUrl}scenario-sessions/audio-upload-url`,
       {
         method: "POST",
         headers: {
