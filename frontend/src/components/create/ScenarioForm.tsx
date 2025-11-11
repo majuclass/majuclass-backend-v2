@@ -33,6 +33,7 @@ const fetchCategory = async () => {
 };
 
 export default function ScenarioForm({ onNext }: ScenarioFormProps) {
+  // category에 tanstack query 작성
   const {
     data: categories,
     isLoading,
@@ -148,47 +149,71 @@ export default function ScenarioForm({ onNext }: ScenarioFormProps) {
           </div>
           <div className="flex items-center gap-3 mb-3">
             <p>썸네일 이미지</p>
+            <label
+              htmlFor="thumbnailInput"
+              className="cursor-pointer bg-gray-100 px-3 py-1.5 rounded-md border border-gray-300 text-gray-700 text-sm hover:bg-gray-200 transition"
+            >
+              파일 선택
+            </label>
             <input
+              id="thumbnailInput"
               type="file"
               name="thumbnailImg"
               accept="image/*"
               onChange={(e) => handleFileChange(e, "thumbnail")}
-              className="text-sm text-gray-600"
+              className="hidden"
             />
 
             {/* 파일 생겼을 때만 표시&삭제 */}
             {thumbnail && (
-              <div className="text-sm flex items-center gap-2">
-                <span>파일: {thumbnail.name} </span>
-                <button
-                  type="button"
-                  onClick={() => handleClearFile("thumbnail")}
-                  className="text-red-500 hover:text-red-600 font-bold"
-                >
-                  X
-                </button>
+              <div className="flex items-center gap-2 bg-gray-50 px-2 py-1 rounded-md">
+                <span className="text-xs text-gray-500 truncate max-w-[120px]">
+                  {thumbnail.name}
+                </span>
+                <div className="text-sm flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => handleClearFile("thumbnail")}
+                    className="text-red-500 hover:text-red-600 font-bold"
+                  >
+                    X
+                  </button>
+                </div>
               </div>
             )}
           </div>
           <div className="flex flex-row items-center gap-3 mb-4">
             <p>배경화면 이미지</p>
+            <label
+              htmlFor="backgroundInput"
+              className="cursor-pointer bg-gray-100 px-3 py-1.5 rounded-md border border-gray-300 text-gray-700 text-sm hover:bg-gray-200 transition"
+            >
+              파일 선택
+            </label>
             <input
+              id="backgroundInput"
               type="file"
               name="backgroundImg"
               accept="image/*"
               onChange={(e) => handleFileChange(e, "background")}
-              className="text-sm text-gray-600"
+              className="hidden"
             />
+
+            {/* 파일 생겼을 때만 표시&삭제 */}
             {background && (
-              <div className="text-sm flex items-center gap-2">
-                <span>파일: {background.name}</span>
-                <button
-                  type="button"
-                  onClick={() => handleClearFile("background")}
-                  className="text-red-500 hover:text-red-600 font-bold"
-                >
-                  X
-                </button>
+              <div className="flex items-center gap-2 bg-gray-50 px-2 py-1 rounded-md">
+                <span className="text-xs text-gray-500 truncate max-w-[120px]">
+                  {background.name}
+                </span>
+                <div className="text-sm flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => handleClearFile("background")}
+                    className="text-red-500 hover:text-red-600 font-bold"
+                  >
+                    X
+                  </button>
+                </div>
               </div>
             )}
           </div>
