@@ -23,7 +23,7 @@ router = APIRouter(prefix="/ws", tags=["WebSocket STT"])
 # 환경 변수
 SECRET_KEY = os.getenv("JWT_SECRET")
 ALGORITHM = "HS256"
-CHUNK_DURATION = 3.0
+CHUNK_DURATION = 5.0
 SIMILARITY_THRESHOLD = float(os.getenv("SIMILARITY_THRESHOLD", "0.7"))
 
 
