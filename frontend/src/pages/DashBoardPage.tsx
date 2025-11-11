@@ -1,174 +1,238 @@
-// src/pages/(MainPage)/StudentDashboardPage.tsx
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import NavBar from "../components/NavBar";
+import React, { useState,  } from 'react'; // useEffect, useRef
+import NavBar from '../components/NavBar';
+import '../styles/DashBoardPage.css'
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
+import { Doughnut } from 'react-chartjs-2';
 
-type Student = {
+ChartJS.register(ArcElement, Tooltip, Legend);
+
+interface Student {
   id: number;
   name: string;
-  grade?: string;
-  note?: string;
-  joinedAt: string;
-};
+  grade: string;
+  scenarios: {
+    name: string;
+    difficulty: string;
+    status: 'completed' | 'in-progress' | 'not-started';
+  }[];
+}
 
-type ScenarioRecord = {
-  id: number;
-  title: string;
-  date: string;
-  score: number;
-  feedback?: string;
-};
+const StudentDashboard: React.FC = () => {
+  const [students] = useState<Student[]>([
+    {
+      id: 1,
+      name: '김가람',
+      grade: '초3',
+      scenarios: [
+        { name: '시나리오 1', difficulty: '하', status: 'completed' },
+        { name: '시나리오 2', difficulty: '중', status: 'completed' },
+        { name: '시나리오 3', difficulty: '상', status: 'in-progress' },
+      ]
+    },
+    {
+      id: 2,
+      name: '박도윤',
+      grade: '중1',
+      scenarios: [
+        { name: '시나리오 1', difficulty: '하', status: 'completed' },
+        { name: '시나리오 2', difficulty: '중', status: 'not-started' },
+        { name: '시나리오 3', difficulty: '상', status: 'not-started' },
+      ]
+    },
+    {
+      id: 3,
+      name: '어서준',
+      grade: '고1',
+      scenarios: [
+        { name: '시나리오 1', difficulty: '하', status: 'not-started' },
+        { name: '시나리오 2', difficulty: '중', status: 'not-started' },
+        { name: '시나리오 3', difficulty: '상', status: 'not-started' },
+      ]
+    },
+  ]);
 
-export default function StudentDashboardPage() {
-  const { id } = useParams<{ id: string }>();
-  const [student, setStudent] = useState<Student | null>(null);
-  const [records, setRecords] = useState<ScenarioRecord[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [selectedStudent, setSelectedStudent] = useState<Student | null>(students[0]);
+  const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
+  const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
 
-  useEffect(() => {
-    // 실제 API 연결 전 Mock
-    const mockStudent: Student = {
-      id: Number(id),
-      name: "김가람",
-      grade: "초3",
-      note: "시각자료 선호",
-      joinedAt: "2025-10-15",
+  const handleStudentSelect = (student: Student) => {
+    setSelectedStudent(student);
+  };
+
+  const handlePrevMonth = () => {
+    if (currentMonth === 0) {
+      setCurrentMonth(11);
+      setCurrentYear(currentYear - 1);
+    } else {
+      setCurrentMonth(currentMonth - 1);
+    }
+  };
+
+  const handleNextMonth = () => {
+    if (currentMonth === 11) {
+      setCurrentMonth(0);
+      setCurrentYear(currentYear + 1);
+    } else {
+      setCurrentMonth(currentMonth + 1);
+    }
+  };
+
+  // Chart 데이터
+  const getChartData = () => {
+    if (!selectedStudent) return null;
+
+    const completed = selectedStudent.scenarios.filter(s => s.status === 'completed').length;
+    const inProgress = selectedStudent.scenarios.filter(s => s.status === 'in-progress').length;
+    const notStarted = selectedStudent.scenarios.filter(s => s.status === 'not-started').length;
+
+    return {
+      labels: ['카페', '영화관', '식당'],
+      datasets: [
+        {
+          data: [completed, inProgress, notStarted],
+          backgroundColor: [
+            'rgba(99, 179, 237, 0.6)',
+            'rgba(255, 223, 138, 0.6)',
+            'rgba(220, 220, 220, 0.6)',
+          ],
+          borderColor: [
+            'rgba(99, 179, 237, 1)',
+            'rgba(255, 223, 138, 1)',
+            'rgba(220, 220, 220, 1)',
+          ],
+          borderWidth: 2,
+        },
+      ],
     };
+  };
 
-    const mockRecords: ScenarioRecord[] = [
-      {
-        id: 1,
-        title: "영화 티켓 구매하기",
-        date: "2025-10-25",
-        score: 92,
-        feedback: "대화 응답이 자연스러웠습니다.",
+  const chartOptions = {
+    responsive: true,
+    maintainAspectRatio: true,
+    plugins: {
+      legend: {
+        position: 'bottom' as const,
+        labels: {
+          padding: 20,
+          font: {
+            size: 14,
+            family: "'Pretendard', sans-serif",
+          },
+        },
       },
-      {
-        id: 2,
-        title: "카페에서 주문하기",
-        date: "2025-10-26",
-        score: 87,
-        feedback: "발음이 다소 불분명하지만, 주문 순서가 정확했습니다.",
+      tooltip: {
+        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        padding: 12,
+        titleFont: {
+          size: 14,
+        },
+        bodyFont: {
+          size: 13,
+        },
       },
-      {
-        id: 3,
-        title: "횡단보도 건너기",
-        date: "2025-10-27",
-        score: 95,
-        feedback: "상황 인식과 반응 속도가 좋았습니다.",
-      },
-    ];
+    },
+  };
 
-    setTimeout(() => {
-      setStudent(mockStudent);
-      setRecords(mockRecords);
-      setLoading(false);
-    }, 400);
-  }, [id]);
+  // 캘린더 생성
+  const renderCalendar = () => {
+    const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+    const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+    const today = new Date();
+    
+    const days = [];
+    const weekDays = ['일', '월', '화', '수', '목', '금', '토'];
 
-  if (loading || !student) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50 text-gray-500">
-        로딩 중...
-      </div>
-    );
-  }
+    // 요일 헤더
+    weekDays.forEach(day => {
+      days.push(
+        <div key={`header-${day}`} className="calendar-day-header">
+          {day}
+        </div>
+      );
+    });
+
+    // 빈 칸
+    for (let i = 0; i < firstDay; i++) {
+      days.push(<div key={`empty-${i}`} className="calendar-day empty"></div>);
+    }
+
+    // 날짜
+    for (let day = 1; day <= daysInMonth; day++) {
+      const isToday = 
+        today.getDate() === day &&
+        today.getMonth() === currentMonth &&
+        today.getFullYear() === currentYear;
+      
+      days.push(
+        <div key={`day-${day}`} className={`calendar-day ${isToday ? 'today' : ''}`}>
+          <span className="day-number">{day}</span>
+        </div>
+      );
+    }
+
+    return days;
+  };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="student-dashboard">
       <NavBar />
-      <div className="mx-auto max-w-6xl px-4 py-6">
-        <div className="mb-6 flex items-center justify-between">
-          <h1 className="text-2xl font-semibold">{student.name} 학생 대시보드</h1>
-          <button
-            onClick={() => history.back()}
-            className="rounded-xl border px-3 py-1 text-sm text-gray-600 hover:bg-gray-100"
-          >
-            ← 목록으로
-          </button>
+      
+      <div className="dashboard-content">
+        <div className="student-list-section">
+          <div className="section-header">
+            <h2>학생 목록</h2>
+            <span className="student-count">이름/학년 검색</span>
+          </div>
+          
+          <div className="student-list">
+            {students.map((student) => (
+              <div
+                key={student.id}
+                className={`student-item ${selectedStudent?.id === student.id ? 'active' : ''}`}
+                onClick={() => handleStudentSelect(student)}
+              >
+                <div className="student-info">
+                  <span className="student-name">{student.name}</span>
+                  <span className="student-grade">{student.grade}</span>
+                </div>
+                <button className="view-button">보기</button>
+              </div>
+            ))}
+          </div>
         </div>
 
-        {/* ✅ 기본 정보 카드 */}
-        <section className="mb-6 rounded-2xl border bg-white p-5 shadow-sm">
-          <h2 className="mb-3 text-lg font-semibold">기본 정보</h2>
-          <div className="grid grid-cols-2 gap-3 text-sm">
-            <div>
-              <p className="text-gray-500">이름</p>
-              <p className="font-medium">{student.name}</p>
+        <div className="student-detail-section">
+          <div className="top-cards">
+            <div className="detail-card activity-summary-card">
+              <h3 className="card-title">(학생 이름) 활동</h3>
+              <div className="chart-container">
+                {selectedStudent && getChartData() && (
+                  <Doughnut data={getChartData()!} options={chartOptions} />
+                )}
+              </div>
             </div>
-            <div>
-              <p className="text-gray-500">학년/반</p>
-              <p className="font-medium">{student.grade ?? "-"}</p>
-            </div>
-            <div>
-              <p className="text-gray-500">비고</p>
-              <p className="font-medium">{student.note ?? "-"}</p>
-            </div>
-            <div>
-              <p className="text-gray-500">등록일</p>
-              <p className="font-medium">{student.joinedAt}</p>
-            </div>
-          </div>
-        </section>
 
-        {/* ✅ 학습 요약 */}
-        <section className="mb-6 rounded-2xl border bg-white p-5 shadow-sm">
-          <h2 className="mb-4 text-lg font-semibold">학습 요약</h2>
-          <div className="grid grid-cols-3 gap-4 text-center">
-            <div className="rounded-xl bg-blue-50 p-4">
-              <p className="text-sm text-gray-600">총 참여 시나리오</p>
-              <p className="text-2xl font-bold text-blue-600">{records.length}</p>
-            </div>
-            <div className="rounded-xl bg-green-50 p-4">
-              <p className="text-sm text-gray-600">평균 점수</p>
-              <p className="text-2xl font-bold text-green-600">
-                {records.length
-                  ? Math.round(
-                      records.reduce((a, b) => a + b.score, 0) / records.length
-                    )
-                  : "-"}
-              </p>
-            </div>
-            <div className="rounded-xl bg-yellow-50 p-4">
-              <p className="text-sm text-gray-600">최근 학습일</p>
-              <p className="text-2xl font-bold text-yellow-600">
-                {records[0]?.date ?? "-"}
-              </p>
+            <div className="detail-card calendar-card">
+              <div className="calendar-header">
+                <button className="calendar-nav-btn" onClick={handlePrevMonth}>←</button>
+                <h3 className="calendar-title">{currentMonth + 1}월</h3>
+                <button className="calendar-nav-btn" onClick={handleNextMonth}>→</button>
+              </div>
+              <div className="calendar-grid">
+                {renderCalendar()}
+              </div>
             </div>
           </div>
-        </section>
 
-        {/* ✅ 시나리오 기록 */}
-        <section className="rounded-2xl border bg-white p-5 shadow-sm">
-          <h2 className="mb-3 text-lg font-semibold">시나리오 학습 기록</h2>
-          <div className="overflow-hidden rounded-xl border">
-            <table className="min-w-full divide-y text-sm">
-              <thead className="bg-gray-50">
-                <tr className="text-left text-gray-600">
-                  <th className="px-4 py-2">시나리오명</th>
-                  <th className="px-4 py-2">날짜</th>
-                  <th className="px-4 py-2">점수</th>
-                  <th className="px-4 py-2">피드백</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y bg-white">
-                {records.map((r) => (
-                  <tr key={r.id} className="hover:bg-gray-50">
-                    <td className="px-4 py-2 font-medium">{r.title}</td>
-                    <td className="px-4 py-2">{r.date}</td>
-                    <td className="px-4 py-2 text-blue-600 font-semibold">
-                      {r.score}
-                    </td>
-                    <td className="px-4 py-2 text-gray-700">
-                      {r.feedback ?? "-"}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="detail-card activity-card">
+            <h3 className="card-title">
+              카테고리 별 해당 학생이 챗한 시뮬레이션 들을 상세보기 눌르면 해당 시나리오 질문과 정답을 텍스트로 볼 수 있음
+            </h3>
           </div>
-        </section>
+        </div>
       </div>
     </div>
   );
-}
+};
+
+export default StudentDashboard;

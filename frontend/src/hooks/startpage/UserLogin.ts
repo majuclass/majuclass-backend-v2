@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-// src/pages/(StartPage)/hooks/userlogin.ts
+// src/hooks/startpage/UserLogin.ts
 import { useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { login as loginApi } from "../../apis/startpageApi"

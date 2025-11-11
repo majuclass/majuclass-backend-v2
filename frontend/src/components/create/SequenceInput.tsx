@@ -7,6 +7,9 @@ import {
 import boyHead from "../../assets/scenarios/cinema/cinema-boy-head.png";
 import axios from "axios";
 import api from "../../apis/apiInstance";
+import PictogramPopover from "../PictogramPopover"; // 픽토그램 추가
+import type { PictogramItem } from "../PictogramPopover"; // type import 분리
+import { useRef, useState } from "react"; // react 추가
 
 interface SequenceInputProps {
   activeSeq: SequenceData;
@@ -20,6 +23,10 @@ export default function SequenceInput({ activeSeq }: SequenceInputProps) {
 
   const addOption = useScenarioCreateStore((s) => s.addOption);
   const updateSequence = useScenarioCreateStore((s) => s.updateSequence);
+
+  // 팝오버 상태 관리 추가
+  const [openPopoverIndex, setOpenPopoverIndex] = useState<number | null>(null);
+  const buttonRefs = useRef<{ [key: number]: HTMLButtonElement | null }>({});
 
   if (!activeSequenceData) return null;
 
@@ -36,12 +43,64 @@ export default function SequenceInput({ activeSeq }: SequenceInputProps) {
     });
   };
 
+  // Pictogram 선택 핸들러 추가
+  const handlePictogramSelect = async (idx: number, item: PictogramItem) => {
+    console.log("선택된 아이콘:", item);
+
+    // 1. 미리보기 즉시 표시
+    const updated = options.map((opt, i) =>
+      i === idx ? { ...opt, optionIconUrl: item.src } : opt
+    );
+    updateSequence(activeSequenceData.seqNo!, { options: updated });
+
+    // 2. 모든 경우에 S3 업로드 (blob이든 정적 이미지든)
+    try {
+      let file: File;
+      
+      if (item.src.startsWith("blob:")) {
+        // blob URL인 경우
+        const response = await fetch(item.src);
+        const blob = await response.blob();
+        file = new File([blob], item.name, { type: blob.type });
+      } else {
+        // 정적 이미지도 fetch해서 File로 변환
+        const response = await fetch(item.src);
+        const blob = await response.blob();
+        file = new File([blob], item.name || 'icon.png', { type: blob.type || 'image/png' });
+      }
+      
+      const s3Key = await handleUpload(file, "OPTION");
+
+      // 3. S3 키 업데이트
+      // const finalUpdated = options.map((opt, i) =>
+      //   i === idx ? { ...opt, optionS3Key: s3Key } : opt
+      // );
+
+      const currentSequence = useScenarioCreateStore.getState().sequences.find(
+        s => s.seqNo === activeSequenceData.seqNo
+      );
+
+      const finalUpdated = currentSequence!.options.map((opt, i) =>
+        i === idx ? { ...opt, optionS3Key: s3Key } : opt
+      );
+
+      updateSequence(activeSequenceData.seqNo!, { options: finalUpdated });
+      console.log("S3 업로드 완료:", s3Key);
+    } catch (error) {
+      console.error("S3 업로드 실패:", error);
+      alert("이미지 업로드에 실패했습니다.");
+    }
+
+    setOpenPopoverIndex(null);
+  };
+
   const handleAddOption = () => {
     if (options.length >= 4) return;
 
     const newOption = {
-      optionNumber: options.length + 1,
+      optionNo: options.length + 1,
       optionText: "",
+      optionS3Key:"",
       isAnswer: false,
     };
 
@@ -69,47 +128,47 @@ export default function SequenceInput({ activeSeq }: SequenceInputProps) {
       console.error(error);
     }
   };
+  // // 위의 함수와 중복
+  // const handleIconUpload = async (
+  //   e: React.ChangeEvent<HTMLInputElement>,
+  //   idx: number
+  // ) => {
+  //   const file = e.target.files?.[0];
+  //   if (!file) return;
 
-  const handleIconUpload = async (
-    e: React.ChangeEvent<HTMLInputElement>,
-    idx: number
-  ) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  //   const previewUrl = URL.createObjectURL(file);
 
-    const previewUrl = URL.createObjectURL(file);
+  //   const updated = options.map((opt, i) =>
+  //     i === idx ? { ...opt, previewUrl } : opt
+  //   );
 
-    const updated = options.map((opt, i) =>
-      i === idx ? { ...opt, previewUrl } : opt
-    );
+  //   updateSequence(activeSequenceData.seqNo!, {
+  //     options: updated,
+  //   });
 
-    updateSequence(activeSequenceData.seqNo!, {
-      options: updated,
-    });
+  //   // s3 업로드 비동기로 시도
+  //   try {
+  //     const s3Key = await handleUpload(file, "OPTION");
 
-    // s3 업로드 비동기로 시도
-    try {
-      const s3Key = await handleUpload(file, "OPTION");
+  //     const cleanedUpdated = options.map((opt, i) =>
+  //       i === idx
+  //         ? {
+  //             optionNo: opt.optionNo,
+  //             optionText: opt.optionText,
+  //             optionS3Key: s3Key,
+  //             isAnswer: opt.isAnswer,
+  //             //   previewUrl, // UI 표시용 (보내지는 않음)
+  //           }
+  //         : opt
+  //     );
 
-      const cleanedUpdated = options.map((opt, i) =>
-        i === idx
-          ? {
-              optionNo: opt.optionNo,
-              optionText: opt.optionText,
-              optionS3Key: s3Key,
-              isAnswer: opt.isAnswer,
-              //   previewUrl, // UI 표시용 (보내지는 않음)
-            }
-          : opt
-      );
-
-      updateSequence(activeSequenceData.seqNo!, { options: cleanedUpdated });
-      console.log("업로드 완료: " + options);
-      console.log("업로드 완료" + s3Key);
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  //     updateSequence(activeSequenceData.seqNo!, { options: cleanedUpdated });
+  //     console.log("업로드 완료: " + options);
+  //     console.log("업로드 완료" + s3Key);
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
 
   return (
     <div className="flex flex-col bg-pink-50 rounded-2xl p-6 shadow-sm">
@@ -163,17 +222,17 @@ export default function SequenceInput({ activeSeq }: SequenceInputProps) {
                 />
 
                 {/* 아이콘 미리보기 */}
-                {/* <div className="flex items-center justify-center w-32 h-32 bg-white rounded-xl border border-gray-200 overflow-hidden">
-                  {option.icon ? (
+                <div className="flex items-center justify-center w-32 h-32 bg-white rounded-xl border border-gray-200 overflow-hidden">
+                  {option.optionIconUrl ? ( // icon -> optionIconUrl으로 수정
                     <img
-                      src={option.icon}
+                      src={option.optionIconUrl} // icon -> optionIconUrl으로 수정
                       alt="아이콘 미리보기"
                       className="object-contain w-full h-full"
                     />
                   ) : (
                     <span className="text-gray-400 text-sm">이미지 없음</span>
                   )}
-                </div> */}
+                </div>
 
                 {/* TODO: option pic 미리보기 전역에 추가 */}
                 {/* <div className="flex items-center justify-center w-32 h-32 bg-white rounded-xl border border-gray-200 overflow-hidden">
@@ -190,8 +249,10 @@ export default function SequenceInput({ activeSeq }: SequenceInputProps) {
 
                 {/* 아이콘 업로드 + 답변 입력 */}
                 <div className="flex flex-col flex-1 gap-2 bg-white rounded-xl p-3 border border-gray-200">
+                  
+                  {/* 임시 삭제 */}
                   {/* 파일 업로드 */}
-                  <label className="flex items-center justify-between px-3 py-2 border border-gray-300 rounded-lg cursor-pointer hover:bg-pink-50 transition">
+                  {/* <label className="flex items-center justify-between px-3 py-2 border border-gray-300 rounded-lg cursor-pointer hover:bg-pink-50 transition">
                     <span className="font-medium">아이콘</span>
                     <input
                       type="file"
@@ -200,7 +261,28 @@ export default function SequenceInput({ activeSeq }: SequenceInputProps) {
                       onChange={(e) => handleIconUpload(e, idx)}
                     />
                     <span className="text-sm text-gray-500">파일 선택</span>
-                  </label>
+                  </label> */}
+                  {/* 임시 삭제 */}
+                  
+                  {/* 팝오버 트리거 버튼 추가*/}
+                  <button
+                    ref={(el) => {
+                      buttonRefs.current[idx] = el; // ref 수정
+                    }} 
+                    onClick={() => setOpenPopoverIndex(idx)}
+                    className="flex items-center justify-between px-3 py-2 border border-gray-300 rounded-lg hover:bg-pink-50 transition"
+                  >
+                    <span className="font-medium">아이콘</span>
+                    <span className="text-sm text-gray-500">파일 선택</span>
+                  </button>
+
+                  {/* Pictogram Popover */}
+                  <PictogramPopover
+                    open={openPopoverIndex === idx}
+                    onClose={() => setOpenPopoverIndex(null)}
+                    onSelect={(item) => handlePictogramSelect(idx, item)}
+                    anchorRef={{ current: buttonRefs.current[idx] || null }} // || null 추가
+                  />
 
                   {/* 답변 입력 */}
                   <div className="flex items-center justify-between px-3 py-2 border border-gray-300 rounded-lg">
