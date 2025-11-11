@@ -2,17 +2,23 @@
 
 import { useEffect, useRef, useState } from "react";
 import "./AudioRecordingButton.css";
-
 import Lottie from "lottie-react";
 import micRecording from "../../../assets/scenarios/animations/recording.json";
 import startrecord from "../../../assets/scenarios/animations/start-record.json";
 
-type Record = {
-  sessionId: number; // 시나리오 세션 ID
-  sequenceNumber: number; // 현재 시퀀스 번호
+type AudioRecorderProps = {
+  sessionId: number;
+  sequenceNumber: number;
+  sendPCMChunk?: (data: string) => void;
+  sendEndStream?: (audioS3Key: string, seq: number) => void;
 };
 
-export default function Record({ sessionId, sequenceNumber }: Record) {
+export default function AudioRecorder({
+  sessionId,
+  sequenceNumber,
+  sendPCMChunk,
+  sendEndStream,
+}: AudioRecorderProps) {
   const [isRecording, setIsRecording] = useState(false);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
   const [ready, setReady] = useState(false);
@@ -21,17 +27,15 @@ export default function Record({ sessionId, sequenceNumber }: Record) {
   const workletRef = useRef<AudioWorkletNode | null>(null);
   const pcmRef = useRef<Int16Array[]>([]);
   const streamRef = useRef<MediaStream | null>(null);
-
   const SAMPLE_RATE = 16000;
 
-  // AudioWorklet 모듈
+  // AudioWorklet 준비
   useEffect(() => {
     const prepare = async () => {
       try {
         const ctx = new AudioContext({ sampleRate: SAMPLE_RATE });
         await ctx.audioWorklet.addModule("/pcm16-processor.js");
-        // AudioWorklet만의 개별 Thread 생성 시점
-        await ctx.close(); // 초기 등록만 하고 닫기
+        await ctx.close();
         setReady(true);
       } catch (err) {
         console.error("AudioWorklet 등록 실패:", err);
@@ -47,40 +51,44 @@ export default function Record({ sessionId, sequenceNumber }: Record) {
       return;
     }
 
-    // 이전 세션 정리
     await audioCtxRef.current?.close();
     audioCtxRef.current = null;
     workletRef.current = null;
     pcmRef.current = [];
     streamRef.current = null;
 
-    // 새 AudioContext 생성
     const ctx = new AudioContext({ sampleRate: SAMPLE_RATE });
     await ctx.audioWorklet.addModule("/pcm16-processor.js");
     audioCtxRef.current = ctx;
 
-    // 마이크 접근
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     streamRef.current = stream;
     const source = ctx.createMediaStreamSource(stream);
 
-    // WorkletNode 생성
     const node = new AudioWorkletNode(ctx, "pcm16-processor");
     workletRef.current = node;
 
-    // PCM 데이터 수집
+    // let chunkCount = 0;
     node.port.onmessage = (audioMessage) => {
-      const float32 = audioMessage.data as Float32Array;
+      const buffer = audioMessage.data as ArrayBuffer;
+      const float32 = new Float32Array(buffer);
+
       const pcm16 = new Int16Array(float32.length);
-      const float32len = float32.length;
-      for (let i = 0; i < float32len; i++) {
-        const sample = Math.max(-1, Math.min(1, float32[i]));
-        pcm16[i] =
-          sample < 0
-            ? Math.round(sample * 0x8000)
-            : Math.round(sample * 0x7fff);
+      for (let i = 0; i < float32.length; i++) {
+        const s = Math.max(-1, Math.min(1, float32[i]));
+        pcm16[i] = s < 0 ? s * 0x8000 : s * 0x7fff;
       }
       pcmRef.current.push(pcm16);
+
+      const uint8 = new Uint8Array(pcm16.buffer);
+      let binary = "";
+      for (let i = 0; i < uint8.length; i++)
+        binary += String.fromCharCode(uint8[i]);
+      const base64 = btoa(binary);
+
+      //   chunkCount++;
+      if (sendPCMChunk) sendPCMChunk(base64);
+      else console.warn("sendPCMChunk 없음 → 청크 전송 불가!");
     };
 
     source.connect(node);
@@ -92,33 +100,38 @@ export default function Record({ sessionId, sequenceNumber }: Record) {
     const ctx = audioCtxRef.current;
     const node = workletRef.current;
     const stream = streamRef.current;
-    if (!ctx || !node) return;
+    if (!ctx || !node) {
+      console.warn("stop() 시점에 AudioContext 또는 Worklet 없음");
+      return;
+    }
 
-    // 연결 해제
     node.port.onmessage = null;
     node.disconnect();
 
-    // 스트림 중지
     stream?.getTracks().forEach((t) => t.stop());
     streamRef.current = null;
 
-    // WAV 파일 변환
     const wav = makeWav(pcmRef.current, SAMPLE_RATE);
     const url = URL.createObjectURL(wav);
     setAudioUrl(url);
     setIsRecording(false);
 
     try {
-      await uploadToS3(wav);
+      const s3Key = await uploadToS3(wav);
+      console.log(`업로드 성공: ${s3Key}`);
+      if (sendEndStream) {
+        console.log(`end_stream 전송 (seq=${sequenceNumber})`);
+        sendEndStream(s3Key, sequenceNumber);
+      } else {
+        console.warn("sendEndStream 없음 → end_stream 전송 불가");
+      }
     } catch (err) {
       console.error("업로드 실패:", err);
     }
 
-    // 정리
     pcmRef.current = [];
     workletRef.current = null;
 
-    // AudioContext 닫기
     await ctx.close();
     audioCtxRef.current = null;
   };
@@ -130,8 +143,7 @@ export default function Record({ sessionId, sequenceNumber }: Record) {
     const view = new DataView(buffer);
 
     const writeStr = (off: number, str: string) => {
-      const strlen = str.length;
-      for (let i = 0; i < strlen; i++)
+      for (let i = 0; i < str.length; i++)
         view.setUint8(off + i, str.charCodeAt(i));
     };
 
@@ -172,8 +184,7 @@ export default function Record({ sessionId, sequenceNumber }: Record) {
     return new Blob([buffer], { type: "audio/wav" });
   };
 
-  // Presigned URL 요청
-  const getPresignedUrl = async (): Promise<string> => {
+  const getPresignedUrl = async (): Promise<{ url: string; s3Key: string }> => {
     const token = localStorage.getItem("accessToken");
     const res = await fetch(
       "http://k13a202.p.ssafy.io:8080/api/scenario-sessions/audio-upload-url",
@@ -195,20 +206,11 @@ export default function Record({ sessionId, sequenceNumber }: Record) {
     const json = await res.json();
     const presignedUrl = json?.data?.presignedUrl;
     const s3Key = json?.data?.s3Key;
-    console.log("Presigned URL 발급 성공:", presignedUrl);
-    console.log("파일 경로:", s3Key);
-    return json.data.presignedUrl;
+    return { url: presignedUrl, s3Key };
   };
 
-  // S3 업로드 함수
-  const uploadToS3 = async (wavBlob: Blob) => {
-    const url = await getPresignedUrl();
-    console.log("Presigned URL:", url);
-    console.log(
-      "Signed Headers:",
-      url.includes("SignedHeaders=content-type") ? "YES" : "NO"
-    );
-
+  const uploadToS3 = async (wavBlob: Blob): Promise<string> => {
+    const { url, s3Key } = await getPresignedUrl();
     const res = await fetch(url, {
       method: "PUT",
       headers: { "Content-Type": "audio/wav" },
@@ -216,7 +218,7 @@ export default function Record({ sessionId, sequenceNumber }: Record) {
     });
 
     if (!res.ok) throw new Error(`S3 업로드 실패 (${res.status})`);
-    console.log("S3 업로드 성공:", url.split("?")[0]);
+    return s3Key;
   };
 
   return (

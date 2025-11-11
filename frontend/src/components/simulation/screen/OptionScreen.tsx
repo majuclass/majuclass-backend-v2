@@ -1,10 +1,10 @@
 /** @format */
 
-import type { TransformedOption, Sequence } from "../../../types/Scenario";
+import type { Sequence, TransformedOption } from "../../../types/Scenario";
 import OptionButton from "../OptionButton";
 import girlHead from "../../../assets/scenarios/cinema/cinema-girl-head.png";
 import Record from "../audio/WebSocketTest";
-
+import WebSocketResponse from "../audio/WebSocketResponse";
 type OptionScreenProps = {
   options: TransformedOption[];
   sequence: Sequence;
@@ -12,7 +12,9 @@ type OptionScreenProps = {
   sessionId?: number;
   sequenceNumber?: number;
   difficulty?: string;
-  optionImageUrl?: string;
+  sendPCMChunk?: (data: string) => void;
+  wsMessage?: string;
+  sendEndStream?: (audioS3Key: string, seq: number) => void;
 };
 
 export default function OptionScreen({
@@ -22,6 +24,9 @@ export default function OptionScreen({
   sessionId,
   sequenceNumber,
   difficulty,
+  sendPCMChunk,
+  wsMessage,
+  sendEndStream,
 }: OptionScreenProps) {
   const colors = ["pink", "yellow", "green", "blue"] as const; // 색상 순서 지정
 
@@ -30,9 +35,15 @@ export default function OptionScreen({
       {/* 난이도 "상"일 때만 녹음 버튼 표시 */}
       {difficulty === "HARD" && sessionId && (
         <div className="absolute bottom-48 z-30">
-          <Record sessionId={sessionId} sequenceNumber={sequenceNumber ?? 1} />
+          <Record
+            sessionId={sessionId}
+            sequenceNumber={sequenceNumber ?? 1}
+            sendPCMChunk={sendPCMChunk}
+            sendEndStream={sendEndStream}
+          />
         </div>
       )}
+      <WebSocketResponse messageData={wsMessage} />
 
       <div className="flex items-center">
         {/* 머리머리 */}
@@ -43,34 +54,16 @@ export default function OptionScreen({
       </div>
 
       {/* 선택지 */}
-      {/* option type에 따라 image, label 둘 중 하나로 변경 */}
       <div className="flex flex-wrap justify-center gap-4 p-6 font-shark font-normal text-2xl">
-        {options.map((option, index) => {
-          if (option.type === "image") {
-            return (
-              <OptionButton
-                key={option.id}
-                color={colors[index % colors.length]}
-                onClick={() => onSelect(option)}
-              >
-                <img src={option.label} alt="옵션 미리보기" />
-              </OptionButton>
-            );
-          }
-
-          if (option.type === "text") {
-            return (
-              <OptionButton
-                key={option.id}
-                color={colors[index % colors.length]}
-                onClick={() => onSelect(option)}
-              >
-                {option.label}
-              </OptionButton>
-            );
-          }
-          return null;
-        })}
+        {options.map((option, index) => (
+          <OptionButton
+            key={option.id}
+            color={colors[index % colors.length]}
+            onClick={() => onSelect(option)}
+          >
+            {option.label}
+          </OptionButton>
+        ))}
       </div>
     </div>
   );
