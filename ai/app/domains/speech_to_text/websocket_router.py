@@ -23,24 +23,11 @@ router = APIRouter(prefix="/ws", tags=["WebSocket STT"])
 # 환경 변수
 SECRET_KEY = os.getenv("JWT_SECRET")
 ALGORITHM = "HS256"
-CHUNK_DURATION = 5.0
-SIMILARITY_THRESHOLD = float(os.getenv("SIMILARITY_THRESHOLD", "0.7"))
-
+CHUNK_DURATION = 3.0
+SIMILARITY_THRESHOLD = 0.7
+USE_CLOVA_STT = False
 
 async def verify_websocket_token(token: str, db: AsyncSession) -> int:
-    """
-    WebSocket JWT 토큰 검증
-
-    Args:
-        token: JWT 토큰
-        db: DB 세션
-
-    Returns:
-        user_id
-
-    Raises:
-        AuthenticationError: 인증 실패
-    """
     try:
         # JWT 디코딩
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
@@ -83,29 +70,6 @@ async def websocket_stt_endpoint(
     token: str = Query(..., description="JWT 인증 토큰"),
     db: AsyncSession = Depends(get_session)
 ):
-    """
-    WebSocket 실시간 STT 엔드포인트
-
-    연결:
-        ws://localhost:8001/ws/stt/{session_id}/{seq_no}?token={jwt_token}
-
-    Path Parameters:
-        - session_id: scenario_sessions.id
-        - seq_no: 시퀀스 번호 (1, 2, 3, ...)
-
-    Query Parameters:
-        - token: JWT 인증 토큰
-
-    메시지 프로토콜:
-        클라이언트 → AI:
-            - {type: "audio_chunk", data: "base64..."}
-            - {type: "end_stream", audioS3Key: "..."}
-
-        AI → 클라이언트:
-            - {type: "transcript", text: "...", isFinal: false}
-            - {type: "final_result", answerId: 123, ...}
-            - {type: "error", message: "...", code: "..."}
-    """
     await websocket.accept()
 
     # 초기화
@@ -145,11 +109,14 @@ async def websocket_stt_endpoint(
             await websocket.close()
             return
 
-        # 4. 시퀀스 ID 및 정답 조회
+        # 4. 시퀀스 ID, 질문, 정답 조회
         try:
             seq_id = await session_repo.get_seq_id(scenario_id, seq_no)
+            question_text = await session_repo.get_question(seq_id)
             answer_text = await session_repo.get_answer_text(seq_id)
-            print(f"[WebSocket] 정답 조회 완료: seq_id={seq_id}")
+            print(f"[WebSocket] 조회 완료: seq_id={seq_id}")
+            print(f"[WebSocket] 질문: {question_text}")
+            print(f"[WebSocket] 정답: {answer_text}")
         except SequenceNotFoundError as e:
             await websocket.send_json({
                 "type": "error",
@@ -159,8 +126,21 @@ async def websocket_stt_endpoint(
             return
 
         # 5. 서비스 초기화
-        streaming_stt = StreamingSTTService()
+        streaming_stt = StreamingSTTService(use_clova=USE_CLOVA_STT)
         similarity_service = SimilarityService()
+
+        # 언어 코드 설정 (Clova: "Kor", Whisper: "ko")
+        stt_language = "Kor" if USE_CLOVA_STT else "ko"
+
+        # Whisper 프롬프트: 정답 편향 방지를 위해 비활성화
+        # (실제 발화를 정확히 인식하는 것이 중요)
+        stt_prompt = ""
+        # if question_text:
+        #     stt_prompt += question_text + " "
+        # if answer_text:
+        #     stt_prompt += answer_text
+        # stt_prompt = stt_prompt.strip()
+        print(f"[WebSocket] STT 프롬프트: 없음 (정확한 인식 우선)")
 
         # 6. 오디오 버퍼 초기화
         buffer = AudioBuffer(chunk_duration=CHUNK_DURATION)
@@ -182,10 +162,30 @@ async def websocket_stt_endpoint(
                     print(f"[WebSocket] 청크 수신: {len(audio_data)} bytes, "
                           f"누적: {buffer.duration:.2f}초")
 
-                    # 1초치 누적되면 STT 처리
+                    # 일정치 누적되면 STT 처리
                     if buffer.is_ready:
                         wav_file = buffer.to_wav_file()
-                        text = await streaming_stt.transcribe(wav_file)
+
+                        # 디버깅: WAV 파일 저장
+                        import time
+                        debug_path = f"/tmp/debug_audio_{int(time.time() * 1000)}.wav"
+                        with open(debug_path, 'wb') as f:
+                            wav_file.seek(0)
+                            f.write(wav_file.read())
+                            wav_file.seek(0)
+                        print(f"[DEBUG] WAV 파일 저장: {debug_path}")
+
+                        # 청크 내용 확인
+                        wav_file.seek(0)
+                        sample_data = wav_file.read(100)
+                        print(f"[DEBUG] 처음 100바이트: {sample_data[:100]}")
+                        wav_file.seek(0)
+
+                        text = await streaming_stt.transcribe(
+                            wav_file,
+                            language=stt_language,
+                            prompt=stt_prompt
+                        )
 
                         full_transcript += " " + text
 
@@ -215,7 +215,11 @@ async def websocket_stt_endpoint(
                     if buffer.get_chunk_count() > 0:
                         print(f"[WebSocket] 남은 버퍼 처리: {buffer.duration:.2f}초")
                         wav_file = buffer.to_wav_file()
-                        text = await streaming_stt.transcribe(wav_file)
+                        text = await streaming_stt.transcribe(
+                            wav_file,
+                            language=stt_language,
+                            prompt=stt_prompt
+                        )
                         full_transcript += " " + text
 
                     # 전체 텍스트 정리
