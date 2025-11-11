@@ -8,7 +8,7 @@ import TextInput from "../TextInput";
 import boyHead from "../../assets/scenarios/cinema/cinema-boy-head.png";
 import { useNavigate } from "react-router-dom";
 import api from "../../apis/apiInstance";
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 
 interface ScenarioFormProps {
   onNext: () => void;
@@ -26,8 +26,27 @@ type category = {
 //     3:
 // }
 
+// 실제 API 호출 함수 -> useQuery 사용 위함
+const fetchCategory = async () => {
+  const resp = await api.get(`categories`);
+  return resp.data.data as category[];
+};
+
 export default function ScenarioForm({ onNext }: ScenarioFormProps) {
-  const [categories, setCategories] = useState<category[]>([]);
+  const {
+    data: categories,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["categories"],
+    queryFn: fetchCategory,
+    // 24시간동안 stale로 간주, refetch 없음
+    staleTime: 1000 * 60 * 60 * 24,
+  });
+
+  // category 로드 시 배열에 할당
+  const categoryList = categories || [];
+
   // 리렌더링 방지 위한 selector + shallow pattern
   // TODO: onChange 방식으로 관리 시, 매번 모든 전역스토어 리렌더링 문제?
   // 이렇게 관리하는게 잘한건지 몰르겠슈
@@ -51,20 +70,6 @@ export default function ScenarioForm({ onNext }: ScenarioFormProps) {
     setScenarioInfo({ categoryId: newCategoryId });
   };
 
-  //   TODO: React Query로 전역 caching돌리기
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const resp = await api.get(`categories`);
-        const data = resp.data.data;
-        setCategories(data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    fetchCategories();
-  }, []);
-
   const handleFileChange = (
     e: React.ChangeEvent<HTMLInputElement>,
     fieldName: "thumbnail" | "background"
@@ -82,7 +87,21 @@ export default function ScenarioForm({ onNext }: ScenarioFormProps) {
   //   미리보기
   const thumbnailUrl = thumbnail ? URL.createObjectURL(thumbnail) : null;
 
-  // 카테고리 default image mapping
+  // TODO: 카테고리 default image mapping
+
+  //   카테고리용 로딩 / 에러 상태 처리
+  if (isLoading) {
+    return (
+      <div className="p-8 text-center">카테고리 정보 불러오는 중 ... </div>
+    );
+  }
+  if (isError) {
+    return (
+      <div className="p-8 text-center text-red-500">
+        카테고리 로드 중 에러 발생
+      </div>
+    );
+  }
 
   return (
     <div className="w-full">
@@ -101,7 +120,8 @@ export default function ScenarioForm({ onNext }: ScenarioFormProps) {
               className="flex-1 border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-pink-300"
             >
               <option value="">카테고리를 선택하세요</option>
-              {categories.map((cate) => (
+              {/* useQuery data 바로 매핑 */}
+              {categoryList.map((cate) => (
                 <option key={cate.id} value={cate.id}>
                   {cate.categoryName}
                 </option>
