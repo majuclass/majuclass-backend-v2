@@ -1,9 +1,13 @@
-package com.ssafy.a202.domain.user.controller;
+package com.ssafy.a202.domain.student.controller;
 
-import com.ssafy.a202.domain.user.dto.request.StudentCreateRequest;
-import com.ssafy.a202.domain.user.dto.request.StudentUpdateRequest;
-import com.ssafy.a202.domain.user.dto.response.StudentResponse;
-import com.ssafy.a202.domain.user.service.StudentService;
+import com.ssafy.a202.domain.student.dto.request.StudentCreateRequest;
+import com.ssafy.a202.domain.student.dto.request.StudentUpdateRequest;
+import com.ssafy.a202.domain.student.dto.response.SessionSequenceStatsResponse;
+import com.ssafy.a202.domain.student.dto.response.StudentDashboardStatsResponse;
+import com.ssafy.a202.domain.student.dto.response.StudentSessionsResponse;
+import com.ssafy.a202.domain.student.dto.response.StudentResponse;
+import com.ssafy.a202.domain.student.service.StudentService;
+import com.ssafy.a202.global.constants.SessionStatus;
 import com.ssafy.a202.global.constants.SuccessCode;
 import com.ssafy.a202.global.response.ApiResponse;
 import com.ssafy.a202.global.security.UserPrincipal;
@@ -76,5 +80,74 @@ public class StudentController {
             @PathVariable Long studentId) {
         studentService.deleteStudent(userPrincipal.getUserId(), studentId);
         return ApiResponse.success(SuccessCode.STUDENT_DELETE_SUCCESS);
+    }
+
+    @Operation(
+            summary = "학생 대시보드 통계 조회",
+            description = "특정 학생의 월별 카테고리별 세션 통계를 조회합니다. (도넛 그래프용)"
+    )
+    @GetMapping("/dashboard/category-stats/{studentId}")
+    public ApiResponse<StudentDashboardStatsResponse> getStudentDashboardStats(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @Parameter(description = "학생 ID", example = "1")
+            @PathVariable Long studentId,
+            @Parameter(description = "조회 년도", example = "2025")
+            @RequestParam int year,
+            @Parameter(description = "조회 월 (1-12)", example = "1")
+            @RequestParam int month
+    ) {
+        StudentDashboardStatsResponse stats = studentService.getStudentDashboardStats(
+                userPrincipal.getUserId(),
+                studentId,
+                year,
+                month
+        );
+        return ApiResponse.success(SuccessCode.CATEGORY_STATS_SUCCESS, stats);
+    }
+
+    @Operation(
+            summary = "학생 세션 목록 조회",
+            description = "특정 학생의 월별 세션 목록을 조회합니다. 카테고리 및 세션 상태로 필터링이 가능합니다."
+    )
+    @GetMapping("/dashboard/monthly-sessions/{studentId}")
+    public ApiResponse<StudentSessionsResponse> getStudentSessions(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @Parameter(description = "학생 ID", example = "1")
+            @PathVariable Long studentId,
+            @Parameter(description = "조회 년도", example = "2025")
+            @RequestParam int year,
+            @Parameter(description = "조회 월 (1-12)", example = "1")
+            @RequestParam int month,
+            @Parameter(description = "카테고리 필터 (선택 사항)", example = "1")
+            @RequestParam(required = false) Long categoryId,
+            @Parameter(description = "세션 상태 필터 (선택 사항, IN_PROGRESS/COMPLETED/ABORTED)", example = "COMPLETED")
+            @RequestParam(required = false) SessionStatus status
+    ) {
+        StudentSessionsResponse sessions = studentService.getStudentSessions(
+                userPrincipal.getUserId(),
+                studentId,
+                year,
+                month,
+                categoryId,
+                status
+        );
+        return ApiResponse.success(SuccessCode.MONTHLY_SESSION_LIST_SUCCESS, sessions);
+    }
+
+    @Operation(
+            summary = "세션 시퀀스별 통계 조회",
+            description = "특정 세션의 시퀀스별 정답률 및 통계를 조회합니다. 시도 횟수가 적을수록 정답률이 높습니다."
+    )
+    @GetMapping("/dashboard/sequence-stats/{sessionId}")
+    public ApiResponse<SessionSequenceStatsResponse> getSessionSequenceStats(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @Parameter(description = "세션 ID", example = "123")
+            @PathVariable Long sessionId
+    ) {
+        SessionSequenceStatsResponse stats = studentService.getSessionSequenceStats(
+                userPrincipal.getUserId(),
+                sessionId
+        );
+        return ApiResponse.success(SuccessCode.SESSION_SEQUENCE_STATS_SUCCESS, stats);
     }
 }

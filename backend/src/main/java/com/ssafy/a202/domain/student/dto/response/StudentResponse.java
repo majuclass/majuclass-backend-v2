@@ -1,6 +1,6 @@
-package com.ssafy.a202.domain.user.dto.response;
+package com.ssafy.a202.domain.student.dto.response;
 
-import com.ssafy.a202.domain.user.entity.Student;
+import com.ssafy.a202.domain.student.entity.Student;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
