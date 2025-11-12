@@ -46,7 +46,7 @@ export default function OptionScreen({
       </div>
       {/* 선택지 */}
       <div
-        className={`flex flex-row gap-6 p-6 font-shark font-normal text-2xl flex-grow   
+        className={`flex flex-row flex-wrap gap-6 p-6 font-shark font-normal text-2xl flex-grow justify-center
             `}
         // ${options.length === 3 ? "grid-cols-3" : ""}
       >

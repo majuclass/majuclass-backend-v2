@@ -143,7 +143,7 @@ export default function SimulationPage() {
         setSequenceNumber((prev) => prev + 1);
         setScreen("question");
       }
-    }, 2000);
+    }, 1000);
 
     return;
   };
