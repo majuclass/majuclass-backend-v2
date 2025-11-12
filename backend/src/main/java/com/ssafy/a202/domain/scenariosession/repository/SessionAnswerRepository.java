@@ -30,4 +30,19 @@ public interface SessionAnswerRepository extends JpaRepository<SessionAnswer, Lo
             "WHERE sa.scenarioSession.id = :sessionId " +
             "ORDER BY seq.seqNo, sa.attemptNo")
     List<SessionAnswer> findAllBySessionIdWithSequence(@Param("sessionId") Long sessionId);
+
+    /**
+     * 특정 세션의 특정 시퀀스에 대한 모든 음성 답변 조회
+     * 시도 번호 순으로 정렬
+     */
+    @Query("SELECT sa FROM SessionAnswer sa " +
+            "JOIN FETCH sa.scenarioSequence seq " +
+            "WHERE sa.scenarioSession.id = :sessionId " +
+            "AND seq.seqNo = :sequenceNumber " +
+            "AND sa.answerS3Key IS NOT NULL " +
+            "ORDER BY sa.attemptNo")
+    List<SessionAnswer> findAudioAnswersBySessionAndSequence(
+            @Param("sessionId") Long sessionId,
+            @Param("sequenceNumber") Integer sequenceNumber
+    );
 }

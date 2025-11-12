@@ -48,4 +48,22 @@ public interface ScenarioSessionService {
      * @return 세션 완료 응답
      */
     SessionCompleteResponse completeSession(SessionCompleteRequest request);
+
+    /**
+     * 특정 세션의 특정 시퀀스에 대한 오디오 답변 목록 조회
+     *
+     * @param sessionId 세션 ID
+     * @param sequenceNumber 시퀀스 번호
+     * @return 오디오 답변 목록 응답
+     */
+    AudioAnswerListResponse getAudioAnswers(Long sessionId, Integer sequenceNumber);
+
+    /**
+     * S3 Key로 오디오 파일 조회용 Pre-signed URL 생성
+     * FastAPI STT 분석용
+     *
+     * @param request S3 Key 요청
+     * @return 오디오 파일 Pre-signed URL 응답
+     */
+    AudioUrlByKeyResponse generateAudioUrlByKey(AudioUrlByKeyRequest request);
 }

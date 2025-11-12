@@ -62,7 +62,9 @@ public enum SuccessCode {
     SEQUENCE_RETRIEVE_SUCCESS("시퀀스 조회가 완료되었습니다"),
     OPTIONS_RETRIEVE_SUCCESS("옵션 목록 조회가 완료되었습니다"),
     ANSWER_CHECK_SUCCESS("답안 검증이 완료되었습니다"),
-    AUDIO_ANSWER_CHECK_SUCCESS("음성 답안 검증이 완료되었습니다");
+    AUDIO_ANSWER_CHECK_SUCCESS("음성 답안 검증이 완료되었습니다"),
+    AUDIO_ANSWER_LIST_SUCCESS("오디오 답변 목록 조회가 완료되었습니다"),
+    AUDIO_URL_BY_KEY_GENERATED("S3 키로 오디오 URL 생성이 완료되었습니다");
 
     private final String message;
 }
