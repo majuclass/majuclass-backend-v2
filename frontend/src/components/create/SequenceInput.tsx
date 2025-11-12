@@ -22,6 +22,7 @@ export default function SequenceInput({ activeSeq }: SequenceInputProps) {
   );
 
   const addOption = useScenarioCreateStore((s) => s.addOption);
+  const deleteOption = useScenarioCreateStore((s) => s.deleteOption);
   const updateSequence = useScenarioCreateStore((s) => s.updateSequence);
 
   // 팝오버 상태 관리 추가
@@ -56,7 +57,7 @@ export default function SequenceInput({ activeSeq }: SequenceInputProps) {
     // 2. 모든 경우에 S3 업로드 (blob이든 정적 이미지든)
     try {
       let file: File;
-      
+
       if (item.src.startsWith("blob:")) {
         // blob URL인 경우
         const response = await fetch(item.src);
@@ -66,9 +67,11 @@ export default function SequenceInput({ activeSeq }: SequenceInputProps) {
         // 정적 이미지도 fetch해서 File로 변환
         const response = await fetch(item.src);
         const blob = await response.blob();
-        file = new File([blob], item.name || 'icon.png', { type: blob.type || 'image/png' });
+        file = new File([blob], item.name || "icon.png", {
+          type: blob.type || "image/png",
+        });
       }
-      
+
       const s3Key = await handleUpload(file, "OPTION");
 
       // 3. S3 키 업데이트
@@ -76,9 +79,9 @@ export default function SequenceInput({ activeSeq }: SequenceInputProps) {
       //   i === idx ? { ...opt, optionS3Key: s3Key } : opt
       // );
 
-      const currentSequence = useScenarioCreateStore.getState().sequences.find(
-        s => s.seqNo === activeSequenceData.seqNo
-      );
+      const currentSequence = useScenarioCreateStore
+        .getState()
+        .sequences.find((s) => s.seqNo === activeSequenceData.seqNo);
 
       const finalUpdated = currentSequence!.options.map((opt, i) =>
         i === idx ? { ...opt, optionS3Key: s3Key } : opt
@@ -100,7 +103,7 @@ export default function SequenceInput({ activeSeq }: SequenceInputProps) {
     const newOption = {
       optionNo: options.length + 1,
       optionText: "",
-      optionS3Key:"",
+      optionS3Key: "",
       isAnswer: false,
     };
 
@@ -127,6 +130,14 @@ export default function SequenceInput({ activeSeq }: SequenceInputProps) {
     } catch (error) {
       console.error(error);
     }
+  };
+
+  const handleRemoveOption = (optNo: number) => {
+    if (options.length <= 1) {
+      alert("최소 1개의 답변은 필요합니다.");
+      return;
+    }
+    deleteOption(activeSequenceData.seqNo!, optNo);
   };
   // // 위의 함수와 중복
   // const handleIconUpload = async (
@@ -200,7 +211,7 @@ export default function SequenceInput({ activeSeq }: SequenceInputProps) {
           {options!.map((option, idx) => (
             <div
               key={option.optionNo}
-              className="border p-4 rounded-lg bg-pink-200"
+              className="border p-4 rounded-lg bg-pink-200 flex items-center gap-3"
             >
               {/* 정답 묶음 */}
               <div className="flex items-center gap-3">
@@ -249,7 +260,6 @@ export default function SequenceInput({ activeSeq }: SequenceInputProps) {
 
                 {/* 아이콘 업로드 + 답변 입력 */}
                 <div className="flex flex-col flex-1 gap-2 bg-white rounded-xl p-3 border border-gray-200">
-                  
                   {/* 임시 삭제 */}
                   {/* 파일 업로드 */}
                   {/* <label className="flex items-center justify-between px-3 py-2 border border-gray-300 rounded-lg cursor-pointer hover:bg-pink-50 transition">
@@ -263,12 +273,12 @@ export default function SequenceInput({ activeSeq }: SequenceInputProps) {
                     <span className="text-sm text-gray-500">파일 선택</span>
                   </label> */}
                   {/* 임시 삭제 */}
-                  
+
                   {/* 팝오버 트리거 버튼 추가*/}
                   <button
                     ref={(el) => {
                       buttonRefs.current[idx] = el; // ref 수정
-                    }} 
+                    }}
                     onClick={() => setOpenPopoverIndex(idx)}
                     className="flex items-center justify-between px-3 py-2 border border-gray-300 rounded-lg hover:bg-pink-50 transition"
                   >
@@ -297,6 +307,16 @@ export default function SequenceInput({ activeSeq }: SequenceInputProps) {
                   </div>
                 </div>
               </div>
+
+              {/* 삭제 버튼 */}
+
+              <button
+                onClick={() => handleRemoveOption(option.optionNo!)}
+                className="w-8 h-8 bg-red-500 text-white rounded-full hover:bg-red-600 transition flex items-center justify-center text-lg font-bold flex-shrink-0"
+                title="답변 삭제"
+              >
+                X
+              </button>
             </div>
           ))}
 

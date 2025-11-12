@@ -1,6 +1,6 @@
 /** @format */
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useScenarioCreateStore } from "../../stores/useScenarioCreateStore";
 import TextButton from "../TextButton";
 import SequenceInput from "./SequenceInput";
@@ -12,7 +12,6 @@ interface SequenceFormProps {
   onPrev: () => void;
 }
 
-
 export default function SequenceForm({ onPrev }: SequenceFormProps) {
   const sequences = useScenarioCreateStore((s) => s.sequences);
   const { addSequence } = useScenarioCreateStore();
@@ -20,6 +19,14 @@ export default function SequenceForm({ onPrev }: SequenceFormProps) {
 
   //   현재 활성 시퀀스
   const [activeSeqNum, setActiveSeqNum] = useState(1);
+
+  // activeSeqNum 유효성 오류 해결 유효하지 않으면 첫 번째로 자동 이동
+  useEffect(() => {
+    const exists = sequences.some((s) => s.seqNo === activeSeqNum);
+    if (!exists && sequences.length > 0) {
+      setActiveSeqNum(sequences[0].seqNo!);
+    }
+  }, [sequences, activeSeqNum]);
 
   const activeSequence = sequences.find((s) => s.seqNo === activeSeqNum);
 
@@ -30,14 +37,14 @@ export default function SequenceForm({ onPrev }: SequenceFormProps) {
     // 구체적인 검증 로직
     // 1. 카테고리 확인
     if (!categoryId || categoryId === 0) {
-      alert('카테고리를 선택해주세요.');
+      alert("카테고리를 선택해주세요.");
       return;
     }
 
     // 2. 각 시퀀스별 검증
     for (let i = 0; i < sequences.length; i++) {
       const seq = sequences[i];
-      
+
       // 질문 확인
       if (!seq.question || !seq.question.trim()) {
         alert(`시퀀스 ${i + 1}번: 질문을 입력해주세요.`);
@@ -47,19 +54,21 @@ export default function SequenceForm({ onPrev }: SequenceFormProps) {
       // 옵션 확인
       for (let j = 0; j < seq.options.length; j++) {
         const opt = seq.options[j];
-        
+
         if (!opt.optionText || !opt.optionText.trim()) {
-          alert(`시퀀스 ${i + 1}번, 옵션 ${j + 1}번: 답변 텍스트를 입력해주세요.`);
+          alert(
+            `시퀀스 ${i + 1}번, 옵션 ${j + 1}번: 답변 텍스트를 입력해주세요.`
+          );
           return;
         }
-        
+
         if (!opt.optionS3Key) {
           alert(`시퀀스 ${i + 1}번, 옵션 ${j + 1}번: 아이콘을 선택해주세요.`);
           return;
         }
       }
     }
-      
+
     let thumbnailS3Key: string = "";
     let backgroundS3Key: string = "";
 
@@ -155,6 +164,14 @@ export default function SequenceForm({ onPrev }: SequenceFormProps) {
     }
   };
 
+  const handleDeleteSequence = (seqNo: number) => {
+    if (sequences.length <= 1) {
+      alert("질문답변은 최소 1개 필요합니다.");
+      return;
+    }
+    deleteSequence(seqNo);
+  };
+
   const handleUpload = async (file: File, imageType: string) => {
     // presignedurl 요청
     try {
@@ -188,7 +205,7 @@ export default function SequenceForm({ onPrev }: SequenceFormProps) {
               num={sequence.seqNo}
               isActive={activeSeqNum === sequence.seqNo}
               onClick={() => setActiveSeqNum(sequence.seqNo!)}
-              onDelete={() => deleteSequence(sequence.seqNo!)}
+              onDelete={() => handleDeleteSequence(sequence.seqNo!)}
             />
           </div>
         ))}
@@ -207,7 +224,9 @@ export default function SequenceForm({ onPrev }: SequenceFormProps) {
         {/* 시퀀스 생성 */}
         <div>
           <div className="flex flex-row items-center gap-2 mb-4 bg-pink-50 rounded-2xl justify-center min-h-[600px] transition-all duration-300">
-            <SequenceInput activeSeq={activeSequence!}></SequenceInput>
+            {activeSequence && (
+              <SequenceInput activeSeq={activeSequence!}></SequenceInput>
+            )}
           </div>
         </div>
         {/* 버튼 */}
