@@ -11,9 +11,8 @@ import SequenceScreen from "../components/simulation/screen/SequenceScreen";
 import OptionScreen from "../components/simulation/screen/OptionScreen";
 import EndScreen from "../components/simulation/screen/EndScreen";
 import FeedbackScreen from "../components/simulation/screen/FeedbackScreen";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom"; // 라우팅 연결 추가
-import WebSocketManager from "../components/simulation/audio/WebSocketManager";
 
 import bgCinema from "../assets/scenarios/cinema/cinema-ticket-bg-img.png";
 import girlNormal from "../assets/scenarios/cinema/cinema-girl-normal.png";
@@ -43,15 +42,6 @@ export default function SimulationPage() {
   const [sequenceNumber, setSequenceNumber] = useState(1);
   const [isCorrect, setIsCorrect] = useState<boolean>(false);
   const [sessionId, setSessionId] = useState<number>();
-  const wsRef = useRef<WebSocket | null>(null);
-  const [sendPCMChunk, setSendPCMChunk] = useState<
-    ((data: string) => void) | undefined
-  >(undefined);
-  const [sendEndStream, setSendEndStream] = useState<
-    ((audioS3Key: string, seq: number) => void) | undefined
-  >(undefined);
-  const [wsMessage, setWsMessage] = useState<any>(null);
-  const [wsActive, setWsActive] = useState(false);
 
   //   TODO: studentId 연결
   const studentId = 1;
@@ -122,12 +112,6 @@ export default function SimulationPage() {
       const sessionId = resp.data.data.sessionId;
       setSessionId(sessionId);
       console.log(sessionId + "session start");
-
-      if (difficulty?.toLowerCase() === "hard") {
-        setWsActive(true);
-      } else {
-        console.log("난이도 EASY/NORMAL - WebSocket 연결 생략");
-      }
 
       //   session 시작된 경우만 다음 화면으로
       setGameState("playing");
@@ -209,16 +193,6 @@ export default function SimulationPage() {
     }
   };
 
-  // WebSocket 종료 처리
-  useEffect(() => {
-    if (screen === "end" && wsRef.current) {
-      console.log("WebSocket 연결 닫힘");
-      wsRef.current.close();
-      wsRef.current = null;
-      setWsActive(false);
-    }
-  }, [screen]);
-
   // 화면 렌더링 조건 분기
   const renderContent = () => {
     // 시나리오별
@@ -250,9 +224,6 @@ export default function SimulationPage() {
                 sessionId={sessionId}
                 sequenceNumber={sequenceNumber}
                 difficulty={difficulty ?? ""}
-                sendPCMChunk={sendPCMChunk}
-                wsMessage={wsMessage}
-                sendEndStream={sendEndStream}
               />
             ) : null;
           case "feedback":
@@ -278,19 +249,6 @@ export default function SimulationPage() {
       blurBackground={screen === "start" || screen === "option"}
     >
       {renderContent()}
-      <WebSocketManager
-        wsRef={wsRef}
-        active={wsActive}
-        sessionId={sessionId}
-        sequenceNumber={sequenceNumber}
-        onMessage={(data) => {
-          setWsMessage(data);
-        }}
-        onSendReady={(sendChunk, sendEnd) => {
-          setSendPCMChunk(() => sendChunk);
-          setSendEndStream(() => sendEnd);
-        }}
-      />
     </ScenarioLayout>
   );
 }
