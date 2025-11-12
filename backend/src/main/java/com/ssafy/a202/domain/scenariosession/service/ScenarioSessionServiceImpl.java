@@ -12,6 +12,7 @@ import com.ssafy.a202.domain.scenariosession.repository.ScenarioSessionRepositor
 import com.ssafy.a202.domain.scenariosession.repository.SessionAnswerRepository;
 import com.ssafy.a202.domain.student.entity.Student;
 import com.ssafy.a202.domain.student.repository.StudentRepository;
+import com.ssafy.a202.domain.student.service.StudentService;
 import com.ssafy.a202.global.constants.SessionStatus;
 import com.ssafy.a202.global.exception.CustomException;
 import com.ssafy.a202.global.constants.ErrorCode;
@@ -21,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.Map;
 
 /**
@@ -37,6 +39,7 @@ public class ScenarioSessionServiceImpl implements ScenarioSessionService {
     private final SessionAnswerRepository sessionAnswerRepository;
     private final StudentRepository studentRepository;
     private final S3UrlService s3UrlService;
+    private final StudentService studentService;
 
     @Override
     @Transactional
@@ -69,6 +72,12 @@ public class ScenarioSessionServiceImpl implements ScenarioSessionService {
 
         log.info("Session created with ID: {} for student ID: {}, scenario ID: {}",
                 savedSession.getId(), request.getStudentId(), request.getScenarioId());
+
+        // 달력 캐시 무효화 (오늘 날짜의 캐시 삭제)
+        Long teacherId = student.getUser().getId();
+        LocalDate today = LocalDate.now();
+        studentService.invalidateCalendarCache(teacherId, today);
+        log.debug("Invalidated calendar cache for teacherId: {}, date: {}", teacherId, today);
 
         return SessionStartResponse.from(savedSession);
     }

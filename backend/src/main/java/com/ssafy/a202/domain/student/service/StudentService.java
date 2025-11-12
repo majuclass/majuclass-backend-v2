@@ -2,12 +2,15 @@ package com.ssafy.a202.domain.student.service;
 
 import com.ssafy.a202.domain.student.dto.request.StudentCreateRequest;
 import com.ssafy.a202.domain.student.dto.request.StudentUpdateRequest;
+import com.ssafy.a202.domain.student.dto.response.CalendarMonthlyResponse;
+import com.ssafy.a202.domain.student.dto.response.DailySessionListResponse;
 import com.ssafy.a202.domain.student.dto.response.SessionSequenceStatsResponse;
 import com.ssafy.a202.domain.student.dto.response.StudentDashboardStatsResponse;
 import com.ssafy.a202.domain.student.dto.response.StudentResponse;
 import com.ssafy.a202.domain.student.dto.response.StudentSessionsResponse;
 import com.ssafy.a202.global.constants.SessionStatus;
 
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -83,4 +86,31 @@ public interface StudentService {
      * @return 시퀀스별 통계 데이터
      */
     SessionSequenceStatsResponse getSessionSequenceStats(Long userId, Long sessionId);
+
+    /**
+     * 월별 달력 데이터 조회 (캐시 적용)
+     * 담당 학생들의 일별 세션 수 통계
+     * @param userId 선생님 ID
+     * @param year 년도
+     * @param month 월 (1-12)
+     * @return 월별 달력 데이터
+     */
+    CalendarMonthlyResponse getMonthlyCalendar(Long userId, int year, int month);
+
+    /**
+     * 특정 날짜의 특정 학생 세션 목록 조회
+     * @param userId 선생님 ID
+     * @param studentId 학생 ID
+     * @param date 날짜
+     * @return 해당 날짜의 세션 목록
+     */
+    DailySessionListResponse getDailySessions(Long userId, Long studentId, LocalDate date);
+
+    /**
+     * 달력 캐시 무효화
+     * 새 세션 생성/삭제 시 호출 (해당 날짜의 캐시만 삭제)
+     * @param userId 선생님 ID
+     * @param date 날짜
+     */
+    void invalidateCalendarCache(Long userId, LocalDate date);
 }

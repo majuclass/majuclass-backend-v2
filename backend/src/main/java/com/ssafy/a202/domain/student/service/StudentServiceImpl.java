@@ -7,30 +7,39 @@ import com.ssafy.a202.domain.scenariosession.repository.ScenarioSessionRepositor
 import com.ssafy.a202.domain.scenariosession.repository.SessionAnswerRepository;
 import com.ssafy.a202.domain.student.dto.request.StudentCreateRequest;
 import com.ssafy.a202.domain.student.dto.request.StudentUpdateRequest;
+import com.ssafy.a202.domain.student.dto.response.CalendarDayStatsDto;
+import com.ssafy.a202.domain.student.dto.response.CalendarMonthlyResponse;
 import com.ssafy.a202.domain.student.dto.response.CategoryStatsDto;
+import com.ssafy.a202.domain.student.dto.response.DailySessionListResponse;
 import com.ssafy.a202.domain.student.dto.response.SequenceStatsDto;
 import com.ssafy.a202.domain.student.dto.response.SessionListItemDto;
 import com.ssafy.a202.domain.student.dto.response.SessionSequenceStatsResponse;
 import com.ssafy.a202.domain.student.dto.response.StudentDashboardStatsResponse;
 import com.ssafy.a202.domain.student.dto.response.StudentResponse;
 import com.ssafy.a202.domain.student.dto.response.StudentSessionsResponse;
+import com.ssafy.a202.domain.student.dto.response.StudentSessionCountDto;
 import com.ssafy.a202.domain.student.entity.Student;
 import com.ssafy.a202.domain.user.entity.User;
 import com.ssafy.a202.domain.student.repository.StudentRepository;
 import com.ssafy.a202.domain.user.repository.UserRepository;
 import com.ssafy.a202.global.constants.ErrorCode;
+import com.ssafy.a202.global.constants.RedisKey;
 import com.ssafy.a202.global.constants.Role;
 import com.ssafy.a202.global.constants.SessionStatus;
 import com.ssafy.a202.global.exception.CustomException;
 import com.ssafy.a202.global.s3.S3UrlService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Date;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -47,6 +56,7 @@ public class StudentServiceImpl implements StudentService {
     private final ScenarioSessionRepository scenarioSessionRepository;
     private final SessionAnswerRepository sessionAnswerRepository;
     private final S3UrlService s3UrlService;
+    private final RedisTemplate<String, Object> objectRedisTemplate;
 
     /**
      * 담당 학생 목록 조회
@@ -363,6 +373,114 @@ public class StudentServiceImpl implements StudentService {
                 .build();
     }
 
+    /**
+     * 월별 달력 데이터 조회 (Redis 일별 캐시 적용)
+     * - 담당 학생들의 일별 세션 수 통계
+     */
+    @Override
+    public CalendarMonthlyResponse getMonthlyCalendar(Long userId, int year, int month) {
+        // 1. 사용자 조회
+        User user = userRepository.findByIdAndIsDeletedFalse(userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        // 2. 해당 월의 전체 일자 목록 생성
+        YearMonth yearMonth = YearMonth.of(year, month);
+        int daysInMonth = yearMonth.lengthOfMonth();
+
+        // 3. 일별 캐시 조회 및 미스 날짜 수집
+        List<CalendarDayStatsDto> allDailyStats = new ArrayList<>();
+        List<LocalDate> cacheMissDates = new ArrayList<>();
+
+        for (int day = 1; day <= daysInMonth; day++) {
+            LocalDate date = LocalDate.of(year, month, day);
+            String cacheKey = RedisKey.getCalendarDailyKey(userId, date);
+
+            // 캐시 조회
+            CalendarDayStatsDto cached = (CalendarDayStatsDto) objectRedisTemplate.opsForValue().get(cacheKey);
+            if (cached != null) {
+                allDailyStats.add(cached);
+                log.debug("Calendar daily data retrieved from cache: userId={}, date={}", userId, date);
+            } else {
+                cacheMissDates.add(date);
+            }
+        }
+
+        // 4. 캐시 미스 날짜들만 DB에서 조회
+        if (!cacheMissDates.isEmpty()) {
+            Map<LocalDate, CalendarDayStatsDto> dbStats = fetchDailyStatsFromDB(userId, cacheMissDates);
+
+            // 5. 조회한 데이터를 일별로 캐싱하고 결과 리스트에 추가
+            dbStats.forEach((date, stats) -> {
+                String cacheKey = RedisKey.getCalendarDailyKey(userId, date);
+                objectRedisTemplate.opsForValue().set(cacheKey, stats, RedisKey.CALENDAR_CACHE_TTL_DAYS, TimeUnit.DAYS);
+                allDailyStats.add(stats);
+                log.debug("Calendar daily data cached: userId={}, date={}", userId, date);
+            });
+        }
+
+        // 6. 날짜순 정렬
+        allDailyStats.sort(Comparator.comparing(CalendarDayStatsDto::date));
+
+        log.debug("Calendar monthly data retrieved: userId={}, year={}, month={}, cacheMiss={}/{}",
+                userId, year, month, cacheMissDates.size(), daysInMonth);
+
+        // 7. 응답 생성
+        return CalendarMonthlyResponse.builder()
+                .year(year)
+                .month(month)
+                .dailyStats(allDailyStats)
+                .totalDays(daysInMonth)
+                .build();
+    }
+
+    /**
+     * 특정 날짜의 특정 학생 세션 목록 조회
+     */
+    @Override
+    public DailySessionListResponse getDailySessions(Long userId, Long studentId, LocalDate date) {
+        // 1. 사용자 조회
+        User user = userRepository.findByIdAndIsDeletedFalse(userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        // 2. 학생 조회
+        Student student = studentRepository.findByIdAndIsDeletedFalse(studentId)
+                .orElseThrow(() -> new CustomException(ErrorCode.STUDENT_NOT_FOUND));
+
+        // 3. 권한 체크
+        validateStudentAccess(user, student);
+
+        // 4. 특정 날짜의 세션 목록 조회
+        List<ScenarioSession> sessions = scenarioSessionRepository.findDailySessionsByStudent(studentId, date);
+
+        // 5. 세션 목록을 DTO로 변환
+        List<SessionListItemDto> sessionListItems = sessions.stream()
+                .map(this::convertToSessionListItemDto)
+                .collect(Collectors.toList());
+
+        log.debug("Daily sessions retrieved: userId={}, studentId={}, date={}, count={}",
+                userId, studentId, date, sessionListItems.size());
+
+        // 6. 응답 생성
+        return DailySessionListResponse.builder()
+                .date(date)
+                .studentId(studentId)
+                .studentName(student.getName())
+                .sessions(sessionListItems)
+                .totalCount(sessionListItems.size())
+                .build();
+    }
+
+    /**
+     * 달력 캐시 무효화
+     * - 새 세션 생성/삭제 시 해당 날짜의 캐시만 삭제
+     */
+    @Override
+    public void invalidateCalendarCache(Long userId, LocalDate date) {
+        String cacheKey = RedisKey.getCalendarDailyKey(userId, date);
+        objectRedisTemplate.delete(cacheKey);
+        log.debug("Calendar daily cache invalidated: userId={}, date={}", userId, date);
+    }
+
     // ================================
     // Private Helper Methods
     // ================================
@@ -439,5 +557,71 @@ public class StudentServiceImpl implements StudentService {
                 .status(session.getSessionStatus())
                 .createdAt(session.getCreatedAt())
                 .build();
+    }
+
+    /**
+     * DB에서 특정 날짜들의 달력 데이터 조회
+     * @param userId 사용자 ID
+     * @param dates 조회할 날짜 리스트
+     * @return 날짜별 통계 데이터 맵
+     */
+    private Map<LocalDate, CalendarDayStatsDto> fetchDailyStatsFromDB(Long userId, List<LocalDate> dates) {
+        if (dates.isEmpty()) {
+            return Collections.emptyMap();
+        }
+
+        // 1. 조회 기간 계산 (최소 날짜 ~ 최대 날짜)
+        LocalDate minDate = dates.stream().min(LocalDate::compareTo).orElseThrow();
+        LocalDate maxDate = dates.stream().max(LocalDate::compareTo).orElseThrow();
+        LocalDateTime startDate = minDate.atStartOfDay();
+        LocalDateTime endDate = maxDate.atTime(23, 59, 59);
+
+        // 2. DB에서 일별 학생별 세션 수 집계 조회
+        List<Object[]> rawStats = scenarioSessionRepository.findMonthlyCalendarStats(userId, startDate, endDate);
+
+        // 3. 날짜별로 그룹화
+        Map<LocalDate, List<Object[]>> statsByDate = rawStats.stream()
+                .collect(Collectors.groupingBy(row -> ((Date) row[0]).toLocalDate()));
+
+        // 4. 요청한 날짜들에 대해서만 CalendarDayStatsDto 생성
+        Map<LocalDate, CalendarDayStatsDto> result = new HashMap<>();
+        for (LocalDate date : dates) {
+            List<Object[]> dayStats = statsByDate.get(date);
+
+            if (dayStats != null && !dayStats.isEmpty()) {
+                // 학생별 세션 수 DTO 생성
+                List<StudentSessionCountDto> studentSessions = dayStats.stream()
+                        .map(row -> StudentSessionCountDto.builder()
+                                .studentId((Long) row[1])
+                                .studentName((String) row[2])
+                                .sessionCount(((Long) row[3]).intValue())
+                                .build())
+                        .collect(Collectors.toList());
+
+                // 해당 날짜의 전체 세션 수 계산
+                int totalSessionCount = studentSessions.stream()
+                        .mapToInt(StudentSessionCountDto::sessionCount)
+                        .sum();
+
+                CalendarDayStatsDto stats = CalendarDayStatsDto.builder()
+                        .date(date)
+                        .studentSessions(studentSessions)
+                        .totalSessionCount(totalSessionCount)
+                        .build();
+
+                result.put(date, stats);
+            } else {
+                // 해당 날짜에 세션이 없는 경우 빈 데이터 생성
+                CalendarDayStatsDto emptyStats = CalendarDayStatsDto.builder()
+                        .date(date)
+                        .studentSessions(Collections.emptyList())
+                        .totalSessionCount(0)
+                        .build();
+
+                result.put(date, emptyStats);
+            }
+        }
+
+        return result;
     }
 }
