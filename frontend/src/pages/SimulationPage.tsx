@@ -129,6 +129,25 @@ export default function SimulationPage() {
     setIsCorrect(false);
   };
 
+  const handleSkip = () => {
+    console.log("스킵");
+    alert("스킵합니다");
+
+    setTimeout(() => {
+      // 정답인 경우
+      const isLastSequence = sequenceNumber >= (scenario?.totalSequences || 0);
+
+      if (isLastSequence) {
+        setScreen("end");
+      } else {
+        setSequenceNumber((prev) => prev + 1);
+        setScreen("question");
+      }
+    }, 2000);
+
+    return;
+  };
+
   // 피드백 처리 & 다음 시퀀스로 이동
   const handleFeedback = async (selectedOption: TransformedOption) => {
     try {
@@ -221,6 +240,7 @@ export default function SimulationPage() {
                 options={options}
                 sequence={sequence}
                 onSelect={handleFeedback}
+                onSkip={handleSkip}
                 sessionId={sessionId}
                 sequenceNumber={sequenceNumber}
                 difficulty={difficulty ?? ""}
