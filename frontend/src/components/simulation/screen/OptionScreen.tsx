@@ -4,7 +4,7 @@ import type { Sequence, TransformedOption } from "../../../types/Scenario";
 import OptionButton from "../OptionButton";
 import girlHead from "../../../assets/scenarios/cinema/cinema-girl-head.png";
 import Record from "../audio/WebSocketTest";
-import WebSocketResponse from "../audio/WebSocketResponse";
+
 type OptionScreenProps = {
   options: TransformedOption[];
   sequence: Sequence;
@@ -12,9 +12,7 @@ type OptionScreenProps = {
   sessionId?: number;
   sequenceNumber?: number;
   difficulty?: string;
-  sendPCMChunk?: (data: string) => void;
   wsMessage?: string;
-  sendEndStream?: (audioS3Key: string, seq: number) => void;
 };
 
 export default function OptionScreen({
@@ -24,9 +22,6 @@ export default function OptionScreen({
   sessionId,
   sequenceNumber,
   difficulty,
-  sendPCMChunk,
-  wsMessage,
-  sendEndStream,
 }: OptionScreenProps) {
   const colors = ["pink", "yellow", "green", "blue"] as const; // 색상 순서 지정
 
@@ -38,10 +33,7 @@ export default function OptionScreen({
           <Record
             sessionId={sessionId}
             sequenceNumber={sequenceNumber ?? 1}
-            sendPCMChunk={sendPCMChunk}
-            sendEndStream={sendEndStream}
           />
-          <WebSocketResponse messageData={wsMessage} />
         </div>
       )}
 
