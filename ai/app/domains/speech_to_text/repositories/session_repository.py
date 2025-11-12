@@ -1,9 +1,3 @@
-"""
-세션 Repository
-
-scenario_sessions, scenario_sequences, seq_options 조회 및 검증
-"""
-
 from typing import Optional
 
 from sqlalchemy import select
@@ -32,20 +26,6 @@ class SessionRepository:
         session_id: int,
         user_id: int
     ) -> ScenarioSession:
-        """
-        세션 존재 및 권한 검증
-
-        Args:
-            session_id: 세션 ID
-            user_id: 사용자 ID
-
-        Returns:
-            ScenarioSession 객체
-
-        Raises:
-            SessionNotFoundError: 세션을 찾을 수 없음
-            PermissionDeniedError: 접근 권한 없음
-        """
         print(f"[DEBUG] 세션 검증 시작: session_id={session_id}, user_id={user_id}")
 
         result = await self.db.execute(
@@ -86,19 +66,6 @@ class SessionRepository:
         scenario_id: int,
         seq_no: int
     ) -> int:
-        """
-        scenario_sequences에서 seq_id 조회
-
-        Args:
-            scenario_id: 시나리오 ID
-            seq_no: 시퀀스 번호
-
-        Returns:
-            seq_id
-
-        Raises:
-            SequenceNotFoundError: 시퀀스를 찾을 수 없음
-        """
         result = await self.db.execute(
             select(ScenarioSequence.id)
             .where(
@@ -121,18 +88,6 @@ class SessionRepository:
         self,
         seq_id: int
     ) -> str:
-        """
-        seq_options에서 정답 텍스트 조회
-
-        Args:
-            seq_id: 시퀀스 ID
-
-        Returns:
-            정답 텍스트
-
-        Raises:
-            SequenceNotFoundError: 정답을 찾을 수 없음
-        """
         result = await self.db.execute(
             select(SeqOption.option_text)
             .where(
@@ -155,15 +110,6 @@ class SessionRepository:
         self,
         seq_id: int
     ) -> Optional[str]:
-        """
-        scenario_sequences에서 질문 조회
-
-        Args:
-            seq_id: 시퀀스 ID
-
-        Returns:
-            질문 텍스트 (선택사항)
-        """
         result = await self.db.execute(
             select(ScenarioSequence.question)
             .where(
