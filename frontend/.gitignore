@@ -62,3 +62,6 @@ dist-ssr
 # Codex
 AGENTS.md
 tmp_mark.txt
+
+# Claude Code
+CLAUDE.md

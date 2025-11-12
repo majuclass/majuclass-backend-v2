@@ -1,67 +1,81 @@
-import React, { useState,  } from 'react'; // useEffect, useRef
+/** @format */
+
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import NavBar from '../components/NavBar';
-import '../styles/DashBoardPage.css'
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
+import '../styles/DashBoardPage.css';
+import { Chart as ChartJS, ArcElement, Tooltip, Legend, } from 'chart.js';
+import type { TooltipItem } from 'chart.js';
 import { Doughnut } from 'react-chartjs-2';
+import {
+  getCategoryStats,
+  getMonthlySessions,
+  getSessionSequenceStats,
+} from '../apis/dashboardApi';
+import type {
+  CategoryStatsResponse,
+  SessionsResponse,
+  SessionSequenceStatsResponse,
+} from '../types/Dashboard';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-interface Student {
-  id: number;
-  name: string;
-  grade: string;
-  scenarios: {
-    name: string;
-    difficulty: string;
-    status: 'completed' | 'in-progress' | 'not-started';
-  }[];
-}
-
 const StudentDashboard: React.FC = () => {
-  const [students] = useState<Student[]>([
-    {
-      id: 1,
-      name: '김가람',
-      grade: '초3',
-      scenarios: [
-        { name: '시나리오 1', difficulty: '하', status: 'completed' },
-        { name: '시나리오 2', difficulty: '중', status: 'completed' },
-        { name: '시나리오 3', difficulty: '상', status: 'in-progress' },
-      ]
-    },
-    {
-      id: 2,
-      name: '박도윤',
-      grade: '중1',
-      scenarios: [
-        { name: '시나리오 1', difficulty: '하', status: 'completed' },
-        { name: '시나리오 2', difficulty: '중', status: 'not-started' },
-        { name: '시나리오 3', difficulty: '상', status: 'not-started' },
-      ]
-    },
-    {
-      id: 3,
-      name: '어서준',
-      grade: '고1',
-      scenarios: [
-        { name: '시나리오 1', difficulty: '하', status: 'not-started' },
-        { name: '시나리오 2', difficulty: '중', status: 'not-started' },
-        { name: '시나리오 3', difficulty: '상', status: 'not-started' },
-      ]
-    },
-  ]);
+  const { id } = useParams<{ id: string }>();
+  const studentId = Number(id);
 
-  const [selectedStudent, setSelectedStudent] = useState<Student | null>(students[0]);
-  const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
+  const [currentMonth, setCurrentMonth] = useState(new Date().getMonth() + 1);
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
 
-  const handleStudentSelect = (student: Student) => {
-    setSelectedStudent(student);
+  // API 데이터 상태
+  const [categoryStats, setCategoryStats] = useState<CategoryStatsResponse | null>(null);
+  const [sessions, setSessions] = useState<SessionsResponse | null>(null);
+  const [selectedSession, setSelectedSession] = useState<SessionSequenceStatsResponse | null>(null);
+  const [showSequenceStats, setShowSequenceStats] = useState(false);
+
+  // 카테고리별 통계 로드
+  useEffect(() => {
+    const loadCategoryStats = async () => {
+      try {
+        const data = await getCategoryStats(studentId, currentYear, currentMonth);
+        setCategoryStats(data);
+      } catch (error) {
+        console.error('카테고리 통계 로드 실패:', error);
+      }
+    };
+
+    loadCategoryStats();
+  }, [studentId, currentYear, currentMonth]);
+
+  // 월별 세션 목록 로드
+  useEffect(() => {
+    const loadSessions = async () => {
+      try {
+        const data = await getMonthlySessions(studentId, currentYear, currentMonth);
+        setSessions(data);
+      } catch (error) {
+        console.error('세션 목록 로드 실패:', error);
+      }
+    };
+
+    loadSessions();
+  }, [studentId, currentYear, currentMonth]);
+
+  // 세션 클릭 핸들러
+  const handleSessionClick = async (sessionId: number) => {
+    try {
+      const data = await getSessionSequenceStats(sessionId);
+      setSelectedSession(data);
+      setShowSequenceStats(true);
+    } catch (error) {
+      console.error('시퀀스 통계 로드 실패:', error);
+    }
   };
 
+  // 월 이동 핸들러
   const handlePrevMonth = () => {
-    if (currentMonth === 0) {
-      setCurrentMonth(11);
+    if (currentMonth === 1) {
+      setCurrentMonth(12);
       setCurrentYear(currentYear - 1);
     } else {
       setCurrentMonth(currentMonth - 1);
@@ -69,37 +83,49 @@ const StudentDashboard: React.FC = () => {
   };
 
   const handleNextMonth = () => {
-    if (currentMonth === 11) {
-      setCurrentMonth(0);
+    if (currentMonth === 12) {
+      setCurrentMonth(1);
       setCurrentYear(currentYear + 1);
     } else {
       setCurrentMonth(currentMonth + 1);
     }
   };
 
-  // Chart 데이터
+  // 차트 데이터
   const getChartData = () => {
-    if (!selectedStudent) return null;
+    if (!categoryStats || categoryStats.categoryStats.length === 0) {
+      return null;
+    }
 
-    const completed = selectedStudent.scenarios.filter(s => s.status === 'completed').length;
-    const inProgress = selectedStudent.scenarios.filter(s => s.status === 'in-progress').length;
-    const notStarted = selectedStudent.scenarios.filter(s => s.status === 'not-started').length;
+    const labels = categoryStats.categoryStats.map((cat) => cat.categoryName);
+    const data = categoryStats.categoryStats.map((cat) => cat.sessionCount);
+
+    // 색상 팔레트
+    const colors = [
+      'rgba(99, 179, 237, 0.6)',
+      'rgba(255, 206, 86, 0.6)',
+      'rgba(75, 192, 192, 0.6)',
+      'rgba(255, 159, 64, 0.6)',
+      'rgba(153, 102, 255, 0.6)',
+      'rgba(255, 99, 132, 0.6)',
+    ];
+
+    const borderColors = [
+      'rgba(99, 179, 237, 1)',
+      'rgba(255, 206, 86, 1)',
+      'rgba(75, 192, 192, 1)',
+      'rgba(255, 159, 64, 1)',
+      'rgba(153, 102, 255, 1)',
+      'rgba(255, 99, 132, 1)',
+    ];
 
     return {
-      labels: ['카페', '영화관', '식당'],
+      labels,
       datasets: [
         {
-          data: [completed, inProgress, notStarted],
-          backgroundColor: [
-            'rgba(99, 179, 237, 0.6)',
-            'rgba(255, 223, 138, 0.6)',
-            'rgba(220, 220, 220, 0.6)',
-          ],
-          borderColor: [
-            'rgba(99, 179, 237, 1)',
-            'rgba(255, 223, 138, 1)',
-            'rgba(220, 220, 220, 1)',
-          ],
+          data,
+          backgroundColor: colors.slice(0, data.length),
+          borderColor: borderColors.slice(0, data.length),
           borderWidth: 2,
         },
       ],
@@ -129,108 +155,180 @@ const StudentDashboard: React.FC = () => {
         bodyFont: {
           size: 13,
         },
+        callbacks: {
+          label: function (context: TooltipItem<'doughnut'>) {
+            const label = context.label || '';
+            const value = context.parsed || 0;
+            const total = categoryStats?.totalSessions || 0;
+            const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+            return `${label}: ${value}회 (${percentage}%)`;
+          },
+        },
       },
     },
   };
 
-  // 캘린더 생성
-  const renderCalendar = () => {
-    const firstDay = new Date(currentYear, currentMonth, 1).getDay();
-    const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-    const today = new Date();
-    
-    const days = [];
-    const weekDays = ['일', '월', '화', '수', '목', '금', '토'];
+  // 세션 상태 배지 렌더링
+  const renderStatusBadge = (status: string) => {
+    const statusMap = {
+      COMPLETED: { text: '완료', className: 'status-completed' },
+      IN_PROGRESS: { text: '진행중', className: 'status-progress' },
+      ABORTED: { text: '중단', className: 'status-aborted' },
+    };
 
-    // 요일 헤더
-    weekDays.forEach(day => {
-      days.push(
-        <div key={`header-${day}`} className="calendar-day-header">
-          {day}
-        </div>
-      );
-    });
+    const statusInfo = statusMap[status as keyof typeof statusMap] || {
+      text: status,
+      className: '',
+    };
 
-    // 빈 칸
-    for (let i = 0; i < firstDay; i++) {
-      days.push(<div key={`empty-${i}`} className="calendar-day empty"></div>);
-    }
+    return <span className={`status-badge ${statusInfo.className}`}>{statusInfo.text}</span>;
+  };
 
-    // 날짜
-    for (let day = 1; day <= daysInMonth; day++) {
-      const isToday = 
-        today.getDate() === day &&
-        today.getMonth() === currentMonth &&
-        today.getFullYear() === currentYear;
-      
-      days.push(
-        <div key={`day-${day}`} className={`calendar-day ${isToday ? 'today' : ''}`}>
-          <span className="day-number">{day}</span>
-        </div>
-      );
-    }
-
-    return days;
+  // 정답률에 따른 색상 클래스
+  const getAccuracyClass = (accuracy: number) => {
+    if (accuracy >= 80) return 'accuracy-high';
+    if (accuracy >= 50) return 'accuracy-medium';
+    return 'accuracy-low';
   };
 
   return (
     <div className="student-dashboard">
       <NavBar />
-      
+
       <div className="dashboard-content">
-        <div className="student-list-section">
-          <div className="section-header">
-            <h2>학생 목록</h2>
-            <span className="student-count">이름/학년 검색</span>
-          </div>
-          
-          <div className="student-list">
-            {students.map((student) => (
-              <div
-                key={student.id}
-                className={`student-item ${selectedStudent?.id === student.id ? 'active' : ''}`}
-                onClick={() => handleStudentSelect(student)}
-              >
-                <div className="student-info">
-                  <span className="student-name">{student.name}</span>
-                  <span className="student-grade">{student.grade}</span>
-                </div>
-                <button className="view-button">보기</button>
+        {/* 좌측: 카테고리별 차트 */}
+        <div className="dashboard-left">
+          <div className="detail-card chart-card">
+            <div className="card-header">
+              <h3 className="card-title">카테고리별 활동</h3>
+              <div className="month-selector">
+                <button className="month-nav-btn" onClick={handlePrevMonth}>
+                  ←
+                </button>
+                <span className="month-display">
+                  {currentYear}년 {currentMonth}월
+                </span>
+                <button className="month-nav-btn" onClick={handleNextMonth}>
+                  →
+                </button>
               </div>
-            ))}
+            </div>
+            <div className="chart-container">
+              {categoryStats && getChartData() ? (
+                <>
+                  <Doughnut data={getChartData()!} options={chartOptions} />
+                  <div className="total-sessions">
+                    총 세션: {categoryStats.totalSessions}회
+                  </div>
+                </>
+              ) : (
+                <div className="no-data">이번 달 활동 데이터가 없습니다.</div>
+              )}
+            </div>
           </div>
         </div>
 
-        <div className="student-detail-section">
-          <div className="top-cards">
-            <div className="detail-card activity-summary-card">
-              <h3 className="card-title">(학생 이름) 활동</h3>
-              <div className="chart-container">
-                {selectedStudent && getChartData() && (
-                  <Doughnut data={getChartData()!} options={chartOptions} />
-                )}
-              </div>
+        {/* 우측: 세션 리스트 */}
+        <div className="dashboard-right">
+          <div className="detail-card sessions-card">
+            <h3 className="card-title">최근 시나리오 활동</h3>
+            <div className="sessions-list">
+              {sessions && sessions.sessions.length > 0 ? (
+                sessions.sessions.map((session) => (
+                  <div
+                    key={session.sessionId}
+                    className="session-item"
+                    onClick={() => handleSessionClick(session.sessionId)}
+                  >
+                    <div className="session-thumbnail">
+                      {session.thumbnailUrl ? (
+                        <img src={session.thumbnailUrl} alt={session.scenarioTitle} />
+                      ) : (
+                        <div className="thumbnail-placeholder">이미지 없음</div>
+                      )}
+                    </div>
+                    <div className="session-info">
+                      <div className="session-title">{session.scenarioTitle}</div>
+                      <div className="session-meta">
+                        <span className="session-category">{session.categoryName}</span>
+                        <span className="session-date">
+                          {new Date(session.createdAt).toLocaleDateString('ko-KR')}
+                        </span>
+                      </div>
+                    </div>
+                    {renderStatusBadge(session.status)}
+                  </div>
+                ))
+              ) : (
+                <div className="no-data">활동 기록이 없습니다.</div>
+              )}
             </div>
-
-            <div className="detail-card calendar-card">
-              <div className="calendar-header">
-                <button className="calendar-nav-btn" onClick={handlePrevMonth}>←</button>
-                <h3 className="calendar-title">{currentMonth + 1}월</h3>
-                <button className="calendar-nav-btn" onClick={handleNextMonth}>→</button>
-              </div>
-              <div className="calendar-grid">
-                {renderCalendar()}
-              </div>
-            </div>
-          </div>
-
-          <div className="detail-card activity-card">
-            <h3 className="card-title">
-              카테고리 별 해당 학생이 챗한 시뮬레이션 들을 상세보기 눌르면 해당 시나리오 질문과 정답을 텍스트로 볼 수 있음
-            </h3>
           </div>
         </div>
       </div>
+
+      {/* 시퀀스별 정답률 모달 */}
+      {showSequenceStats && selectedSession && (
+        <div className="modal-overlay" onClick={() => setShowSequenceStats(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>{selectedSession.scenarioTitle} - 상세 결과</h2>
+              <button className="modal-close" onClick={() => setShowSequenceStats(false)}>
+                ✕
+              </button>
+            </div>
+            <div className="modal-body">
+              <div className="session-summary">
+                <div className="summary-item">
+                  <span className="summary-label">전체 시퀀스:</span>
+                  <span className="summary-value">{selectedSession.totalSequences}개</span>
+                </div>
+                <div className="summary-item">
+                  <span className="summary-label">완료 시퀀스:</span>
+                  <span className="summary-value">{selectedSession.completedSequences}개</span>
+                </div>
+                <div className="summary-item">
+                  <span className="summary-label">평균 정답률:</span>
+                  <span className={`summary-value ${getAccuracyClass(selectedSession.averageAccuracy)}`}>
+                    {selectedSession.averageAccuracy.toFixed(1)}%
+                  </span>
+                </div>
+              </div>
+
+              <table className="sequence-stats-table">
+                <thead>
+                  <tr>
+                    <th>순서</th>
+                    <th>질문</th>
+                    <th>시도 횟수</th>
+                    <th>정답률</th>
+                    <th>결과</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {selectedSession.sequenceStats.map((seq) => (
+                    <tr key={seq.sequenceId}>
+                      <td>{seq.sequenceNumber}</td>
+                      <td className="question-cell">{seq.question}</td>
+                      <td>{seq.successAttempt}회</td>
+                      <td>
+                        <span className={`accuracy ${getAccuracyClass(seq.accuracyRate)}`}>
+                          {seq.accuracyRate.toFixed(1)}%
+                        </span>
+                      </td>
+                      <td>
+                        <span className={`result-badge ${seq.isCorrect ? 'correct' : 'incorrect'}`}>
+                          {seq.isCorrect ? '정답' : '오답'}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

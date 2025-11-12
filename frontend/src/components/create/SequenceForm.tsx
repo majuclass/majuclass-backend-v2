@@ -1,23 +1,51 @@
 /** @format */
 
+<<<<<<< HEAD
 import { useEffect, useState } from "react";
+=======
+import { useState } from "react";
+import axios from "axios";
+>>>>>>> 43f1927 ([FE] Feature: 대시보드 1차 완료)
 import { useScenarioCreateStore } from "../../stores/useScenarioCreateStore";
+import api from "../../apis/apiInstance";
 import TextButton from "../TextButton";
 import SequenceInput from "./SequenceInput";
 import SequenceTabHeader from "./SequenceTabHeader";
-import api from "../../apis/apiInstance";
-import axios from "axios";
 
+// Types
 interface SequenceFormProps {
   onPrev: () => void;
 }
 
+<<<<<<< HEAD
+=======
+interface CreateScenarioPayload {
+  title: string;
+  summary: string;
+  categoryId: number;
+  sequences: SequencePayload[];
+  thumbnailS3Key?: string;
+  backgroundS3Key?: string;
+}
+
+interface SequencePayload {
+  seqNo: number;
+  question: string;
+  options: OptionPayload[];
+}
+
+interface OptionPayload {
+  optionNo: number;
+  optionText: string;
+  optionS3Key: string;
+  isAnswer: boolean;
+}
+
+// Component
+>>>>>>> 43f1927 ([FE] Feature: 대시보드 1차 완료)
 export default function SequenceForm({ onPrev }: SequenceFormProps) {
   const sequences = useScenarioCreateStore((s) => s.sequences);
-  const { addSequence } = useScenarioCreateStore();
-  const { deleteSequence } = useScenarioCreateStore();
-
-  //   현재 활성 시퀀스
+  const { addSequence, deleteSequence } = useScenarioCreateStore();
   const [activeSeqNum, setActiveSeqNum] = useState(1);
 
   // activeSeqNum 유효성 오류 해결 유효하지 않으면 첫 번째로 자동 이동
@@ -30,65 +58,117 @@ export default function SequenceForm({ onPrev }: SequenceFormProps) {
 
   const activeSequence = sequences.find((s) => s.seqNo === activeSeqNum);
 
-  const handleCreateScenario = async () => {
-    const { title, summary, thumbnail, background, categoryId, sequences } =
-      useScenarioCreateStore.getState();
+  // Validation 
+  const validateScenarioData = (): boolean => {
+    const { categoryId, sequences } = useScenarioCreateStore.getState();
 
-    // 구체적인 검증 로직
-    // 1. 카테고리 확인
     if (!categoryId || categoryId === 0) {
       alert("카테고리를 선택해주세요.");
+<<<<<<< HEAD
       return;
+=======
+      return false;
+>>>>>>> 43f1927 ([FE] Feature: 대시보드 1차 완료)
     }
 
-    // 2. 각 시퀀스별 검증
     for (let i = 0; i < sequences.length; i++) {
       const seq = sequences[i];
 
+<<<<<<< HEAD
       // 질문 확인
       if (!seq.question || !seq.question.trim()) {
+=======
+      if (!seq.question?.trim()) {
+>>>>>>> 43f1927 ([FE] Feature: 대시보드 1차 완료)
         alert(`시퀀스 ${i + 1}번: 질문을 입력해주세요.`);
-        return;
+        return false;
       }
 
-      // 옵션 확인
       for (let j = 0; j < seq.options.length; j++) {
         const opt = seq.options[j];
 
+<<<<<<< HEAD
         if (!opt.optionText || !opt.optionText.trim()) {
           alert(
             `시퀀스 ${i + 1}번, 옵션 ${j + 1}번: 답변 텍스트를 입력해주세요.`
           );
           return;
+=======
+        if (!opt.optionText?.trim()) {
+          alert(`시퀀스 ${i + 1}번, 옵션 ${j + 1}번: 답변 텍스트를 입력해주세요.`);
+          return false;
+>>>>>>> 43f1927 ([FE] Feature: 대시보드 1차 완료)
         }
 
         if (!opt.optionS3Key) {
           alert(`시퀀스 ${i + 1}번, 옵션 ${j + 1}번: 아이콘을 선택해주세요.`);
-          return;
+          return false;
         }
       }
     }
+<<<<<<< HEAD
 
     let thumbnailS3Key: string = "";
     let backgroundS3Key: string = "";
+=======
+>>>>>>> 43f1927 ([FE] Feature: 대시보드 1차 완료)
 
-    try {
-      if (thumbnail) {
-        thumbnailS3Key = (await handleUpload(thumbnail, "THUMBNAIL")) || "";
-        console.log("thumbnailkey:" + thumbnailS3Key);
-      }
-      if (background) {
-        backgroundS3Key = (await handleUpload(background, "BACKGROUND")) || "";
-        console.log("bgkey: " + backgroundS3Key);
-      }
-    } catch (error) {
-      console.error(error);
+    return true;
+  };
+
+  // Image Upload 
+  const uploadImageToS3 = async (
+    file: File,
+    imageType: string
+  ): Promise<string> => {
+    const { data } = await api.post("scenarios/image-upload-url", {
+      imageType,
+      contentType: file.type,
+    });
+
+    const { presignedUrl, s3Key } = data.data;
+
+    const response = await axios.put(presignedUrl, file, {
+      headers: { "Content-Type": file.type },
+    });
+
+    if (response.status === 200 || response.status === 204) {
+      return s3Key;
     }
-    // sequences 데이터 정체 추가
-    // 변경: API 스키마에 맞게 필드명 매핑
-    // - sequenceNumber/optionNumber 로 변환
-    // - optionText/optionS3Key는 값이 있을 때만 포함
-    const cleanedSequences = sequences.map((seq, sIdx) => ({
+
+    throw new Error("Image upload failed");
+  };
+
+  const uploadImages = async (): Promise<{
+    thumbnailS3Key: string;
+    backgroundS3Key: string;
+  }> => {
+    const { thumbnail, background } = useScenarioCreateStore.getState();
+    let thumbnailS3Key = "";
+    let backgroundS3Key = "";
+
+    if (thumbnail) {
+      thumbnailS3Key = await uploadImageToS3(thumbnail, "THUMBNAIL");
+      console.log("Thumbnail uploaded:", thumbnailS3Key);
+    }
+
+    if (background) {
+      backgroundS3Key = await uploadImageToS3(background, "BACKGROUND");
+      console.log("Background uploaded:", backgroundS3Key);
+    }
+
+    return { thumbnailS3Key, backgroundS3Key };
+  };
+
+  // Prepare Payload 
+  const prepareScenarioPayload = (
+    thumbnailS3Key: string,
+    backgroundS3Key: string
+  ): CreateScenarioPayload => {
+    const { title, summary, categoryId, sequences } =
+      useScenarioCreateStore.getState();
+
+    const cleanedSequences: SequencePayload[] = sequences.map((seq, sIdx) => ({
       seqNo: seq.seqNo ?? sIdx + 1,
       question: seq.question,
       options: seq.options.map((opt, oIdx) => ({
@@ -99,58 +179,38 @@ export default function SequenceForm({ onPrev }: SequenceFormProps) {
       })),
     }));
 
-    // 변경: 최상위 필드 보강 및 선택 필드 조건 포함
-    // - totalSequences 추가
-    // - difficulty 기본값 추가 (TODO: UI에서 선택값으로 대체)
-    // - thumbnail/background 키는 값이 있을 때만 전송
-    // any 사용 금지: 명시적 타입 정의 추가
-    type CreateScenarioPayload = {
-      title: string;
-      summary: string;
-      categoryId: number;
-      // difficulty: "EASY" | "NORMAL" | "HARD";
-      // totalSequences: number;
-      sequences: {
-        seqNo: number;
-        question: string;
-        options: {
-          optionNo: number;
-          isAnswer: boolean;
-          optionText: string;
-          optionS3Key: string;
-        }[];
-      }[];
-      thumbnailS3Key?: string;
-      backgroundS3Key?: string;
-    };
-    const scenarioData: CreateScenarioPayload = {
+    return {
       title,
       summary,
       categoryId,
-      // difficulty: "EASY", // TODO: ScenarioForm에서 난이도 선택값 반영
-      // totalSequences: cleanedSequences.length,
       sequences: cleanedSequences,
-      ...(thumbnailS3Key && { thumbnailS3Key }), // 조건부 프로퍼티
-      ...(backgroundS3Key && { backgroundS3Key }), // 조건부 프로퍼티
+      ...(thumbnailS3Key && { thumbnailS3Key }),
+      ...(backgroundS3Key && { backgroundS3Key }),
     };
-    // if (thumbnailS3Key) scenarioData.thumbnailS3Key = thumbnailS3Key;
-    // if (backgroundS3Key) scenarioData.backgroundS3Key = backgroundS3Key;
+  };
 
-    // const json = JSON.stringify(scenarioData);
-    // console.log(json);
-    console.log(scenarioData);
+  // Scenario 
+  const handleCreateScenario = async (): Promise<void> => {
+    if (!validateScenarioData()) return;
 
-    // 생성 post
     try {
-      const resp = await api.post(`scenarios/create`, scenarioData);
-      // 변경: 요청/응답 로깅 추가
+      const { thumbnailS3Key, backgroundS3Key } = await uploadImages();
+      const scenarioData = prepareScenarioPayload(
+        thumbnailS3Key,
+        backgroundS3Key
+      );
+
       console.log("[create-scenario] request payload:", scenarioData);
-      console.log("[create-scenario] response:", resp.status, resp.data);
-      if (resp.data.status === "SUCCESS") {
+
+      const response = await api.post("scenarios/create", scenarioData);
+
+      console.log("[create-scenario] response:", response.status, response.data);
+
+      if (response.data.status === "SUCCESS") {
+        alert("시나리오가 성공적으로 생성되었습니다.");
         console.log("생성 성공");
       }
     } catch (error) {
-      // 변경: 에러 상세 로그 (상태/본문/URL)
       if (axios.isAxiosError(error)) {
         console.error("[create-scenario] request failed", {
           status: error.response?.status,
@@ -158,12 +218,14 @@ export default function SequenceForm({ onPrev }: SequenceFormProps) {
           url: error.config?.url,
           method: error.config?.method,
         });
+        alert("시나리오 생성 중 오류가 발생했습니다.");
       } else {
         console.error(error);
       }
     }
   };
 
+<<<<<<< HEAD
   const handleDeleteSequence = (seqNo: number) => {
     if (sequences.length <= 1) {
       alert("질문답변은 최소 1개 필요합니다.");
@@ -194,12 +256,15 @@ export default function SequenceForm({ onPrev }: SequenceFormProps) {
     }
   };
 
+=======
+  // Render
+>>>>>>> 43f1927 ([FE] Feature: 대시보드 1차 완료)
   return (
     <>
-      {/* TODO: 개수 제한  */}
-      {/* Header */}
+      {/* Sequence Tabs Header */}
       <div className="flex flex-row flex-wrap items-center gap-2 rounded-2xl p-3">
         {sequences.map((sequence) => (
+<<<<<<< HEAD
           <div key={sequence.seqNo}>
             <SequenceTabHeader
               num={sequence.seqNo}
@@ -208,17 +273,25 @@ export default function SequenceForm({ onPrev }: SequenceFormProps) {
               onDelete={() => handleDeleteSequence(sequence.seqNo!)}
             />
           </div>
+=======
+          <SequenceTabHeader
+            key={sequence.seqNo}
+            num={sequence.seqNo}
+            isActive={activeSeqNum === sequence.seqNo}
+            onClick={() => setActiveSeqNum(sequence.seqNo!)}
+            onDelete={() => deleteSequence(sequence.seqNo!)}
+          />
+>>>>>>> 43f1927 ([FE] Feature: 대시보드 1차 완료)
         ))}
-        <div>
-          <button
-            onClick={addSequence}
-            className="ml-2 px-3 py-1 rounded-full bg-pink-100 text-pink-600 border border-pink-300 hover:bg-pink-200 transition-all text-sm"
-          >
-            추가하기
-          </button>
-        </div>
+        <button
+          onClick={addSequence}
+          className="ml-2 px-3 py-1 rounded-full bg-pink-100 text-pink-600 border border-pink-300 hover:bg-pink-200 transition-all text-sm"
+        >
+          추가하기
+        </button>
       </div>
 
+<<<<<<< HEAD
       {/* 시퀀스 */}
       <div>
         {/* 시퀀스 생성 */}
@@ -234,6 +307,17 @@ export default function SequenceForm({ onPrev }: SequenceFormProps) {
           <TextButton onClick={onPrev}>이전</TextButton>
           <TextButton onClick={handleCreateScenario}>저장</TextButton>
         </div>
+=======
+      {/* Sequence Input */}
+      <div className="flex flex-row items-center gap-2 mb-4 bg-pink-50 rounded-2xl justify-center min-h-[600px] transition-all duration-300">
+        <SequenceInput activeSeq={activeSequence!} />
+      </div>
+
+      {/* Navigation Buttons */}
+      <div className="flex flex-row justify-between">
+        <TextButton onClick={onPrev}>이전</TextButton>
+        <TextButton onClick={handleCreateScenario}>저장</TextButton>
+>>>>>>> 43f1927 ([FE] Feature: 대시보드 1차 완료)
       </div>
     </>
   );
