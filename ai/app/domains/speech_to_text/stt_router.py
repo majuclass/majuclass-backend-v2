@@ -21,8 +21,6 @@ router = APIRouter(
 )
 speech_analysis_service = SpeechAnalysisService()
 presigned_url_service = PresignedUrlService()
-
-# 유사도 임계값
 SIMILARITY_THRESHOLD = 0.7
 
 @router.post(
