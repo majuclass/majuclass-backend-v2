@@ -41,7 +41,7 @@ class SpeechAnalysisService:
             # ===== 2단계: STT로 음성을 텍스트로 변환 =====
             print("\n[2/4] 음성을 텍스트로 변환 중...")
             transcribed_text = self.stt_service.transcribe_audio(
-                audio_file_path=temp_file_path,
+                audio_data=temp_file_path,
                 language=language
             )
             print(f"✓ 변환 완료: '{transcribed_text}'")
