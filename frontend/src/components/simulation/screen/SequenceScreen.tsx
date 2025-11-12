@@ -3,8 +3,6 @@
 import type { Sequence } from "../../../types/Scenario";
 import DialogueBox from "../DialogueBox";
 
-/** @format */
-
 type SequenceScreenProps = {
   sequence: Sequence;
   onNext: () => void;

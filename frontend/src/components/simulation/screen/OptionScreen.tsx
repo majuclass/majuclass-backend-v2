@@ -9,6 +9,7 @@ type OptionScreenProps = {
   options: TransformedOption[];
   sequence: Sequence;
   onSelect: (option: TransformedOption) => void;
+  onSkip: () => void;
   sessionId?: number;
   sequenceNumber?: number;
   difficulty?: string;
@@ -18,6 +19,7 @@ export default function OptionScreen({
   options,
   sequence,
   onSelect,
+  onSkip,
   sessionId,
   sequenceNumber,
   difficulty,
@@ -26,6 +28,9 @@ export default function OptionScreen({
 
   return (
     <div className="flex flex-col items-center min-h-screen p-6">
+      <button onClick={onSkip} className="text-2xl">
+        {">> 스킵하기"}
+      </button>
       {/* 난이도 "상"일 때만 녹음 버튼 표시 */}
       {difficulty === "HARD" && sessionId && (
         <div className="absolute bottom-48 z-30">
@@ -41,7 +46,7 @@ export default function OptionScreen({
       </div>
       {/* 선택지 */}
       <div
-        className={`flex flex-row gap-6 p-6 font-shark font-normal text-2xl flex-grow   
+        className={`flex flex-row flex-wrap gap-6 p-6 font-shark font-normal text-2xl flex-grow justify-center
             `}
         // ${options.length === 3 ? "grid-cols-3" : ""}
       >
