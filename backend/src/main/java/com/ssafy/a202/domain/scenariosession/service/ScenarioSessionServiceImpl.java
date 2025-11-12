@@ -23,7 +23,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * 시나리오 세션 서비스 구현
@@ -307,5 +309,59 @@ public class ScenarioSessionServiceImpl implements ScenarioSessionService {
         log.info("Session ID: {} completed successfully", request.getSessionId());
 
         return SessionCompleteResponse.from(session);
+    }
+
+    @Override
+    public AudioAnswerListResponse getAudioAnswers(Long sessionId, Integer sequenceNumber) {
+        log.info("Retrieving audio answers for sessionId: {}, sequenceNumber: {}", sessionId, sequenceNumber);
+
+        // 세션 조회 및 검증
+        ScenarioSession session = scenarioSessionRepository.findById(sessionId)
+                .orElseThrow(() -> new CustomException(ErrorCode.SESSION_NOT_FOUND));
+
+        if (session.isDeleted()) {
+            throw new CustomException(ErrorCode.SESSION_NOT_FOUND);
+        }
+
+        // 시퀀스 조회 및 검증
+        ScenarioSequence sequence = session.getScenario().getScenarioSequences().stream()
+                .filter(seq -> seq.getSeqNo() == sequenceNumber && !seq.isDeleted())
+                .findFirst()
+                .orElseThrow(() -> new CustomException(ErrorCode.SEQUENCE_NOT_FOUND));
+
+        // 해당 세션/시퀀스의 모든 음성 답변 조회
+        List<SessionAnswer> audioAnswers = sessionAnswerRepository
+                .findAudioAnswersBySessionAndSequence(sessionId, sequenceNumber);
+
+        // 오디오 파일이 없는 경우 빈 리스트 반환
+        if (audioAnswers.isEmpty()) {
+            log.info("No audio answers found for sessionId: {}, sequenceNumber: {}", sessionId, sequenceNumber);
+            return AudioAnswerListResponse.of(sessionId, sequence.getId(), sequenceNumber, List.of());
+        }
+
+        // S3 Pre-signed URL 생성
+        List<AudioAnswerDto> audioAnswerDtos = audioAnswers.stream()
+                .map(answer -> {
+                    String audioUrl = s3UrlService.generateUrl(answer.getAnswerS3Key());
+                    return AudioAnswerDto.from(answer, audioUrl);
+                })
+                .collect(Collectors.toList());
+
+        log.info("Found {} audio answers for sessionId: {}, sequenceNumber: {}",
+                audioAnswerDtos.size(), sessionId, sequenceNumber);
+
+        return AudioAnswerListResponse.of(sessionId, sequence.getId(), sequenceNumber, audioAnswerDtos);
+    }
+
+    @Override
+    public AudioUrlByKeyResponse generateAudioUrlByKey(AudioUrlByKeyRequest request) {
+        log.info("Generating audio URL by S3 key: {}", request.getS3Key());
+
+        // S3UrlService를 통해 Pre-signed URL 생성 (조회용)
+        String audioUrl = s3UrlService.generateUrl(request.getS3Key());
+
+        log.info("Generated audio URL for S3 key: {}", request.getS3Key());
+
+        return AudioUrlByKeyResponse.of(request.getS3Key(), audioUrl);
     }
 }
