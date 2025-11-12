@@ -12,7 +12,6 @@ type OptionScreenProps = {
   sessionId?: number;
   sequenceNumber?: number;
   difficulty?: string;
-  wsMessage?: string;
 };
 
 export default function OptionScreen({

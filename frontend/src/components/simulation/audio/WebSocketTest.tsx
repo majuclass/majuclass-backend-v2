@@ -174,7 +174,7 @@ export default function Record({ sessionId, sequenceNumber }: Record) {
   };
 
   // Presigned URL 요청
-  const getPresignedUrl = async (): Promise<string> => {
+  const getPresignedUrl = async (): Promise<{ url: string; s3Key: string }> => {
   const token = localStorage.getItem("accessToken");
 
   
@@ -201,12 +201,12 @@ export default function Record({ sessionId, sequenceNumber }: Record) {
 
   console.log("파일 경로:", s3Key);
 
-  return presignedUrl;
+   return { url: presignedUrl, s3Key };
 };
 
 // S3 업로드 함수
 const uploadToS3 = async (wavBlob: Blob) => {
-  const url = await getPresignedUrl();
+  const { url, s3Key } = await getPresignedUrl();
   console.log("Presigned URL:", url);
   console.log(
     "Signed Headers:",
@@ -222,9 +222,40 @@ const uploadToS3 = async (wavBlob: Blob) => {
   });
 
   if (!res.ok) {
-    throw new Error(`S3 업로드 실패 (${res.status})`);
+    const text = await res.text();
+    throw new Error(`S3 업로드 실패 (${res.status}): ${text}`);
+  }
+
+  console.log("✅ S3 업로드 성공, STT 요청 시작...");
+   await requestSTTAnalyze(s3Key);
+};
+
+// STT 분석 요청 함수
+const requestSTTAnalyze = async ( s3Key: string) => {
+  const token = localStorage.getItem("accessToken");
+
+  try {
+    const res = await api.post(
+      "/ai/stt-analyze",
+      {
+        audio_s3_key: s3Key,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    console.log("STT 분석 결과:", res.data);
+    return res.data;
+  } catch (err) {
+    console.error("STT 분석 요청 실패:", err);
+    throw err;
   }
 };
+
 
   return (
     <div className="wrap">
