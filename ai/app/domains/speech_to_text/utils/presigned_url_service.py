@@ -1,6 +1,5 @@
+import os
 import requests
-from typing import Optional
-
 
 LAMBDA_PRESIGNED_URL_API = os.getenv("LAMBDA_PRESIGNED_URL_API")
 class PresignedUrlService:
