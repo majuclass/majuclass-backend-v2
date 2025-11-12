@@ -39,6 +39,10 @@ public enum SuccessCode {
     MONTHLY_SESSION_LIST_SUCCESS("월별 세션 목록 조회가 완료되었습니다"),
     SESSION_SEQUENCE_STATS_SUCCESS("세션 시퀀스별 통계 조회가 완료되었습니다"),
 
+    // 달력 관련
+    CALENDAR_MONTHLY_SUCCESS("월별 달력 데이터 조회가 완료되었습니다"),
+    DAILY_SESSION_LIST_SUCCESS("일별 세션 목록 조회가 완료되었습니다"),
+
     // 카테고리 관련
     CATEGORY_LIST_SUCCESS("카테고리 목록 조회가 완료되었습니다"),
 

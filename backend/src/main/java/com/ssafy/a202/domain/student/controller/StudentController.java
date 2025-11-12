@@ -2,6 +2,8 @@ package com.ssafy.a202.domain.student.controller;
 
 import com.ssafy.a202.domain.student.dto.request.StudentCreateRequest;
 import com.ssafy.a202.domain.student.dto.request.StudentUpdateRequest;
+import com.ssafy.a202.domain.student.dto.response.CalendarMonthlyResponse;
+import com.ssafy.a202.domain.student.dto.response.DailySessionListResponse;
 import com.ssafy.a202.domain.student.dto.response.SessionSequenceStatsResponse;
 import com.ssafy.a202.domain.student.dto.response.StudentDashboardStatsResponse;
 import com.ssafy.a202.domain.student.dto.response.StudentSessionsResponse;
@@ -17,9 +19,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -149,5 +153,45 @@ public class StudentController {
                 sessionId
         );
         return ApiResponse.success(SuccessCode.SESSION_SEQUENCE_STATS_SUCCESS, stats);
+    }
+
+    @Operation(
+            summary = "월별 달력 데이터 조회",
+            description = "담당 학생들의 월별 일자별 세션 수 통계를 조회합니다. (Redis 캐시 적용)"
+    )
+    @GetMapping("/calendar/monthly")
+    public ApiResponse<CalendarMonthlyResponse> getMonthlyCalendar(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @Parameter(description = "조회 년도", example = "2025")
+            @RequestParam int year,
+            @Parameter(description = "조회 월 (1-12)", example = "1")
+            @RequestParam int month
+    ) {
+        CalendarMonthlyResponse calendar = studentService.getMonthlyCalendar(
+                userPrincipal.getUserId(),
+                year,
+                month
+        );
+        return ApiResponse.success(SuccessCode.CALENDAR_MONTHLY_SUCCESS, calendar);
+    }
+
+    @Operation(
+            summary = "특정 날짜의 학생 세션 목록 조회",
+            description = "특정 날짜에 특정 학생이 수행한 세션 목록을 조회합니다."
+    )
+    @GetMapping("/calendar/daily-sessions")
+    public ApiResponse<DailySessionListResponse> getDailySessions(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @Parameter(description = "학생 ID", example = "1")
+            @RequestParam Long studentId,
+            @Parameter(description = "조회 날짜 (yyyy-MM-dd)", example = "2025-01-15")
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date
+    ) {
+        DailySessionListResponse sessions = studentService.getDailySessions(
+                userPrincipal.getUserId(),
+                studentId,
+                date
+        );
+        return ApiResponse.success(SuccessCode.DAILY_SESSION_LIST_SUCCESS, sessions);
     }
 }
