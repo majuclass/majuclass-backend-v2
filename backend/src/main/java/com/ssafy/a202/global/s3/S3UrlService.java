@@ -36,6 +36,12 @@ public class S3UrlService {
      * @return S3 접근 URL
      */
     public String generateUrl(String s3Key) {
+        // null 또는 빈 문자열 체크
+        if (s3Key == null || s3Key.isBlank()) {
+            log.warn("S3 key is null or empty, returning empty string");
+            return "";
+        }
+
         // scenarios로 시작하면 Public URL 반환
         if (s3Key.startsWith("scenarios/")) {
             return generatePublicUrl(s3Key);
