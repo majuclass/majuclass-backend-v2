@@ -33,10 +33,10 @@ public class Scenario extends BaseTimeEntity {
     @Column(nullable = false)
     private String summary;
 
-    @Column(name = "thumbnail_s3_key", nullable = false)
+    @Column(name = "thumbnail_s3_key")
     private String thumbnailS3Key;
 
-    @Column(name = "background_s3_key", nullable = false)
+    @Column(name = "background_s3_key")
     private String backgroundS3Key;
 
     @Column(name = "total_sequences", nullable = false)
