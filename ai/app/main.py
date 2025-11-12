@@ -4,7 +4,6 @@ from starlette.middleware.cors import CORSMiddleware
 
 from app.domains.auth.middleware import AuthMiddleware
 from app.domains.speech_to_text.stt_router import router as stt_router
-from app.domains.speech_to_text.websocket_router import router as websocket_router
 from app.common.api_response import ApiResponse
 import logging
 
@@ -42,7 +41,6 @@ app.add_middleware(
 )
 
 app.include_router(stt_router)
-app.include_router(websocket_router)
 
 @app.get("/")
 def read_root():
