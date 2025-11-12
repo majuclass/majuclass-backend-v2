@@ -37,6 +37,7 @@ class AuthMiddleware(BaseHTTPMiddleware):
             "/openapi.json",
             "/favicon.ico",
             "/ai/stt-analyze",
+            "/ai/scenario/generate",
         ]
 
         # WebSocket 경로는 자체 인증 로직 사용
