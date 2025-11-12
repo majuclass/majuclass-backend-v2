@@ -40,3 +40,31 @@ class DatabaseError(BaseSTTException):
     """데이터베이스 에러"""
     def __init__(self, message: str = "데이터베이스 처리 중 오류가 발생했습니다"):
         super().__init__(message, "DATABASE_ERROR")
+
+class AppError(Exception):
+    def __init__(self, message: str, code: str, http_status: int = 400, details: dict | None = None):
+        self.message = message
+        self.code = code
+        self.http_status = http_status
+        self.details = details
+        super().__init__(message)
+
+class LLMParseError(AppError):
+    def __init__(self, message="LLM 응답 JSON 파싱 실패", details=None):
+        super().__init__(message, "LLM_PARSE_ERROR", 502, details)
+
+class ImageGenerationError(AppError):
+    def __init__(self, message="이미지 생성에 실패했습니다", details=None):
+        super().__init__(message, "IMAGE_GENERATION_FAILED", 502, details)
+
+class PresignedUrlExpired(AppError):
+    def __init__(self, message="Presigned URL이 만료되었습니다"):
+        super().__init__(message, "PRESIGNED_URL_EXPIRED", 410)
+
+class S3UploadError(AppError):
+    def __init__(self, message="S3 업로드에 실패했습니다", details=None):
+        super().__init__(message, "S3_UPLOAD_FAILED", 502, details)
+
+class ScenarioSchemaError(AppError):
+    def __init__(self, message="시나리오 스키마 검증 실패", details=None):
+        super().__init__(message, "SCENARIO_SCHEMA_INVALID", 422, details)
