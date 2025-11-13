@@ -1,5 +1,6 @@
 package com.ssafy.a202.domain.student.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssafy.a202.domain.scenario.entity.ScenarioSequence;
 import com.ssafy.a202.domain.scenariosession.entity.ScenarioSession;
 import com.ssafy.a202.domain.scenariosession.entity.SessionAnswer;
@@ -57,6 +58,7 @@ public class StudentServiceImpl implements StudentService {
     private final SessionAnswerRepository sessionAnswerRepository;
     private final S3UrlService s3UrlService;
     private final RedisTemplate<String, Object> objectRedisTemplate;
+    private final ObjectMapper objectMapper;
 
     /**
      * 담당 학생 목록 조회
@@ -396,11 +398,19 @@ public class StudentServiceImpl implements StudentService {
             String cacheKey = RedisKey.getCalendarDailyKey(userId, date);
 
             // 캐시 조회
-            CalendarDayStatsDto cached = (CalendarDayStatsDto) objectRedisTemplate.opsForValue().get(cacheKey);
-            if (cached != null) {
-                allDailyStats.add(cached);
-                log.debug("Calendar daily data retrieved from cache: userId={}, date={}", userId, date);
-            } else {
+            try {
+                Object cachedObject = objectRedisTemplate.opsForValue().get(cacheKey);
+                if (cachedObject != null) {
+                    CalendarDayStatsDto cached = convertToCalendarDayStatsDto(cachedObject);
+                    allDailyStats.add(cached);
+                    log.debug("Calendar daily data retrieved from cache: userId={}, date={}", userId, date);
+                } else {
+                    cacheMissDates.add(date);
+                }
+            } catch (Exception e) {
+                // 캐시 역직렬화 실패 시 캐시 미스로 처리
+                log.warn("Failed to deserialize cached data, treating as cache miss: userId={}, date={}, error={}",
+                        userId, date, e.getMessage());
                 cacheMissDates.add(date);
             }
         }
@@ -623,5 +633,18 @@ public class StudentServiceImpl implements StudentService {
         }
 
         return result;
+    }
+
+    /**
+     * Redis에서 가져온 객체를 CalendarDayStatsDto로 안전하게 변환
+     * - Spring Boot Loader 환경에서 LinkedHashMap으로 역직렬화되는 문제 해결
+     */
+    private CalendarDayStatsDto convertToCalendarDayStatsDto(Object cachedObject) {
+        if (cachedObject instanceof CalendarDayStatsDto) {
+            return (CalendarDayStatsDto) cachedObject;
+        }
+
+        // LinkedHashMap으로 역직렬화된 경우 ObjectMapper를 사용하여 변환
+        return objectMapper.convertValue(cachedObject, CalendarDayStatsDto.class);
     }
 }
