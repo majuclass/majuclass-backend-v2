@@ -1,15 +1,15 @@
 /** @format */
 
 // src/pages/(MainPage)/components/navbar.tsx
-import { Link, useLocation } from "react-router-dom";
-import "../styles/NavBar.css";
+import { Link, useLocation } from 'react-router-dom';
+import '../styles/NavBar.css';
 import {
   HiOutlineHome,
   HiOutlineClock,
   HiOutlineFolder,
   HiOutlineChatBubbleBottomCenterText,
   HiOutlineUserCircle,
-} from "react-icons/hi2";
+} from 'react-icons/hi2';
 
 export default function NavBar() {
   const location = useLocation();
@@ -17,15 +17,13 @@ export default function NavBar() {
   return (
     <nav className="navbar">
       <div className="navbar-left">
-
         <img src="/src/assets/logo.png" alt="로고" className="nav-logo-img" />
 
         <Link
           to="/main"
           className={`nav-item ${
-            location.pathname === "/main" ? "active" : ""
-            }`
-          }
+            location.pathname === '/main' ? 'active' : ''
+          }`}
         >
           <i className="nav-icon">
             <HiOutlineHome />
@@ -36,7 +34,7 @@ export default function NavBar() {
         <Link
           to="/scenarios"
           className={`nav-item ${
-            location.pathname === "/scenario" ? "active" : ""
+            location.pathname === '/scenario' ? 'active' : ''
           }`}
         >
           <i className="nav-icon">
@@ -48,7 +46,7 @@ export default function NavBar() {
         <Link
           to="/students"
           className={`nav-item ${
-            location.pathname === "/students" ? "active" : ""
+            location.pathname === '/students' ? 'active' : ''
           }`}
         >
           <i className="nav-icon">
@@ -60,7 +58,7 @@ export default function NavBar() {
         <Link
           to="/about"
           className={`nav-item ${
-            location.pathname === "/about" ? "active" : ""
+            location.pathname === '/about' ? 'active' : ''
           }`}
         >
           <i className="nav-icon">
