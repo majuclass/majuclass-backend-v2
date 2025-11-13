@@ -18,11 +18,14 @@ import bgCinema from "../assets/scenarios/cinema/cinema-ticket-bg-img.png";
 import girlNormal from "../assets/scenarios/cinema/cinema-girl-normal.png";
 import { transformOptions } from "../utils/format";
 
+import { useUserStore } from "../stores/useUserStore";
+
 /** 시뮬레이션 실행 제어 컨트롤러
  * @param scenarioId - 불러올 시나리오 고유 ID
  */
 export default function SimulationPage() {
   const { scenarioId, difficulty } = useParams();
+  
 
   //   시나리오 인터페이스 확장 위해 type alias 사용
   // TODO: 차후 확장 추가
@@ -43,8 +46,9 @@ export default function SimulationPage() {
   const [isCorrect, setIsCorrect] = useState<boolean>(false);
   const [sessionId, setSessionId] = useState<number>();
 
-  //   TODO: studentId 연결
-  const studentId = 1;
+  const studentId = useUserStore((s) => s.studentId);
+  console.log("🔥 전역 studentId:", studentId);
+
 
   // 시나리오는 최초 로딩 1회
   useEffect(() => {

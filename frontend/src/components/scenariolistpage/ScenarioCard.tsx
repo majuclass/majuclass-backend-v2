@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { Scenario } from '../../apis/scenariolistpageApi';
 import { fetchScenarioById } from '../../apis/scenariolistpageApi';
+import { useUserStore } from '../../stores/useUserStore';
 
 // 모듈 스코프 간단 캐시 (플립해서 상세 본 카드 재요청 방지)
 const scenarioDetailCache = new Map<number, Scenario>();
@@ -26,6 +27,9 @@ export default function ScenarioCard({
 
   const frontBtnRef = useRef<HTMLButtonElement | null>(null);
   const backFirstFocusRef = useRef<HTMLButtonElement | null>(null);
+
+  const studentId = useUserStore((s) => s.studentId);
+  const openStudentModal = useUserStore((s) => s.openStudentModal);
 
   const startHref = useMemo(
     () => (onStartRoute ? onStartRoute(detail.id) : `/simulation/${detail.id}`),
@@ -174,11 +178,18 @@ export default function ScenarioCard({
               세부정보 보기
             </button>
             <button
-              onClick={() => navigate(startHref)}
+              onClick={() => {
+                if (!studentId) {
+                  openStudentModal(detail.id); 
+                  return;
+                }
+                navigate(startHref); 
+              }}
               className="flex-1 h-9 rounded-lg bg-sky-400 hover:bg-sky-500 text-white text-sm"
             >
               시작하기
             </button>
+
           </div>
         </article>
 
@@ -240,11 +251,18 @@ export default function ScenarioCard({
           <div className="mt-3 flex items-center justify-between gap-2">
             <button
               ref={backFirstFocusRef}
-              onClick={() => navigate(startHref)}
+              onClick={() => {
+                if (!studentId) {
+                  openStudentModal(detail.id);   // 학생 선택 모달 띄우기
+                  return;
+                }
+                navigate(startHref);  // 정상 이동
+              }}
               className="flex-1 h-9 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm"
             >
               시작하기
             </button>
+
             <button
               onClick={closeBack}
               className="flex-1 h-9 rounded-lg border border-gray-200 hover:bg-gray-50 text-sm"

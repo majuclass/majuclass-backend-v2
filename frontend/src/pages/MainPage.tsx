@@ -19,6 +19,8 @@ import type {
   DailySessionListResponse,
 } from "../types/MainPage";
 
+import { useUserStore } from "../stores/useUserStore";
+
 const MainPage: React.FC = () => {
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -39,6 +41,8 @@ const MainPage: React.FC = () => {
   // 일일 세션 모달 상태
   const [showDailySessionsModal, setShowDailySessionsModal] = useState(false);
   const [dailySessions, setDailySessions] = useState<DailySessionListResponse | null>(null);
+
+  const setStudent = useUserStore((s) => s.setStudent);
 
   // 학생 목록 로드
   useEffect(() => {
@@ -356,7 +360,12 @@ const MainPage: React.FC = () => {
                 <div
                   key={student.studentId}
                   className={`student-item ${selectedStudent?.studentId === student.studentId ? "active" : ""}`}
-                  onClick={() => setSelectedStudent(student)}
+                  onClick={() => {
+                    setSelectedStudent(student);
+                    setStudent(student.studentId, student.name);
+                    console.log("🔵 저장된 studentId:", student.studentId);
+                  }}
+
                 >
                   <div className="student-info">
                     <span className="student-name">{student.name}</span>
