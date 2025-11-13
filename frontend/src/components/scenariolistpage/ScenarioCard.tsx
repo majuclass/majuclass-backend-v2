@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useMemo, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import type { Scenario } from "../../apis/scenariolistpageApi";
-import { fetchScenarioById } from "../../apis/scenariolistpageApi";
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import type { Scenario } from '../../apis/scenariolistpageApi';
+import { fetchScenarioById } from '../../apis/scenariolistpageApi';
 
 // 모듈 스코프 간단 캐시 (플립해서 상세 본 카드 재요청 방지)
 const scenarioDetailCache = new Map<number, Scenario>();
@@ -61,7 +61,7 @@ export default function ScenarioCard({
       setDetail(full);
       queueMicrotask(() => backFirstFocusRef.current?.focus());
     } catch (e: any) {
-      setErrorDetail(e?.message ?? "상세 정보를 불러오지 못했습니다.");
+      setErrorDetail(e?.message ?? '상세 정보를 불러오지 못했습니다.');
     } finally {
       setLoadingDetail(false);
     }
@@ -84,22 +84,22 @@ export default function ScenarioCard({
         closeBack();
       }
     }
-    document.addEventListener("mousedown", onDocClick);
+    document.addEventListener('mousedown', onDocClick);
     return () => {
-      document.removeEventListener("mousedown", onDocClick);
+      document.removeEventListener('mousedown', onDocClick);
     };
   }, [isFlipped]);
 
   // 키보드 접근성: Enter 토글, Esc 닫기
   const onKeyDown: React.KeyboardEventHandler<HTMLDivElement> = (e) => {
-    if (e.key === "Enter") {
+    if (e.key === 'Enter') {
       e.preventDefault();
       if (isFlipped) {
         closeBack();
       } else {
         void openBack();
       }
-    } else if (e.key === "Escape") {
+    } else if (e.key === 'Escape') {
       if (isFlipped) {
         e.preventDefault();
         closeBack();
@@ -110,7 +110,9 @@ export default function ScenarioCard({
   return (
     <div
       ref={wrapperRef}
-      className={`relative ${className ?? ""}`}
+      className={`relative w-full max-w-[400px] p-3 rounded-[36px] font-nsrBold ${
+        className ?? ''
+      }`}
       role="group"
       aria-label={`${detail.title} 카드`}
       tabIndex={0}
@@ -118,20 +120,20 @@ export default function ScenarioCard({
       style={{ perspective: 1000 }} // Tailwind에 없는 유틸
     >
       <div
-        className="relative w-[400px] h-[240px] transition-transform duration-[400ms] ease-out will-change-transform"
+        className="relative w-full h-[260px] transition-transform duration-[400ms] ease-out will-change-transform"
         style={{
-          transformStyle: "preserve-3d",
-          transform: isFlipped ? "rotateY(180deg)" : "rotateY(0deg)",
+          transformStyle: 'preserve-3d',
+          transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
         }}
       >
         {/* FRONT */}
         <article
-          className="absolute inset-0 rounded-2xl bg-white shadow-md hover:shadow-lg border border-gray-100 overflow-hidden"
-          style={{ backfaceVisibility: "hidden" }}
+          className="absolute inset-0 rounded-3xl bg-white shadow-sm hover:shadow-md border-2 border-gray-200 overflow-hidden transition-shadow"
+          style={{ backfaceVisibility: 'hidden' }}
           aria-hidden={isFlipped}
         >
           {/* 이미지 영역 (60%) */}
-          <div className="w-full h-[144px] bg-gray-100 flex items-center justify-center overflow-hidden">
+          <div className="w-full h-[150px] rounded-t-[28px] bg-gray-100 flex items-center justify-center overflow-hidden">
             {!thumbError && detail.thumbnailUrl ? (
               <img
                 src={detail.thumbnailUrl}
@@ -141,24 +143,27 @@ export default function ScenarioCard({
                 onError={() => setThumbError(true)}
               />
             ) : (
-              <span className="text-gray-500 text-sm">이미지 미등록</span>
+              <span className="text-gray-500 text-sm">이미지 준비중</span>
             )}
           </div>
 
           {/* 제목 영역 (20%) */}
-          <div className="px-4 h-[48px] flex items-center justify-between">
-            <h3 className="font-semibold text-base truncate" title={detail.title}>
+          <div className="px-4 py-2 h-[60px] flex items-center justify-between">
+            <h1
+              className="font-bold text-base truncate text-lg"
+              title={detail.title}
+            >
               {detail.title}
-            </h3>
+            </h1>
             {detail.categoryName && (
-              <span className="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-600">
+              <span className="text-xs px-2 py-2 rounded-full bg-gray-100 text-gray-600">
                 {detail.categoryName}
               </span>
             )}
           </div>
 
           {/* 버튼 영역 (20%) */}
-          <div className="h-[48px] px-4 pb-3 flex items-center justify-between gap-2">
+          <div className="px-6 pb-5 flex items-center justify-between gap-2">
             <button
               ref={frontBtnRef}
               onClick={() => void openBack()}
@@ -170,7 +175,7 @@ export default function ScenarioCard({
             </button>
             <button
               onClick={() => navigate(startHref)}
-              className="flex-1 h-9 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm"
+              className="flex-1 h-9 rounded-lg bg-sky-400 hover:bg-sky-500 text-white text-sm"
             >
               시작하기
             </button>
@@ -181,29 +186,29 @@ export default function ScenarioCard({
         <article
           id={`card-back-${detail.id}`}
           className="absolute inset-0 rounded-2xl bg-white shadow-md border border-gray-100 p-4 flex flex-col"
-          style={{ transform: "rotateY(180deg)", backfaceVisibility: "hidden" }}
+          style={{ transform: 'rotateY(180deg)', backfaceVisibility: 'hidden' }}
           aria-hidden={!isFlipped}
           aria-live="polite"
         >
           {/* 상단 메타 */}
           <div className="flex items-center justify-between mb-2">
-            <h3 className="font-semibold text-base truncate" title={detail.title}>
+            <h3 className="font-bold text-base truncate" title={detail.title}>
               {detail.title}
             </h3>
             <div className="flex items-center gap-2 shrink-0">
               {detail.difficulty && (
                 <span
                   className={`text-xs px-2 py-0.5 rounded-full ${
-                    detail.difficulty === "HARD"
-                      ? "bg-red-50 text-red-600"
-                      : "bg-emerald-50 text-emerald-600"
+                    detail.difficulty === 'HARD'
+                      ? 'bg-red-50 text-red-600'
+                      : 'bg-emerald-50 text-emerald-600'
                   }`}
                   title={`난이도: ${detail.difficulty}`}
                 >
                   {detail.difficulty}
                 </span>
               )}
-              {typeof detail.totalSequences === "number" && (
+              {typeof detail.totalSequences === 'number' && (
                 <span className="text-xs text-gray-500">
                   {detail.totalSequences} 단계
                 </span>
@@ -226,7 +231,7 @@ export default function ScenarioCard({
             )}
             {!loadingDetail && !errorDetail && (
               <p className="text-sm text-gray-700 leading-5 line-clamp-6 whitespace-pre-line">
-                {detail.summary || "요약 정보가 없습니다."}
+                {detail.summary || '요약 정보가 없습니다.'}
               </p>
             )}
           </div>
@@ -264,8 +269,8 @@ function formatDate(iso: string) {
   try {
     const d = new Date(iso);
     const y = d.getFullYear();
-    const m = String(d.getMonth() + 1).padStart(2, "0");
-    const day = String(d.getDate()).padStart(2, "0");
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
     return `${y}.${m}.${day}`;
   } catch {
     return iso;
