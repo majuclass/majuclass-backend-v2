@@ -28,7 +28,10 @@ const router = createBrowserRouter([
       {
         path: 'scenarios',
         element: <ScenarioListPage />,
-        children: [{ path: 'create', element: <ScenarioCreatePage /> }],
+      },
+      {
+        path: 'scenarios/create',
+        element: <ScenarioCreatePage />,
       },
       { path: 'simulation/:scenarioId', element: <SelectLevelPage /> },
       {
