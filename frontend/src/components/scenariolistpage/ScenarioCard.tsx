@@ -110,7 +110,7 @@ export default function ScenarioCard({
   return (
     <div
       ref={wrapperRef}
-      className={`relative ${className ?? ""}`}
+      className={`relative w-full max-w-[400px] p-3 rounded-[36px] font-shark ${className ?? ""}`}
       role="group"
       aria-label={`${detail.title} 카드`}
       tabIndex={0}
@@ -118,7 +118,7 @@ export default function ScenarioCard({
       style={{ perspective: 1000 }} // Tailwind에 없는 유틸
     >
       <div
-        className="relative w-[400px] h-[240px] transition-transform duration-[400ms] ease-out will-change-transform"
+        className="relative w-full h-[260px] transition-transform duration-[400ms] ease-out will-change-transform"
         style={{
           transformStyle: "preserve-3d",
           transform: isFlipped ? "rotateY(180deg)" : "rotateY(0deg)",
@@ -126,12 +126,12 @@ export default function ScenarioCard({
       >
         {/* FRONT */}
         <article
-          className="absolute inset-0 rounded-2xl bg-white shadow-md hover:shadow-lg border border-gray-100 overflow-hidden"
+          className="absolute inset-0 rounded-3xl bg-white shadow-sm hover:shadow-md border-2 border-gray-200 overflow-hidden transition-shadow"
           style={{ backfaceVisibility: "hidden" }}
           aria-hidden={isFlipped}
         >
           {/* 이미지 영역 (60%) */}
-          <div className="w-full h-[144px] bg-gray-100 flex items-center justify-center overflow-hidden">
+          <div className="w-full h-[150px] rounded-t-[28px] bg-gray-100 flex items-center justify-center overflow-hidden">
             {!thumbError && detail.thumbnailUrl ? (
               <img
                 src={detail.thumbnailUrl}
@@ -141,24 +141,24 @@ export default function ScenarioCard({
                 onError={() => setThumbError(true)}
               />
             ) : (
-              <span className="text-gray-500 text-sm">이미지 미등록</span>
+              <span className="text-gray-500 text-sm">이미지 준비중</span>
             )}
           </div>
 
           {/* 제목 영역 (20%) */}
-          <div className="px-4 h-[48px] flex items-center justify-between">
-            <h3 className="font-semibold text-base truncate" title={detail.title}>
+          <div className="px-4 py-2 h-[60px] flex items-center justify-between">
+            <h1 className="font-bold text-base truncate text-lg" title={detail.title}>
               {detail.title}
-            </h3>
+            </h1>
             {detail.categoryName && (
-              <span className="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-600">
+              <span className="text-xs px-2 py-2 rounded-full bg-gray-100 text-gray-600">
                 {detail.categoryName}
               </span>
             )}
           </div>
 
           {/* 버튼 영역 (20%) */}
-          <div className="h-[48px] px-4 pb-3 flex items-center justify-between gap-2">
+          <div className="px-6 pb-5 flex items-center justify-between gap-2">
             <button
               ref={frontBtnRef}
               onClick={() => void openBack()}
@@ -170,7 +170,7 @@ export default function ScenarioCard({
             </button>
             <button
               onClick={() => navigate(startHref)}
-              className="flex-1 h-9 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm"
+              className="flex-1 h-9 rounded-lg bg-sky-400 hover:bg-sky-500 text-white text-sm"
             >
               시작하기
             </button>
@@ -187,7 +187,7 @@ export default function ScenarioCard({
         >
           {/* 상단 메타 */}
           <div className="flex items-center justify-between mb-2">
-            <h3 className="font-semibold text-base truncate" title={detail.title}>
+            <h3 className="font-bold text-base truncate" title={detail.title}>
               {detail.title}
             </h3>
             <div className="flex items-center gap-2 shrink-0">
