@@ -1,14 +1,15 @@
 /** @format */
 
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import StartPage from "./pages/StartPage";
-import MainPage from "./pages/MainPage";
-import ScenarioListPage from "./pages/ScenarioListPage";
-import SimulationPage from "./pages/SimulationPage";
-import DashBoardPage from "./pages/DashBoardPage";
-import SelectLevelPage from "./pages/SelectLevelPage";
-import ScenarioCreatePage from "./pages/ScenarioCreatePage";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import StartPage from './pages/StartPage';
+import MainPage from './pages/MainPage';
+import ScenarioListPage from './pages/ScenarioListPage';
+import SimulationPage from './pages/SimulationPage';
+import DashBoardPage from './pages/DashBoardPage';
+import SelectLevelPage from './pages/SelectLevelPage';
+import ScenarioCreatePage from './pages/ScenarioCreatePage';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import NotFoundPage from './pages/NotFoundPage';
 
 export default function App() {
   // tanstack query
@@ -44,11 +45,10 @@ export default function App() {
             path="/simulation/:scenarioId/:difficulty"
             element={<SimulationPage />}
           />
-          {/* 학생 목록 페이지 */}
-          {/* <Route path="/students" element={<StudentsPage />} /> */}
           {/* 학생 대시보드 페이지 */}
           <Route path="/students/:id" element={<DashBoardPage />} />
-          {/* 다른 라우터는 아래 추가 */}
+          {/* 404 fallback */}
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </BrowserRouter>
     </QueryClientProvider>

@@ -1,10 +1,10 @@
 /** @format */
 
-import React, { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 // import { AxiosError } from "axios";
-import NavBar from "../components/NavBar";
-import "../styles/MainPage.css";
+import NavBar from '../components/NavBar';
+import '../styles/MainPage.css';
 import {
   getStudents,
   createStudent,
@@ -12,14 +12,18 @@ import {
   deleteStudent,
   getMonthlyCalendar,
   getDailySessions,
-} from "../apis/mainApi";
+} from '../apis/mainApi';
 import type {
   StudentResponse,
   CalendarMonthlyResponse,
   DailySessionListResponse,
+<<<<<<< HEAD
 } from "../types/MainPage";
 
 import { useUserStore } from "../stores/useUserStore";
+=======
+} from '../types/MainPaget';
+>>>>>>> ac1839e ([FE] Feat: 404 에러 페이지 추가)
 
 const MainPage: React.FC = () => {
   const navigate = useNavigate();
@@ -27,20 +31,23 @@ const MainPage: React.FC = () => {
 
   // 학생 관련 상태
   const [students, setStudents] = useState<StudentResponse[]>([]);
-  const [selectedStudent, setSelectedStudent] = useState<StudentResponse | null>(null);
+  const [selectedStudent, setSelectedStudent] =
+    useState<StudentResponse | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
-  const [newStudentName, setNewStudentName] = useState("");
-  const [editStudentName, setEditStudentName] = useState("");
+  const [newStudentName, setNewStudentName] = useState('');
+  const [editStudentName, setEditStudentName] = useState('');
 
   // 달력 관련 상태
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth() + 1);
-  const [calendarData, setCalendarData] = useState<CalendarMonthlyResponse | null>(null);
+  const [calendarData, setCalendarData] =
+    useState<CalendarMonthlyResponse | null>(null);
 
   // 일일 세션 모달 상태
   const [showDailySessionsModal, setShowDailySessionsModal] = useState(false);
-  const [dailySessions, setDailySessions] = useState<DailySessionListResponse | null>(null);
+  const [dailySessions, setDailySessions] =
+    useState<DailySessionListResponse | null>(null);
 
   const setStudent = useUserStore((s) => s.setStudent);
 
@@ -59,10 +66,10 @@ const MainPage: React.FC = () => {
       const data = await getStudents();
       setStudents(data);
     } catch (error) {
-      console.error("학생 목록 로드 실패:", error);
+      console.error('학생 목록 로드 실패:', error);
       if (error && typeof error === 'object' && 'response' in error) {
         const axiosError = error as { response?: { data: unknown } };
-        console.error("서버 응답:", axiosError.response?.data);
+        console.error('서버 응답:', axiosError.response?.data);
       }
     }
   };
@@ -72,25 +79,29 @@ const MainPage: React.FC = () => {
       const data = await getMonthlyCalendar(currentYear, currentMonth);
       setCalendarData(data);
     } catch (error) {
-      console.error("달력 데이터 로드 실패:", error);
+      console.error('달력 데이터 로드 실패:', error);
 
       if (error && typeof error === 'object' && 'response' in error) {
         const axiosError = error as {
           response?: { status: number; data: unknown };
           config?: { url?: string; params?: unknown };
         };
-        console.error("상태 코드:", axiosError.response?.status);
-        console.error("서버 응답:", axiosError.response?.data);
-        console.error("요청 URL:", axiosError.config?.url);
-        console.error("요청 파라미터:", axiosError.config?.params);
+        console.error('상태 코드:', axiosError.response?.status);
+        console.error('서버 응답:', axiosError.response?.data);
+        console.error('요청 URL:', axiosError.config?.url);
+        console.error('요청 파라미터:', axiosError.config?.params);
       }
 
       // 임시로 빈 데이터 설정하여 UI가 깨지지 않도록 처리
       setCalendarData({
         year: currentYear,
         month: currentMonth,
+<<<<<<< HEAD
         dailyStats: [],
         totalDays: 0
+=======
+        dailyData: [],
+>>>>>>> ac1839e ([FE] Feat: 404 에러 페이지 추가)
       });
     }
   };
@@ -98,18 +109,18 @@ const MainPage: React.FC = () => {
   // 학생 추가
   const handleAddStudent = async () => {
     if (!newStudentName.trim()) {
-      alert("학생 이름을 입력해주세요.");
+      alert('학생 이름을 입력해주세요.');
       return;
     }
 
     try {
       await createStudent(newStudentName);
-      setNewStudentName("");
+      setNewStudentName('');
       setShowAddModal(false);
       loadStudents();
     } catch (error) {
-      console.error("학생 추가 실패:", error);
-      alert("학생 추가에 실패했습니다.");
+      console.error('학생 추가 실패:', error);
+      alert('학생 추가에 실패했습니다.');
     }
   };
 
@@ -117,24 +128,27 @@ const MainPage: React.FC = () => {
   const handleEditStudent = async () => {
     if (!selectedStudent) return;
     if (!editStudentName.trim()) {
-      alert("학생 이름을 입력해주세요.");
+      alert('학생 이름을 입력해주세요.');
       return;
     }
 
     try {
       await updateStudent(selectedStudent.studentId, { name: editStudentName });
-      setEditStudentName("");
+      setEditStudentName('');
       setShowEditModal(false);
       setSelectedStudent(null);
       loadStudents();
     } catch (error) {
-      console.error("학생 수정 실패:", error);
-      alert("학생 수정에 실패했습니다.");
+      console.error('학생 수정 실패:', error);
+      alert('학생 수정에 실패했습니다.');
     }
   };
 
   // 학생 삭제
-  const handleDeleteStudent = async (studentId: number, studentName: string) => {
+  const handleDeleteStudent = async (
+    studentId: number,
+    studentName: string
+  ) => {
     if (!confirm(`"${studentName}" 학생을 삭제하시겠습니까?`)) {
       return;
     }
@@ -146,8 +160,8 @@ const MainPage: React.FC = () => {
         setSelectedStudent(null);
       }
     } catch (error) {
-      console.error("학생 삭제 실패:", error);
-      alert("학생 삭제에 실패했습니다.");
+      console.error('학생 삭제 실패:', error);
+      alert('학생 삭제에 실패했습니다.');
     }
   };
 
@@ -160,12 +174,12 @@ const MainPage: React.FC = () => {
     const reader = new FileReader();
     reader.onload = async (e) => {
       const text = e.target?.result as string;
-      const lines = text.split("\n").filter((line) => line.trim());
+      const lines = text.split('\n').filter((line) => line.trim());
 
       // 첫 줄은 헤더로 가정 (name 등)
-      const headers = lines[0].split(",").map((h) => h.trim());
+      const headers = lines[0].split(',').map((h) => h.trim());
       const nameIndex = headers.findIndex(
-        (h) => h.toLowerCase() === "name" || h === "이름"
+        (h) => h.toLowerCase() === 'name' || h === '이름'
       );
 
       if (nameIndex === -1) {
@@ -176,7 +190,7 @@ const MainPage: React.FC = () => {
       // 데이터 행 파싱
       const studentNames: string[] = [];
       for (let i = 1; i < lines.length; i++) {
-        const values = lines[i].split(",").map((v) => v.trim());
+        const values = lines[i].split(',').map((v) => v.trim());
         const name = values[nameIndex];
         if (name) {
           studentNames.push(name);
@@ -191,8 +205,8 @@ const MainPage: React.FC = () => {
         alert(`${studentNames.length}명의 학생이 추가되었습니다.`);
         loadStudents();
       } catch (error) {
-        console.error("CSV 학생 추가 실패:", error);
-        alert("일부 학생 추가에 실패했습니다.");
+        console.error('CSV 학생 추가 실패:', error);
+        alert('일부 학생 추가에 실패했습니다.');
       }
     };
     reader.readAsText(file);
@@ -200,7 +214,7 @@ const MainPage: React.FC = () => {
 
     // 파일 입력 초기화
     if (fileInputRef.current) {
-      fileInputRef.current.value = "";
+      fileInputRef.current.value = '';
     }
   };
 
@@ -229,15 +243,18 @@ const MainPage: React.FC = () => {
     // studentName: string,
     day: number
   ) => {
-    const dateStr = `${currentYear}-${String(currentMonth).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+    const dateStr = `${currentYear}-${String(currentMonth).padStart(
+      2,
+      '0'
+    )}-${String(day).padStart(2, '0')}`;
 
     try {
       const data = await getDailySessions(studentId, dateStr);
       setDailySessions(data);
       setShowDailySessionsModal(true);
     } catch (error) {
-      console.error("일일 세션 로드 실패:", error);
-      alert("일일 세션 조회에 실패했습니다.");
+      console.error('일일 세션 로드 실패:', error);
+      alert('일일 세션 조회에 실패했습니다.');
     }
   };
 
@@ -247,7 +264,7 @@ const MainPage: React.FC = () => {
     const daysInMonth = new Date(currentYear, currentMonth, 0).getDate();
 
     const days = [];
-    const weekDays = ["일", "월", "화", "수", "목", "금", "토"];
+    const weekDays = ['일', '월', '화', '수', '목', '금', '토'];
 
     // 요일 헤더
     weekDays.forEach((day) => {
@@ -274,7 +291,7 @@ const MainPage: React.FC = () => {
       days.push(
         <div
           key={`day-${day}`}
-          className={`calendar-day ${isToday ? "today" : ""}`}
+          className={`calendar-day ${isToday ? 'today' : ''}`}
         >
           <div className="day-number">{day}</div>
           {dayData && dayData.studentSessions.length > 0 && (
@@ -283,12 +300,14 @@ const MainPage: React.FC = () => {
                 <div
                   key={activity.studentId}
                   className="activity-item"
-                  onClick={() =>
-                    handleDayClick(activity.studentId, day)
-                  }
+                  onClick={() => handleDayClick(activity.studentId, day)}
                 >
-                  <span className="activity-student">{activity.studentName}</span>
-                  <span className="activity-count">{activity.sessionCount}회</span>
+                  <span className="activity-student">
+                    {activity.studentName}
+                  </span>
+                  <span className="activity-count">
+                    {activity.sessionCount}회
+                  </span>
                 </div>
               ))}
             </div>
@@ -303,14 +322,14 @@ const MainPage: React.FC = () => {
   // 상태 배지 렌더링
   const renderStatusBadge = (status: string) => {
     const statusMap = {
-      COMPLETED: { text: "완료", className: "status-completed" },
-      IN_PROGRESS: { text: "진행중", className: "status-progress" },
-      ABORTED: { text: "중단", className: "status-aborted" },
+      COMPLETED: { text: '완료', className: 'status-completed' },
+      IN_PROGRESS: { text: '진행중', className: 'status-progress' },
+      ABORTED: { text: '중단', className: 'status-aborted' },
     };
 
     const statusInfo = statusMap[status as keyof typeof statusMap] || {
       text: status,
-      className: "",
+      className: '',
     };
 
     return (
@@ -330,10 +349,7 @@ const MainPage: React.FC = () => {
           <div className="section-header">
             <h2>학생 목록</h2>
             <div className="action-buttons">
-              <button
-                className="btn-add"
-                onClick={() => setShowAddModal(true)}
-              >
+              <button className="btn-add" onClick={() => setShowAddModal(true)}>
                 + 추가
               </button>
               <button
@@ -346,7 +362,7 @@ const MainPage: React.FC = () => {
                 ref={fileInputRef}
                 type="file"
                 accept=".csv"
-                style={{ display: "none" }}
+                style={{ display: 'none' }}
                 onChange={handleCSVUpload}
               />
             </div>
@@ -359,6 +375,7 @@ const MainPage: React.FC = () => {
               students.map((student) => (
                 <div
                   key={student.studentId}
+<<<<<<< HEAD
                   className={`student-item ${selectedStudent?.studentId === student.studentId ? "active" : ""}`}
                   onClick={() => {
                     setSelectedStudent(student);
@@ -366,6 +383,14 @@ const MainPage: React.FC = () => {
                     console.log("🔵 저장된 studentId:", student.studentId);
                   }}
 
+=======
+                  className={`student-item ${
+                    selectedStudent?.studentId === student.studentId
+                      ? 'active'
+                      : ''
+                  }`}
+                  onClick={() => setSelectedStudent(student)}
+>>>>>>> ac1839e ([FE] Feat: 404 에러 페이지 추가)
                 >
                   <div className="student-info">
                     <span className="student-name">{student.name}</span>
@@ -447,11 +472,14 @@ const MainPage: React.FC = () => {
                   value={newStudentName}
                   onChange={(e) => setNewStudentName(e.target.value)}
                   placeholder="이름을 입력하세요"
-                  onKeyPress={(e) => e.key === "Enter" && handleAddStudent()}
+                  onKeyPress={(e) => e.key === 'Enter' && handleAddStudent()}
                 />
               </div>
               <div className="modal-actions">
-                <button className="btn-cancel" onClick={() => setShowAddModal(false)}>
+                <button
+                  className="btn-cancel"
+                  onClick={() => setShowAddModal(false)}
+                >
                   취소
                 </button>
                 <button className="btn-confirm" onClick={handleAddStudent}>
@@ -484,11 +512,14 @@ const MainPage: React.FC = () => {
                   value={editStudentName}
                   onChange={(e) => setEditStudentName(e.target.value)}
                   placeholder="이름을 입력하세요"
-                  onKeyPress={(e) => e.key === "Enter" && handleEditStudent()}
+                  onKeyPress={(e) => e.key === 'Enter' && handleEditStudent()}
                 />
               </div>
               <div className="modal-actions">
-                <button className="btn-cancel" onClick={() => setShowEditModal(false)}>
+                <button
+                  className="btn-cancel"
+                  onClick={() => setShowEditModal(false)}
+                >
                   취소
                 </button>
                 <button className="btn-confirm" onClick={handleEditStudent}>
@@ -506,7 +537,10 @@ const MainPage: React.FC = () => {
           className="modal-overlay"
           onClick={() => setShowDailySessionsModal(false)}
         >
-          <div className="modal-content large" onClick={(e) => e.stopPropagation()}>
+          <div
+            className="modal-content large"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="modal-header">
               <h2>
                 {dailySessions.studentName} - {dailySessions.date} 활동
@@ -527,21 +561,30 @@ const MainPage: React.FC = () => {
                   <div key={session.sessionId} className="session-item-modal">
                     <div className="session-thumbnail">
                       {session.thumbnailUrl ? (
-                        <img src={session.thumbnailUrl} alt={session.scenarioTitle} />
+                        <img
+                          src={session.thumbnailUrl}
+                          alt={session.scenarioTitle}
+                        />
                       ) : (
                         <div className="thumbnail-placeholder">이미지 없음</div>
                       )}
                     </div>
                     <div className="session-info">
-                      <div className="session-title">{session.scenarioTitle}</div>
+                      <div className="session-title">
+                        {session.scenarioTitle}
+                      </div>
                       <div className="session-meta">
                         <span className="session-category">
                           {session.categoryName}
                         </span>
                         <span className="session-time">
-                          {new Date(session.createdAt).toLocaleTimeString("ko-KR")}
+                          {new Date(session.createdAt).toLocaleTimeString(
+                            'ko-KR'
+                          )}
                           {session.completedAt &&
-                            ` - ${new Date(session.completedAt).toLocaleTimeString("ko-KR")}`}
+                            ` - ${new Date(
+                              session.completedAt
+                            ).toLocaleTimeString('ko-KR')}`}
                         </span>
                       </div>
                     </div>
