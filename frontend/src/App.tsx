@@ -10,6 +10,7 @@ import SelectLevelPage from './pages/SelectLevelPage';
 import ScenarioCreatePage from './pages/ScenarioCreatePage';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import NotFoundPage from './pages/NotFoundPage';
+import ErrorBoundary from './components/wrappers/ErrorBoundary';
 
 export default function App() {
   // tanstack query
@@ -27,7 +28,6 @@ export default function App() {
       <ErrorBoundary>
         <BrowserRouter>
           <Routes>
-            {/*  */}
             {/* 시작 페이지 */}
             <Route path="/" element={<StartPage />} />
             <Route path="/startpage" element={<Navigate to="/" replace />} />
