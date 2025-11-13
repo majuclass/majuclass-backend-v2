@@ -1,8 +1,8 @@
 /** @format */
 
 // src/pages/(MainPage)/components/navbar.tsx
-import { Link, useLocation } from 'react-router-dom';
-import '../styles/NavBar.css';
+import { Link, useLocation,useNavigate } from "react-router-dom";
+import "../styles/NavBar.css";
 import {
   HiOutlineHome,
   HiOutlineClock,
@@ -11,8 +11,16 @@ import {
   HiOutlineUserCircle,
 } from 'react-icons/hi2';
 
+import { useUserStore } from "../stores/useUserStore";
+
 export default function NavBar() {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { studentId, studentName } = useUserStore();
+  const handleStudentClick = () => {
+    if (!studentId) return;
+    navigate(`/students/${studentId}`);
+  };
 
   return (
     <nav className="navbar">
@@ -69,6 +77,19 @@ export default function NavBar() {
       </div>
 
       <div className="navbar-right">
+        
+        <div className="selected-student" onClick={handleStudentClick}>
+          {studentId && studentName ? (
+            <span className="selected-student-name">
+              현재 선택: <strong>{studentName}</strong> 학생
+            </span>
+          ) : (
+            <span className="selected-student-empty">
+              현재 선택된 학생 없음
+            </span>
+          )}
+        </div>
+
         <span className="navbar-greeting">
           <strong>김선생님</strong>, 안녕하세요!
         </span>

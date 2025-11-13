@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
 interface UserState {
   studentId: number | null;
@@ -15,30 +16,43 @@ interface UserState {
   clear: () => void;
 }
 
-export const useUserStore = create<UserState>((set) => ({
-  studentId: null,
-  studentName: null,
-  pendingScenarioId: null,
-  isStudentModalOpen: false,
-
-  setStudent: (id, name) =>
-    set({
-      studentId: id,
-      studentName: name,
-      isStudentModalOpen: false,
-    }),
-
-  openStudentModal: (scenarioId) =>
-    set({
-      isStudentModalOpen: true,
-      pendingScenarioId: scenarioId,
-    }),
-
-  closeStudentModal: () =>
-    set({
-      isStudentModalOpen: false,
+export const useUserStore = create<UserState>()(
+  persist(
+    (set) => ({
+      studentId: null,
+      studentName: null,
       pendingScenarioId: null,
-    }),
+      isStudentModalOpen: false,
 
-  clear: () => set({ studentId: null, studentName: null }),
-}));
+      setStudent: (id, name) =>
+        set({
+          studentId: id,
+          studentName: name,
+          isStudentModalOpen: false,
+        }),
+
+      openStudentModal: (scenarioId) =>
+        set({
+          isStudentModalOpen: true,
+          pendingScenarioId: scenarioId,
+        }),
+
+      closeStudentModal: () =>
+        set({
+          isStudentModalOpen: false,
+          pendingScenarioId: null,
+        }),
+
+      clear: () =>
+        set({
+          studentId: null,
+          studentName: null,
+          pendingScenarioId: null,
+          isStudentModalOpen: false,
+        }),
+    }),
+    {
+      name: "maju-user", // localStorage key
+    }
+  )
+);

@@ -45,6 +45,8 @@ const MainPage: React.FC = () => {
     useState<DailySessionListResponse | null>(null);
 
   const setStudent = useUserStore((s) => s.setStudent);
+  const currentStudentId = useUserStore((s) => s.studentId);
+  const clear = useUserStore((s) => s.clear);
 
   // 학생 목록 로드
   useEffect(() => {
@@ -366,15 +368,17 @@ const MainPage: React.FC = () => {
               students.map((student) => (
                 <div
                   key={student.studentId}
-                  className={`student-item ${
-                    selectedStudent?.studentId === student.studentId
-                      ? 'active'
-                      : ''
-                  }`}
+                  className={`student-item ${currentStudentId === student.studentId ? "active" : ""}`}
                   onClick={() => {
-                    setSelectedStudent(student);
-                    setStudent(student.studentId, student.name);
-                    console.log('🔵 저장된 studentId:', student.studentId);
+                    if (currentStudentId === student.studentId) {
+                      // 선택 해제
+                      setSelectedStudent(null);
+                      clear();
+                    } else {
+                      // 선택
+                      setSelectedStudent(student);
+                      setStudent(student.studentId, student.name);
+                    }
                   }}
                 >
                   <div className="student-info">
