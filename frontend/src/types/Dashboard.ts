@@ -48,3 +48,26 @@ export interface SessionSequenceStatsResponse {
   completedSequences: number;
   averageAccuracy: number;
 }
+
+/** 음성 답변 */
+export interface AudioAnswerDto {
+  answerId: number;
+  attemptNo: number;
+  audioUrl: string;
+  isCorrect: boolean;
+  createdAt: string;
+}
+
+/** 시퀀스별 음성 답변 */
+export interface SequenceAudioAnswersDto {
+  sequenceId: number;
+  sequenceNumber: number;
+  totalAttempts: number;
+  audioAnswers: AudioAnswerDto[];
+}
+
+/** 세션 전체 음성 답변 응답 */
+export interface AudioAnswerListResponse {
+  sessionId: number;
+  sequences: SequenceAudioAnswersDto[];
+}

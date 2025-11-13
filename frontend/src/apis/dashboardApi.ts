@@ -41,3 +41,11 @@ export const getSessionSequenceStats = async (sessionId: number) => {
   );
   return response.data.data;
 };
+
+/** 세션 전체 음성 답변 조회 */
+export const getAudioAnswers = async (sessionId: number) => {
+  const response = await api.get(
+    `/scenario-sessions/audio-answers/${sessionId}`
+  );
+  return response.data.data;
+};
