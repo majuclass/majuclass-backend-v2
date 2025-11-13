@@ -16,13 +16,9 @@ import type {
   StudentResponse,
   CalendarMonthlyResponse,
   DailySessionListResponse,
-<<<<<<< HEAD
-} from "../types/MainPage";
+} from '../types/MainPage';
 
-import { useUserStore } from "../stores/useUserStore";
-=======
-} from '../types/MainPaget';
->>>>>>> ac1839e ([FE] Feat: 404 에러 페이지 추가)
+import { useUserStore } from '../stores/useUserStore';
 
 const MainPage: React.FC = () => {
   const navigate = useNavigate();
@@ -95,12 +91,8 @@ const MainPage: React.FC = () => {
       setCalendarData({
         year: currentYear,
         month: currentMonth,
-<<<<<<< HEAD
         dailyStats: [],
-        totalDays: 0
-=======
-        dailyData: [],
->>>>>>> ac1839e ([FE] Feat: 404 에러 페이지 추가)
+        totalDays: 0,
       });
     }
   };
@@ -281,7 +273,9 @@ const MainPage: React.FC = () => {
 
     // 날짜
     for (let day = 1; day <= daysInMonth; day++) {
-      const dayData = calendarData?.dailyStats.find((d) => new Date(d.date).getDate() === day);
+      const dayData = calendarData?.dailyStats.find(
+        (d) => new Date(d.date).getDate() === day
+      );
       const isToday =
         new Date().getDate() === day &&
         new Date().getMonth() + 1 === currentMonth &&
@@ -372,22 +366,16 @@ const MainPage: React.FC = () => {
               students.map((student) => (
                 <div
                   key={student.studentId}
-<<<<<<< HEAD
-                  className={`student-item ${selectedStudent?.studentId === student.studentId ? "active" : ""}`}
-                  onClick={() => {
-                    setSelectedStudent(student);
-                    setStudent(student.studentId, student.name);
-                    console.log("🔵 저장된 studentId:", student.studentId);
-                  }}
-
-=======
                   className={`student-item ${
                     selectedStudent?.studentId === student.studentId
                       ? 'active'
                       : ''
                   }`}
-                  onClick={() => setSelectedStudent(student)}
->>>>>>> ac1839e ([FE] Feat: 404 에러 페이지 추가)
+                  onClick={() => {
+                    setSelectedStudent(student);
+                    setStudent(student.studentId, student.name);
+                    console.log('🔵 저장된 studentId:', student.studentId);
+                  }}
                 >
                   <div className="student-info">
                     <span className="student-name">{student.name}</span>
