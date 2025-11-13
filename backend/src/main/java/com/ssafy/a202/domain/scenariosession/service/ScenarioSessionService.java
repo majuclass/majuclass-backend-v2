@@ -50,13 +50,12 @@ public interface ScenarioSessionService {
     SessionCompleteResponse completeSession(SessionCompleteRequest request);
 
     /**
-     * 특정 세션의 특정 시퀀스에 대한 오디오 답변 목록 조회
+     * 특정 세션의 모든 오디오 답변 목록 조회 (시퀀스별 그룹화)
      *
      * @param sessionId 세션 ID
-     * @param sequenceNumber 시퀀스 번호
-     * @return 오디오 답변 목록 응답
+     * @return 오디오 답변 목록 응답 (시퀀스별 그룹화)
      */
-    AudioAnswerListResponse getAudioAnswers(Long sessionId, Integer sequenceNumber);
+    AudioAnswerListResponse getAudioAnswers(Long sessionId);
 
     /**
      * S3 Key로 오디오 파일 조회용 Pre-signed URL 생성

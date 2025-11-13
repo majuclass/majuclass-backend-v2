@@ -65,12 +65,10 @@ public class ScenarioSessionController {
         return ApiResponse.success(SuccessCode.SESSION_COMPLETE_SUCCESS, response);
     }
 
-    @Operation(summary = "오디오 답변 목록 조회", description = "특정 세션의 특정 시퀀스에 대한 모든 오디오 답변 URL을 조회합니다.")
-    @GetMapping("/{sessionId}/sequences/{sequenceNumber}/audio-answers")
-    public ApiResponse<AudioAnswerListResponse> getAudioAnswers(
-            @PathVariable Long sessionId,
-            @PathVariable Integer sequenceNumber) {
-        AudioAnswerListResponse response = scenarioSessionService.getAudioAnswers(sessionId, sequenceNumber);
+    @Operation(summary = "오디오 답변 목록 조회", description = "특정 세션의 모든 오디오 답변을 시퀀스별로 그룹화하여 조회합니다.")
+    @GetMapping("/audio-answers/{sessionId}")
+    public ApiResponse<AudioAnswerListResponse> getAudioAnswers(@PathVariable Long sessionId) {
+        AudioAnswerListResponse response = scenarioSessionService.getAudioAnswers(sessionId);
         return ApiResponse.success(SuccessCode.AUDIO_ANSWER_LIST_SUCCESS, response);
     }
 
