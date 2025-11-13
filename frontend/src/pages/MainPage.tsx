@@ -17,7 +17,7 @@ import type {
   StudentResponse,
   CalendarMonthlyResponse,
   DailySessionListResponse,
-} from "../types/MainPaget";
+} from "../types/MainPage";
 
 const MainPage: React.FC = () => {
   const navigate = useNavigate();
@@ -85,7 +85,8 @@ const MainPage: React.FC = () => {
       setCalendarData({
         year: currentYear,
         month: currentMonth,
-        dailyData: []
+        dailyStats: [],
+        totalDays: 0
       });
     }
   };
@@ -260,7 +261,7 @@ const MainPage: React.FC = () => {
 
     // 날짜
     for (let day = 1; day <= daysInMonth; day++) {
-      const dayData = calendarData?.dailyData.find((d) => d.day === day);
+      const dayData = calendarData?.dailyStats.find((d) => new Date(d.date).getDate() === day);
       const isToday =
         new Date().getDate() === day &&
         new Date().getMonth() + 1 === currentMonth &&
@@ -272,9 +273,9 @@ const MainPage: React.FC = () => {
           className={`calendar-day ${isToday ? "today" : ""}`}
         >
           <div className="day-number">{day}</div>
-          {dayData && dayData.studentActivities.length > 0 && (
+          {dayData && dayData.studentSessions.length > 0 && (
             <div className="day-activities">
-              {dayData.studentActivities.map((activity) => (
+              {dayData.studentSessions.map((activity) => (
                 <div
                   key={activity.studentId}
                   className="activity-item"

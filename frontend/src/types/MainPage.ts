@@ -22,24 +22,26 @@ export interface StudentUpdateRequest {
   userId?: number;
 }
 
-/** 달력 일일 데이터 */
-export interface CalendarDayData {
-  day: number;
-  studentActivities: StudentActivitySummary[];
-}
-
-/** 학생 활동 요약 */
-export interface StudentActivitySummary {
+/** 학생 세션 카운트 (백엔드 스펙) */
+export interface StudentSessionCountDto {
   studentId: number;
   studentName: string;
   sessionCount: number;
 }
 
-/** 월별 달력 응답 */
+/** 달력 일일 통계 (백엔드 스펙) */
+export interface CalendarDayStatsDto {
+  date: string; // "2025-01-15" 형태
+  studentSessions: StudentSessionCountDto[];
+  totalSessionCount: number;
+}
+
+/** 월별 달력 응답 (백엔드 스펙) */
 export interface CalendarMonthlyResponse {
   year: number;
   month: number;
-  dailyData: CalendarDayData[];
+  dailyStats: CalendarDayStatsDto[];
+  totalDays: number;
 }
 
 /** 일일 세션 아이템 */
