@@ -8,8 +8,10 @@ import com.ssafy.a202.domain.scenariosession.dto.request.*;
 import com.ssafy.a202.domain.scenariosession.dto.response.*;
 import com.ssafy.a202.domain.scenariosession.entity.ScenarioSession;
 import com.ssafy.a202.domain.scenariosession.entity.SessionAnswer;
+import com.ssafy.a202.domain.scenariosession.entity.SessionSttAnswer;
 import com.ssafy.a202.domain.scenariosession.repository.ScenarioSessionRepository;
 import com.ssafy.a202.domain.scenariosession.repository.SessionAnswerRepository;
+import com.ssafy.a202.domain.scenariosession.repository.SessionSttAnswerRepository;
 import com.ssafy.a202.domain.student.entity.Student;
 import com.ssafy.a202.domain.student.repository.StudentRepository;
 import com.ssafy.a202.domain.student.service.StudentService;
@@ -39,6 +41,7 @@ public class ScenarioSessionServiceImpl implements ScenarioSessionService {
     private final ScenarioRepository scenarioRepository;
     private final ScenarioSessionRepository scenarioSessionRepository;
     private final SessionAnswerRepository sessionAnswerRepository;
+    private final SessionSttAnswerRepository sessionSttAnswerRepository;
     private final StudentRepository studentRepository;
     private final S3UrlService s3UrlService;
     private final StudentService studentService;
@@ -197,7 +200,6 @@ public class ScenarioSessionServiceImpl implements ScenarioSessionService {
         SessionAnswer sessionAnswer = SessionAnswer.builder()
                 .scenarioSession(session)
                 .scenarioSequence(sequence)
-                .answerS3Key(null)  // 하/중 난이도는 음성 없음
                 .attemptNo(attemptNo)
                 .isCorrect(isCorrect)
                 .build();
@@ -312,8 +314,8 @@ public class ScenarioSessionServiceImpl implements ScenarioSessionService {
     }
 
     @Override
-    public AudioAnswerListResponse getAudioAnswers(Long sessionId, Integer sequenceNumber) {
-        log.info("Retrieving audio answers for sessionId: {}, sequenceNumber: {}", sessionId, sequenceNumber);
+    public AudioAnswerListResponse getAudioAnswers(Long sessionId) {
+        log.info("Retrieving all audio answers for sessionId: {}", sessionId);
 
         // 세션 조회 및 검증
         ScenarioSession session = scenarioSessionRepository.findById(sessionId)
@@ -323,34 +325,42 @@ public class ScenarioSessionServiceImpl implements ScenarioSessionService {
             throw new CustomException(ErrorCode.SESSION_NOT_FOUND);
         }
 
-        // 시퀀스 조회 및 검증
-        ScenarioSequence sequence = session.getScenario().getScenarioSequences().stream()
-                .filter(seq -> seq.getSeqNo() == sequenceNumber && !seq.isDeleted())
-                .findFirst()
-                .orElseThrow(() -> new CustomException(ErrorCode.SEQUENCE_NOT_FOUND));
-
-        // 해당 세션/시퀀스의 모든 음성 답변 조회
-        List<SessionAnswer> audioAnswers = sessionAnswerRepository
-                .findAudioAnswersBySessionAndSequence(sessionId, sequenceNumber);
+        // 해당 세션의 모든 음성 답변 조회 (SessionSttAnswer)
+        List<SessionSttAnswer> audioAnswers = sessionSttAnswerRepository.findAllAudioAnswersBySessionId(sessionId);
 
         // 오디오 파일이 없는 경우 빈 리스트 반환
         if (audioAnswers.isEmpty()) {
-            log.info("No audio answers found for sessionId: {}, sequenceNumber: {}", sessionId, sequenceNumber);
-            return AudioAnswerListResponse.of(sessionId, sequence.getId(), sequenceNumber, List.of());
+            log.info("No audio answers found for sessionId: {}", sessionId);
+            return AudioAnswerListResponse.of(sessionId, List.of());
         }
 
-        // S3 Pre-signed URL 생성
-        List<AudioAnswerDto> audioAnswerDtos = audioAnswers.stream()
-                .map(answer -> {
-                    String audioUrl = s3UrlService.generateUrl(answer.getAnswerS3Key());
-                    return AudioAnswerDto.from(answer, audioUrl);
+        // 시퀀스별로 그룹화
+        Map<ScenarioSequence, List<SessionSttAnswer>> groupedBySequence =
+                audioAnswers.stream()
+                        .collect(Collectors.groupingBy(SessionSttAnswer::getScenarioSequence));
+
+        // 시퀀스별 DTO 생성
+        List<SequenceAudioAnswersDto> sequenceDtos = groupedBySequence.entrySet().stream()
+                .map(entry -> {
+                    ScenarioSequence sequence = entry.getKey();
+                    List<SessionSttAnswer> answers = entry.getValue();
+
+                    // 각 답변에 대한 S3 Pre-signed URL 생성
+                    List<AudioAnswerDto> audioAnswerDtos = answers.stream()
+                            .map(answer -> {
+                                String audioUrl = s3UrlService.generateUrl(answer.getAudioS3Key());
+                                return AudioAnswerDto.from(answer, audioUrl);
+                            })
+                            .collect(Collectors.toList());
+
+                    return SequenceAudioAnswersDto.of(sequence.getId(), sequence.getSeqNo(), audioAnswerDtos);
                 })
+                .sorted((a, b) -> a.sequenceNumber().compareTo(b.sequenceNumber()))
                 .collect(Collectors.toList());
 
-        log.info("Found {} audio answers for sessionId: {}, sequenceNumber: {}",
-                audioAnswerDtos.size(), sessionId, sequenceNumber);
+        log.info("Found {} sequences with audio answers for sessionId: {}", sequenceDtos.size(), sessionId);
 
-        return AudioAnswerListResponse.of(sessionId, sequence.getId(), sequenceNumber, audioAnswerDtos);
+        return AudioAnswerListResponse.of(sessionId, sequenceDtos);
     }
 
     @Override

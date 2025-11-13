@@ -1,6 +1,6 @@
 package com.ssafy.a202.domain.scenariosession.dto.response;
 
-import com.ssafy.a202.domain.scenariosession.entity.SessionAnswer;
+import com.ssafy.a202.domain.scenariosession.entity.SessionSttAnswer;
 import lombok.Builder;
 
 import java.time.LocalDateTime;
@@ -17,19 +17,19 @@ public record AudioAnswerDto(
         LocalDateTime createdAt
 ) {
     /**
-     * SessionAnswer 엔티티로부터 DTO 생성
+     * SessionSttAnswer 엔티티로부터 DTO 생성
      *
-     * @param sessionAnswer 세션 답변 엔티티
+     * @param sessionSttAnswer 세션 STT 답변 엔티티
      * @param audioUrl 오디오 파일 S3 URL
      * @return AudioAnswerDto
      */
-    public static AudioAnswerDto from(SessionAnswer sessionAnswer, String audioUrl) {
+    public static AudioAnswerDto from(SessionSttAnswer sessionSttAnswer, String audioUrl) {
         return AudioAnswerDto.builder()
-                .answerId(sessionAnswer.getId())
-                .attemptNo(sessionAnswer.getAttemptNo())
+                .answerId(sessionSttAnswer.getId())
+                .attemptNo(sessionSttAnswer.getAttemptNo())
                 .audioUrl(audioUrl)
-                .isCorrect(sessionAnswer.getIsCorrect())
-                .createdAt(sessionAnswer.getCreatedAt())
+                .isCorrect(sessionSttAnswer.isCorrect())
+                .createdAt(sessionSttAnswer.getCreatedAt())
                 .build();
     }
 }
