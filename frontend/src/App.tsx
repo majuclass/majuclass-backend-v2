@@ -24,33 +24,41 @@ export default function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <Routes>
-          {/*  */}
-          {/* 시작 페이지 */}
-          <Route path="/" element={<StartPage />} />
-          <Route path="/startpage" element={<Navigate to="/" replace />} />
-          {/* 메인 페이지 */}
-          <Route path="/main" element={<MainPage />} />
-          {/* 회원가입 페이지 */}
-          <Route path="/signup" element={<div>회원가입 준비 중입니다.</div>} />
-          {/* 시나리오 목록 페이지 */}
-          <Route path="/scenarios" element={<ScenarioListPage />} />
-          {/* 시나리오 생성 */}
-          <Route path="/scenarios/create" element={<ScenarioCreatePage />} />
-          {/* 시나리오 레벨 선택 페이지 */}
-          <Route path="/simulation/:scenarioId" element={<SelectLevelPage />} />
-          {/* 시나리오 실행 페이지 */}
-          <Route
-            path="/simulation/:scenarioId/:difficulty"
-            element={<SimulationPage />}
-          />
-          {/* 학생 대시보드 페이지 */}
-          <Route path="/students/:id" element={<DashBoardPage />} />
-          {/* 404 fallback */}
-          <Route path="*" element={<NotFoundPage />} />
-        </Routes>
-      </BrowserRouter>
+      <ErrorBoundary>
+        <BrowserRouter>
+          <Routes>
+            {/*  */}
+            {/* 시작 페이지 */}
+            <Route path="/" element={<StartPage />} />
+            <Route path="/startpage" element={<Navigate to="/" replace />} />
+            {/* 메인 페이지 */}
+            <Route path="/main" element={<MainPage />} />
+            {/* 회원가입 페이지 */}
+            <Route
+              path="/signup"
+              element={<div>회원가입 준비 중입니다.</div>}
+            />
+            {/* 시나리오 목록 페이지 */}
+            <Route path="/scenarios" element={<ScenarioListPage />} />
+            {/* 시나리오 생성 */}
+            <Route path="/scenarios/create" element={<ScenarioCreatePage />} />
+            {/* 시나리오 레벨 선택 페이지 */}
+            <Route
+              path="/simulation/:scenarioId"
+              element={<SelectLevelPage />}
+            />
+            {/* 시나리오 실행 페이지 */}
+            <Route
+              path="/simulation/:scenarioId/:difficulty"
+              element={<SimulationPage />}
+            />
+            {/* 학생 대시보드 페이지 */}
+            <Route path="/students/:id" element={<DashBoardPage />} />
+            {/* 404 fallback */}
+            <Route path="*" element={<NotFoundPage />} />
+          </Routes>
+        </BrowserRouter>
+      </ErrorBoundary>
     </QueryClientProvider>
   );
 }
