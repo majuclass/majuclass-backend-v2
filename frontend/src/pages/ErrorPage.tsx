@@ -45,7 +45,7 @@ export default function ErrorPage() {
       <h1 className="font-bold">{title}</h1>
       <p className="py-10">{message}</p>
       {/* 🌟 사용자에게 친절하게 메인 페이지로 돌아가는 버튼 제공 */}
-      <a href="/">메인으로 돌아가기</a>
+      <a href="/main">메인으로 돌아가기</a>
 
       {/* 개발 단계에서만 에러 상세 정보를 보여줍니다. */}
       {/* {import.meta.env.DEV && error && <pre>{JSON.stringify(error, null, 2)}</pre>} */}
