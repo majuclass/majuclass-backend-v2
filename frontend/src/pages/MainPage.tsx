@@ -3,7 +3,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 // import { AxiosError } from "axios";
-import NavBar from '../components/NavBar';
 import '../styles/MainPage.css';
 import {
   getStudents,
@@ -341,8 +340,6 @@ const MainPage: React.FC = () => {
 
   return (
     <div className="main-page">
-      <NavBar />
-
       <div className="main-content">
         {/* 왼쪽: 학생 목록 */}
         <div className="students-section">

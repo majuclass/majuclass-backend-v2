@@ -1,7 +1,6 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import Layout from './components/wrappers/Layout';
 import StartPage from './pages/StartPage';
-import NotFoundPage from './pages/NotFoundPage';
 import MainPage from './pages/MainPage';
 import ScenarioListPage from './pages/ScenarioListPage';
 import ScenarioCreatePage from './pages/ScenarioCreatePage';
@@ -31,10 +30,10 @@ const router = createBrowserRouter([
         element: <ScenarioListPage />,
         children: [{ path: 'create', element: <ScenarioCreatePage /> }],
       },
+      { path: 'simulation/:scenarioId', element: <SelectLevelPage /> },
       {
-        path: 'simulation/:scenarioId',
-        element: <SelectLevelPage />,
-        children: [{ path: ':difficulty', element: <SimulationPage /> }],
+        path: 'simulation/:scenarioId/:difficulty',
+        element: <SimulationPage />,
       },
       // 404 fallback: NotFound에서 변경
       { path: '*', element: <ErrorPage /> },

@@ -5,7 +5,6 @@
  */
 
 import { useEffect, useMemo, useState } from 'react';
-import NavBar from '../components/NavBar'; // 네브바
 import ScenarioCard from '../components/scenariolistpage/ScenarioCard';
 import {
   fetchScenarios,
@@ -83,9 +82,6 @@ export default function ScenarioListPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* 상단 네브바 */}
-      <NavBar />
-
       {/* 콘텐츠 */}
       <section className="max-w-7xl mx-auto px-6 sm:px-6 lg:px-8 py-6 sm:py-8  text-base sm:text-lg">
         <div className="text-center mb-8">
