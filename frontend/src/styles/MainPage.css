@@ -535,6 +535,16 @@
   color: #991b1b;
 }
 
+.selected-student-banner {
+  text-align: center;
+  padding-bottom: 15px;
+  font-size: 20px;
+}
+
+.selected-student-banner span {
+  font-weight: bold;
+}
+
 /* 반응형 디자인 */
 @media (max-width: 1024px) {
   .main-content {
