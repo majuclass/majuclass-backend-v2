@@ -1,269 +1,240 @@
 /** @format */
 
-import { useShallow } from "zustand/react/shallow";
-
+import { useEffect, useState } from "react";
 import { useScenarioCreateStore } from "../../stores/useScenarioCreateStore";
 import TextButton from "../TextButton";
-import TextInput from "../TextInput";
-import boyHead from "../../assets/scenarios/cinema/cinema-boy-head.png";
-import { useNavigate } from "react-router-dom";
+import SequenceInput from "./SequenceInput";
+import SequenceTabHeader from "./SequenceTabHeader";
 import api from "../../apis/apiInstance";
-import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 
-interface ScenarioFormProps {
-  onNext: () => void;
+interface SequenceFormProps {
+  onPrev: () => void;
 }
 
-type category = {
-  id: number;
-  categoryName: string;
-};
+export default function SequenceForm({ onPrev }: SequenceFormProps) {
+  const sequences = useScenarioCreateStore((s) => s.sequences);
+  const { addSequence } = useScenarioCreateStore();
+  const { deleteSequence } = useScenarioCreateStore();
 
-// TODO: 정해지면 매핑 시작
-// const categoryDefaultImg: Record<number, string> = {
-//     1:
-//     2:
-//     3:
-// }
+  //   현재 활성 시퀀스
+  const [activeSeqNum, setActiveSeqNum] = useState(1);
 
-// 실제 API 호출 함수 -> useQuery 사용 위함
-const fetchCategory = async () => {
-  const resp = await api.get(`categories`);
-  return resp.data.data as category[];
-};
+  // activeSeqNum 유효성 오류 해결 유효하지 않으면 첫 번째로 자동 이동
+  useEffect(() => {
+    const exists = sequences.some((s) => s.seqNo === activeSeqNum);
+    if (!exists && sequences.length > 0) {
+      setActiveSeqNum(sequences[0].seqNo!);
+    }
+  }, [sequences, activeSeqNum]);
 
-export default function ScenarioForm({ onNext }: ScenarioFormProps) {
-  // category에 tanstack query 작성
-  const {
-    data: categories,
-    isLoading,
-    isError,
-  } = useQuery({
-    queryKey: ["categories"],
-    queryFn: fetchCategory,
-    // 24시간동안 stale로 간주, refetch 없음
-    staleTime: 1000 * 60 * 60 * 24,
-  });
+  const activeSequence = sequences.find((s) => s.seqNo === activeSeqNum);
 
-  // category 로드 시 배열에 할당
-  const categoryList = categories || [];
+  const handleCreateScenario = async () => {
+    const { title, summary, thumbnail, background, categoryId, sequences } =
+      useScenarioCreateStore.getState();
 
-  // 리렌더링 방지 위한 selector + shallow pattern
-  // TODO: onChange 방식으로 관리 시, 매번 모든 전역스토어 리렌더링 문제?
-  // 이렇게 관리하는게 잘한건지 몰르겠슈
-  const { title, summary, categoryId, thumbnail, background } =
-    useScenarioCreateStore(
-      useShallow((s) => ({
-        title: s.title,
-        summary: s.summary,
-        categoryId: s.categoryId,
-        thumbnail: s.thumbnail,
-        background: s.background,
-      }))
-    );
+    // 구체적인 검증 로직
+    // 1. 카테고리 확인
+    if (!categoryId || categoryId === 0) {
+      alert("카테고리를 선택해주세요.");
+      return;
+    }
 
-  const navigator = useNavigate();
+    // 2. 각 시퀀스별 검증
+    for (let i = 0; i < sequences.length; i++) {
+      const seq = sequences[i];
 
-  const setScenarioInfo = useScenarioCreateStore((s) => s.setScenarioInfo);
-  const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    // e.target.value는 항상 문자열
-    const newCategoryId = parseInt(e.target.value, 10);
-    setScenarioInfo({ categoryId: newCategoryId });
+      // 질문 확인
+      if (!seq.question || !seq.question.trim()) {
+        alert(`시퀀스 ${i + 1}번: 질문을 입력해주세요.`);
+        return;
+      }
+
+      // 옵션 확인
+      for (let j = 0; j < seq.options.length; j++) {
+        const opt = seq.options[j];
+
+        if (!opt.optionText || !opt.optionText.trim()) {
+          alert(
+            `시퀀스 ${i + 1}번, 옵션 ${j + 1}번: 답변 텍스트를 입력해주세요.`
+          );
+          return;
+        }
+
+        if (!opt.optionS3Key) {
+          alert(`시퀀스 ${i + 1}번, 옵션 ${j + 1}번: 아이콘을 선택해주세요.`);
+          return;
+        }
+      }
+    }
+
+    let thumbnailS3Key: string = "";
+    let backgroundS3Key: string = "";
+
+    try {
+      if (thumbnail) {
+        thumbnailS3Key = (await handleUpload(thumbnail, "THUMBNAIL")) || "";
+        console.log("thumbnailkey:" + thumbnailS3Key);
+      }
+      if (background) {
+        backgroundS3Key = (await handleUpload(background, "BACKGROUND")) || "";
+        console.log("bgkey: " + backgroundS3Key);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+    // sequences 데이터 정체 추가
+    // 변경: API 스키마에 맞게 필드명 매핑
+    // - sequenceNumber/optionNumber 로 변환
+    // - optionText/optionS3Key는 값이 있을 때만 포함
+    const cleanedSequences = sequences.map((seq, sIdx) => ({
+      seqNo: seq.seqNo ?? sIdx + 1,
+      question: seq.question,
+      options: seq.options.map((opt, oIdx) => ({
+        optionNo: opt.optionNo ?? oIdx + 1,
+        optionText: opt.optionText,
+        optionS3Key: opt.optionS3Key,
+        isAnswer: !!opt.isAnswer,
+      })),
+    }));
+
+    // 변경: 최상위 필드 보강 및 선택 필드 조건 포함
+    // - totalSequences 추가
+    // - difficulty 기본값 추가 (TODO: UI에서 선택값으로 대체)
+    // - thumbnail/background 키는 값이 있을 때만 전송
+    // any 사용 금지: 명시적 타입 정의 추가
+    type CreateScenarioPayload = {
+      title: string;
+      summary: string;
+      categoryId: number;
+      // difficulty: "EASY" | "NORMAL" | "HARD";
+      // totalSequences: number;
+      sequences: {
+        seqNo: number;
+        question: string;
+        options: {
+          optionNo: number;
+          isAnswer: boolean;
+          optionText: string;
+          optionS3Key: string;
+        }[];
+      }[];
+      thumbnailS3Key?: string;
+      backgroundS3Key?: string;
+    };
+    const scenarioData: CreateScenarioPayload = {
+      title,
+      summary,
+      categoryId,
+      // difficulty: "EASY", // TODO: ScenarioForm에서 난이도 선택값 반영
+      // totalSequences: cleanedSequences.length,
+      sequences: cleanedSequences,
+      ...(thumbnailS3Key && { thumbnailS3Key }), // 조건부 프로퍼티
+      ...(backgroundS3Key && { backgroundS3Key }), // 조건부 프로퍼티
+    };
+    // if (thumbnailS3Key) scenarioData.thumbnailS3Key = thumbnailS3Key;
+    // if (backgroundS3Key) scenarioData.backgroundS3Key = backgroundS3Key;
+
+    // const json = JSON.stringify(scenarioData);
+    // console.log(json);
+    console.log(scenarioData);
+
+    // 생성 post
+    try {
+      const resp = await api.post(`scenarios/create`, scenarioData);
+      // 변경: 요청/응답 로깅 추가
+      console.log("[create-scenario] request payload:", scenarioData);
+      console.log("[create-scenario] response:", resp.status, resp.data);
+      if (resp.data.status === "SUCCESS") {
+        console.log("생성 성공");
+      }
+    } catch (error) {
+      // 변경: 에러 상세 로그 (상태/본문/URL)
+      if (axios.isAxiosError(error)) {
+        console.error("[create-scenario] request failed", {
+          status: error.response?.status,
+          data: error.response?.data,
+          url: error.config?.url,
+          method: error.config?.method,
+        });
+      } else {
+        console.error(error);
+      }
+    }
   };
 
-  const handleFileChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    fieldName: "thumbnail" | "background"
-  ) => {
-    // fileList 객체 첫 번째만 가져오기
-    const file = e.target.files ? e.target.files[0] : null;
-    setScenarioInfo({ [fieldName]: file });
+  const handleDeleteSequence = (seqNo: number) => {
+    if (sequences.length <= 1) {
+      alert("질문답변은 최소 1개 필요합니다.");
+      return;
+    }
+    deleteSequence(seqNo);
   };
 
-  const handleClearFile = (fieldName: "thumbnail" | "background") => {
-    // store 초기화
-    setScenarioInfo({ [fieldName]: null });
+  const handleUpload = async (file: File, imageType: string) => {
+    // presignedurl 요청
+    try {
+      const { data } = await api.post("scenarios/image-upload-url", {
+        imageType: imageType,
+        contentType: file.type,
+      });
+      console.log(data);
+
+      const { presignedUrl, s3Key } = data.data;
+
+      // s3 업로드
+      const resp = await axios.put(presignedUrl, file, {
+        headers: { "Content-Type": file.type },
+      });
+
+      if (resp.status === 200 || resp.status === 204) return s3Key;
+    } catch (error) {
+      console.error(error);
+    }
   };
-
-  //   미리보기
-  const thumbnailUrl = thumbnail ? URL.createObjectURL(thumbnail) : null;
-
-  // TODO: 카테고리 default image mapping
-
-  //   카테고리용 로딩 / 에러 상태 처리
-  if (isLoading) {
-    return (
-      <div className="p-8 text-center">카테고리 정보 불러오는 중 ... </div>
-    );
-  }
-  if (isError) {
-    return (
-      <div className="p-8 text-center text-red-500">
-        카테고리 로드 중 에러 발생
-      </div>
-    );
-  }
 
   return (
-    <div className="w-full">
-      <div className="flex flex-row gap-5">
-        {/* 메타데이터 입력 */}
-        <div className="flex-1 bg-pink-50 rounded-2xl p-8 shadow-sm">
-          <h2 className="text-lg font-bold mb-4">시나리오 정보 입력하기</h2>
-
-          <div className="flex items-center gap-3 mb-4">
-            <p className="w-24 text-md">카테고리</p>
-            <select
-              name="category"
-              id="scenario-category"
-              value={categoryId ?? ""}
-              onChange={handleCategoryChange}
-              className="flex-1 border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-pink-300"
-            >
-              <option value="">카테고리를 선택하세요</option>
-              {/* useQuery data 바로 매핑 */}
-              {categoryList.map((cate) => (
-                <option key={cate.id} value={cate.id}>
-                  {cate.categoryName}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="space-y-4 mb-4">
-            <TextInput
-              name="title"
-              placeholder="시나리오 제목을 입력하세요"
-              value={title}
-              onChange={(val) => setScenarioInfo({ title: val })}
-            >
-              시나리오 제목
-            </TextInput>
-            <TextInput
-              name="summary"
-              value={summary}
-              placeholder="시나리오 설명을 입력하세요."
-              onChange={(val) => setScenarioInfo({ summary: val })}
-            >
-              시나리오 설명
-            </TextInput>
-          </div>
-          <div className="flex items-center gap-3 mb-3">
-            <p>썸네일 이미지</p>
-            <label
-              htmlFor="thumbnailInput"
-              className="cursor-pointer bg-gray-100 px-3 py-1.5 rounded-md border border-gray-300 text-gray-700 text-sm hover:bg-gray-200 transition"
-            >
-              파일 선택
-            </label>
-            <input
-              id="thumbnailInput"
-              type="file"
-              name="thumbnailImg"
-              accept="image/*"
-              onChange={(e) => handleFileChange(e, "thumbnail")}
-              className="hidden"
+    <>
+      {/* TODO: 개수 제한  */}
+      {/* Header */}
+      <div className="flex flex-row flex-wrap items-center gap-2 rounded-2xl p-3">
+        {sequences.map((sequence) => (
+          <div key={sequence.seqNo}>
+            <SequenceTabHeader
+              num={sequence.seqNo}
+              isActive={activeSeqNum === sequence.seqNo}
+              onClick={() => setActiveSeqNum(sequence.seqNo!)}
+              onDelete={() => handleDeleteSequence(sequence.seqNo!)}
             />
-
-            {/* 파일 생겼을 때만 표시&삭제 */}
-            {thumbnail && (
-              <div className="flex items-center gap-2 bg-gray-50 px-2 py-1 rounded-md">
-                <span className="text-xs text-gray-500 truncate max-w-[120px]">
-                  {thumbnail.name}
-                </span>
-                <div className="text-sm flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() => handleClearFile("thumbnail")}
-                    className="text-red-500 hover:text-red-600 font-bold"
-                  >
-                    X
-                  </button>
-                </div>
-              </div>
-            )}
           </div>
-          <div className="flex flex-row items-center gap-3 mb-4">
-            <p>배경화면 이미지</p>
-            <label
-              htmlFor="backgroundInput"
-              className="cursor-pointer bg-gray-100 px-3 py-1.5 rounded-md border border-gray-300 text-gray-700 text-sm hover:bg-gray-200 transition"
-            >
-              파일 선택
-            </label>
-            <input
-              id="backgroundInput"
-              type="file"
-              name="backgroundImg"
-              accept="image/*"
-              onChange={(e) => handleFileChange(e, "background")}
-              className="hidden"
-            />
-
-            {/* 파일 생겼을 때만 표시&삭제 */}
-            {background && (
-              <div className="flex items-center gap-2 bg-gray-50 px-2 py-1 rounded-md">
-                <span className="text-xs text-gray-500 truncate max-w-[120px]">
-                  {background.name}
-                </span>
-                <div className="text-sm flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() => handleClearFile("background")}
-                    className="text-red-500 hover:text-red-600 font-bold"
-                  >
-                    X
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* 썸네일 미리보기 */}
-        <div className="flex-1 bg-pink-50 rounded-2xl p-6 shadow-sm flex flex-col items-center justify-center text-center">
-          <div className="flex flex-row items-center gap-3 mb-4">
-            <div className="h-20 flex-shrink-0">
-              <img
-                src={boyHead}
-                alt="미리보기 캐릭터"
-                className="w-full h-full object-contain"
-              />
-            </div>
-            <div className="flex flex-col items-start text-left">
-              <h2 className="text-xl font-bold leading-tight">
-                썸네일 미리보기
-              </h2>
-              <p className="text-gray-600 text-sm">화면은 이렇게 만들어져요</p>
-            </div>
-          </div>
-
-          {/* 썸네일 박스 유지 */}
-          <div
-            className={`
-      w-80 h-56 rounded-xl border-2 border-dashed 
-      flex items-center justify-center 
-      bg-white transition-all
-      ${thumbnailUrl ? "border-gray-200" : "border-gray-300"}
-    `}
+        ))}
+        <div>
+          <button
+            onClick={addSequence}
+            className="ml-2 px-3 py-1 rounded-full bg-pink-100 text-pink-600 border border-pink-300 hover:bg-pink-200 transition-all text-sm"
           >
-            {thumbnailUrl ? (
-              <img
-                src={thumbnailUrl}
-                alt="썸네일 미리보기"
-                className="object-cover w-full h-full rounded-xl"
-              />
-            ) : (
-              <div className="flex flex-col items-center justify-center text-gray-400">
-                <p className="text-sm">대표 이미지를 추가하세요</p>
-              </div>
+            추가하기
+          </button>
+        </div>
+      </div>
+
+      {/* 시퀀스 */}
+      <div>
+        {/* 시퀀스 생성 */}
+        <div>
+          <div className="flex flex-row items-center gap-2 mb-4 bg-pink-50 rounded-2xl justify-center min-h-[600px] transition-all duration-300">
+            {activeSequence && (
+              <SequenceInput activeSeq={activeSequence!}></SequenceInput>
             )}
           </div>
         </div>
+        {/* 버튼 */}
+        <div className="flex flex-row justify-between">
+          <TextButton onClick={onPrev}>이전</TextButton>
+          <TextButton onClick={handleCreateScenario}>저장</TextButton>
+        </div>
       </div>
-      <div className="flex flex-row justify-between mt-6">
-        <TextButton onClick={() => navigator(-1)}>취소</TextButton>
-        <TextButton onClick={onNext}>다음</TextButton>
-      </div>
-    </div>
+    </>
   );
 }
