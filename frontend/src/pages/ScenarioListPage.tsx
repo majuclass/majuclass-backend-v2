@@ -14,6 +14,9 @@ import {
 } from '../apis/scenariolistpageApi';
 import { useNavigate } from 'react-router-dom';
 
+import { getStudents } from '../apis/mainApi';
+import SelectStudentModal from '../components/simulation/screen/SelectStudentModal';
+
 export default function ScenarioListPage() {
   const [items, setItems] = useState<Scenario[]>([]);
   const [loading, setLoading] = useState(true);
@@ -29,6 +32,19 @@ export default function ScenarioListPage() {
   const [difficulty] = useState<Difficulty | undefined>(undefined);
 
   const navigate = useNavigate();
+
+  const [students, setStudents] = useState([]);
+
+  const loadStudents = async () => {
+    try {
+      const data = await getStudents();  
+      setStudents(data);
+      console.log('[ScenarioListPage] 학생 목록 로드 완료:', data);
+    } catch (error) {
+      console.error("학생 목록 로드 실패:", error);
+    }
+  };
+
 
   // 시나리오 목록 로드
   useEffect(() => {
@@ -57,6 +73,10 @@ export default function ScenarioListPage() {
       mounted = false;
     };
   }, [categoryId, difficulty, page]);
+  
+    useEffect(() => {
+      loadStudents();
+    }, []);
 
   // 시뮬레이션 라우트 규약
   const toSimulation = useMemo(() => (id: number) => `/simulation/${id}`, []);
@@ -143,6 +163,7 @@ export default function ScenarioListPage() {
           </>
         )}
       </section>
+      <SelectStudentModal students={students} />
     </div>
   );
 }
