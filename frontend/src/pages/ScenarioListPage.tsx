@@ -4,15 +4,15 @@
  * @format
  */
 
-import { useEffect, useMemo, useState } from "react";
-import NavBar from "../components/NavBar"; // 네브바
-import ScenarioCard from "../components/scenariolistpage/ScenarioCard";
+import { useEffect, useMemo, useState } from 'react';
+import NavBar from '../components/NavBar'; // 네브바
+import ScenarioCard from '../components/scenariolistpage/ScenarioCard';
 import {
   fetchScenarios,
   type Difficulty,
   type Scenario,
-} from "../apis/scenariolistpageApi";
-import { useNavigate } from "react-router-dom";
+} from '../apis/scenariolistpageApi';
+import { useNavigate } from 'react-router-dom';
 
 export default function ScenarioListPage() {
   const [items, setItems] = useState<Scenario[]>([]);
@@ -46,7 +46,7 @@ export default function ScenarioListPage() {
       })
       .catch((e: Error) => {
         if (!mounted) return;
-        setError(e?.message ?? "시나리오 목록을 불러오지 못했습니다.");
+        setError(e?.message ?? '시나리오 목록을 불러오지 못했습니다.');
       })
       .finally(() => {
         if (!mounted) return;
@@ -63,23 +63,28 @@ export default function ScenarioListPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-
       {/* 상단 네브바 */}
       <NavBar />
 
       {/* 콘텐츠 */}
       <section className="max-w-7xl mx-auto px-6 sm:px-6 lg:px-8 py-6 sm:py-8  text-base sm:text-lg">
-        <h2 className="text-xl font-bold mb-6 text-gray-800">
-          이야기 선택하기
-        </h2>
+        <div className="text-center mb-8">
+          <div className="inline-block bg-white rounded-full px-8 py-4 shadow-lg">
+            <h2 className="text-3xl font-bold font-nsrExtraBold">
+              이야기 선택하기
+            </h2>
+          </div>
+        </div>
 
         {/* 시나리오 추가 */}
-        <button
-          className="mb-3 bg-pink-200 border border-pink-200 rounded-xl p-2 font-bold"
-          onClick={() => navigate("create")}
-        >
-          + 이야기 만들기
-        </button>
+        <div className="flex justify-end">
+          <button
+            className="w-full sm:w-auto p-3 font-nsrExtraBold mb-6 bg-gradient-to-r from-pink-400 to-pink-500 hover:from-pink-500 hover:to-pink-600 text-white rounded-full shadow-lg hover:shadow-lg transition-all duration-300 transform hover:scale-105"
+            onClick={() => navigate('create')}
+          >
+            새 이야기 만들기
+          </button>
+        </div>
 
         {/* 로딩 */}
         {loading && <GridSkeleton />}
@@ -101,14 +106,16 @@ export default function ScenarioListPage() {
         {/* 목록 */}
         {!loading && !error && items.length > 0 && (
           <>
-            <div className="grid gap-4 sm:gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 justify-items-center py-6">
-              {items.map((sc) => (
-                <ScenarioCard
-                  key={sc.id}
-                  scenario={sc}
-                  onStartRoute={toSimulation}
-                />
-              ))}
+            <div className="bg-white rounded-3xl shadow-lg p-6 sm:p-8 mb-8">
+              <div className="grid gap-4 sm:gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 justify-items-center py-6">
+                {items.map((sc) => (
+                  <ScenarioCard
+                    key={sc.id}
+                    scenario={sc}
+                    onStartRoute={toSimulation}
+                  />
+                ))}
+              </div>
             </div>
 
             {/* 페이지네이션 */}
@@ -144,8 +151,7 @@ export default function ScenarioListPage() {
 function GridSkeleton() {
   const placeholders = Array.from({ length: 6 });
   return (
-    <div
-      className="grid gap-5 grid-cols-3 justify-items-center"   >
+    <div className="grid gap-5 grid-cols-3 justify-items-center">
       {placeholders.map((_, i) => (
         <div
           key={i}
