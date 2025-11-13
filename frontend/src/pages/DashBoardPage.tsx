@@ -237,7 +237,7 @@ const StudentDashboard: React.FC = () => {
   const renderStatusBadge = (status: string) => {
     const statusMap = {
       COMPLETED: { text: '완료', className: 'status-completed' },
-      IN_PROGRESS: { text: '진행중', className: 'status-progress' },
+      IN_PROGRESS: { text: '중단', className: 'status-progress' }, // 현재는 진행 중인 시나리오를 연결해서 할 수 없으므로
       ABORTED: { text: '중단', className: 'status-aborted' },
     };
 
