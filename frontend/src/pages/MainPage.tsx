@@ -362,6 +362,11 @@ const MainPage: React.FC = () => {
           </div>
 
           <div className="students-list">
+            {currentStudentId && (
+              <div className="selected-student-banner">
+                <span>{useUserStore.getState().studentName}</span> 학생이 선택되었습니다.
+              </div>
+            )}
             {students.length === 0 ? (
               <div className="no-data">학생이 없습니다.</div>
             ) : (

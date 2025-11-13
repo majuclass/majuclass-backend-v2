@@ -81,7 +81,7 @@ export default function NavBar() {
         <div className="selected-student" onClick={handleStudentClick}>
           {studentId && studentName ? (
             <span className="selected-student-name">
-              현재 선택: <strong>{studentName}</strong> 학생
+              <strong>{studentName}</strong> 학생 관리 상태입니다
             </span>
           ) : (
             <span className="selected-student-empty">
