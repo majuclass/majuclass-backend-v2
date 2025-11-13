@@ -7,6 +7,7 @@ import Lottie from "lottie-react";
 import micRecording from "../../../assets/scenarios/animations/recording.json";
 import startrecord from "../../../assets/scenarios/animations/start-record.json";
 import api from "../../../apis/apiInstance";
+import {fastapi} from "../../../apis/apiInstance";
 
 type Record = {
   sessionId: number; 
@@ -226,17 +227,17 @@ const uploadToS3 = async (wavBlob: Blob) => {
     throw new Error(`S3 업로드 실패 (${res.status}): ${text}`);
   }
 
-  console.log("✅ S3 업로드 성공, STT 요청 시작...");
-   await requestSTTAnalyze(s3Key);
+  console.log("S3 업로드 성공, STT 요청 시작...");
+   await requestSTTAnalyze(sessionId, sequenceNumber, s3Key);
 };
 
 // STT 분석 요청 함수
-const requestSTTAnalyze = async ( s3Key: string) => {
+const requestSTTAnalyze = async (sessionId: number, seqNo: number, s3Key: string) => {
   const token = localStorage.getItem("accessToken");
 
   try {
-    const res = await api.post(
-      "/ai/stt-analyze",
+    const res = await fastapi.post(
+      `/stt-analyze/${sessionId}/${seqNo}`,
       {
         audio_s3_key: s3Key,
       },
