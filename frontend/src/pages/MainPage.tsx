@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+// import { AxiosError } from "axios";
 import NavBar from "../components/NavBar";
 import "../styles/MainPage.css";
 import {
@@ -55,6 +56,10 @@ const MainPage: React.FC = () => {
       setStudents(data);
     } catch (error) {
       console.error("학생 목록 로드 실패:", error);
+      if (error && typeof error === 'object' && 'response' in error) {
+        const axiosError = error as { response?: { data: unknown } };
+        console.error("서버 응답:", axiosError.response?.data);
+      }
     }
   };
 
@@ -64,9 +69,18 @@ const MainPage: React.FC = () => {
       setCalendarData(data);
     } catch (error) {
       console.error("달력 데이터 로드 실패:", error);
-      if (error instanceof Error) {
-        console.error("에러 메시지:", error.message);
+
+      if (error && typeof error === 'object' && 'response' in error) {
+        const axiosError = error as {
+          response?: { status: number; data: unknown };
+          config?: { url?: string; params?: unknown };
+        };
+        console.error("상태 코드:", axiosError.response?.status);
+        console.error("서버 응답:", axiosError.response?.data);
+        console.error("요청 URL:", axiosError.config?.url);
+        console.error("요청 파라미터:", axiosError.config?.params);
       }
+
       // 임시로 빈 데이터 설정하여 UI가 깨지지 않도록 처리
       setCalendarData({
         year: currentYear,
@@ -207,7 +221,7 @@ const MainPage: React.FC = () => {
   // 달력 일자 클릭 (일일 세션 조회)
   const handleDayClick = async (
     studentId: number,
-    studentName: string,
+    // studentName: string,
     day: number
   ) => {
     const dateStr = `${currentYear}-${String(currentMonth).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
@@ -265,7 +279,7 @@ const MainPage: React.FC = () => {
                   key={activity.studentId}
                   className="activity-item"
                   onClick={() =>
-                    handleDayClick(activity.studentId, activity.studentName, day)
+                    handleDayClick(activity.studentId, day)
                   }
                 >
                   <span className="activity-student">{activity.studentName}</span>

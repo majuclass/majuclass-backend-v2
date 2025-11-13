@@ -5,7 +5,7 @@ import { useParams } from 'react-router-dom';
 import NavBar from '../components/NavBar';
 import '../styles/DashBoardPage.css';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, } from 'chart.js';
-import type { TooltipItem } from 'chart.js';
+// import type { TooltipItem } from 'chart.js';
 import { Doughnut } from 'react-chartjs-2';
 import {
   getCategoryStats,
@@ -16,6 +16,7 @@ import type {
   CategoryStatsResponse,
   SessionsResponse,
   SessionSequenceStatsResponse,
+  // SessionListItemDto,
 } from '../types/Dashboard';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
@@ -41,6 +42,10 @@ const StudentDashboard: React.FC = () => {
         setCategoryStats(data);
       } catch (error) {
         console.error('카테고리 통계 로드 실패:', error);
+        if (error && typeof error === 'object' && 'response' in error) {
+          const axiosError = error as { response?: { data: unknown } };
+          console.error('서버 응답:', axiosError.response?.data);
+        }
       }
     };
 
@@ -55,6 +60,10 @@ const StudentDashboard: React.FC = () => {
         setSessions(data);
       } catch (error) {
         console.error('세션 목록 로드 실패:', error);
+        if (error && typeof error === 'object' && 'response' in error) {
+          const axiosError = error as { response?: { data: unknown } };
+          console.error('서버 응답:', axiosError.response?.data);
+        }
       }
     };
 
@@ -69,6 +78,10 @@ const StudentDashboard: React.FC = () => {
       setShowSequenceStats(true);
     } catch (error) {
       console.error('시퀀스 통계 로드 실패:', error);
+      if (error && typeof error === 'object' && 'response' in error) {
+        const axiosError = error as { response?: { data: unknown } };
+        console.error('서버 응답:', axiosError.response?.data);
+      }
     }
   };
 
@@ -156,7 +169,8 @@ const StudentDashboard: React.FC = () => {
           size: 13,
         },
         callbacks: {
-          label: function (context: TooltipItem<'doughnut'>) {
+          // label: function (context: TooltipItem<'doughnut'>) {
+          label: function (context: { label?: string; parsed?: number }) {
             const label = context.label || '';
             const value = context.parsed || 0;
             const total = categoryStats?.totalSessions || 0;
