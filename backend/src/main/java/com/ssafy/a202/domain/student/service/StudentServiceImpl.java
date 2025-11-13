@@ -644,7 +644,13 @@ public class StudentServiceImpl implements StudentService {
             return (CalendarDayStatsDto) cachedObject;
         }
 
-        // LinkedHashMap으로 역직렬화된 경우 ObjectMapper를 사용하여 변환
-        return objectMapper.convertValue(cachedObject, CalendarDayStatsDto.class);
+        // LinkedHashMap으로 역직렬화된 경우 JSON을 거쳐 변환 (중첩 타입 안전 처리)
+        try {
+            String json = objectMapper.writeValueAsString(cachedObject);
+            return objectMapper.readValue(json, CalendarDayStatsDto.class);
+        } catch (Exception e) {
+            log.error("Failed to convert cached object to CalendarDayStatsDto", e);
+            throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
+        }
     }
 }
