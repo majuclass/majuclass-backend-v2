@@ -7,6 +7,11 @@ const api = axios.create({
   withCredentials: true,
 });
 
+export const fastapi = axios.create({
+  baseURL: import.meta.env.VITE_BASE_AI_URL,
+  withCredentials: true,
+});
+
 // TODO: authorization 주입
 api.interceptors.request.use(
   (config) => {
