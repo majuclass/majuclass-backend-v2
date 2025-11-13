@@ -1,18 +1,19 @@
 /** @format */
 
-import { useState } from 'react';
+import { useState } from "react";
 
-import SequenceForm from '../components/create/SequenceForm';
-import ScenarioForm from '../components/create/ScenarioForm';
+import SequenceForm from "../components/create/SequenceForm";
+import ScenarioForm from "../components/create/ScenarioForm";
+import NavBar from "../components/NavBar";
 
 export default function ScenarioCreatePage() {
   const [step, setStep] = useState(1);
 
   const circleClass = (n: number) =>
-    n <= step ? 'bg-blue-500 text-white' : 'bg-gray-400 text-white';
+    n <= step ? "bg-blue-500 text-white" : "bg-gray-400 text-white";
 
   const textClass = (n: number) =>
-    n <= step ? 'text-blue-500' : 'text-gray-500';
+    n <= step ? "text-blue-500" : "text-gray-500";
 
   const handleGotoNext = () => {
     setStep((prev) => prev + 1);
@@ -23,6 +24,7 @@ export default function ScenarioCreatePage() {
 
   return (
     <div>
+      <NavBar></NavBar>
       <div className="flex flex-col items-center gap-6 p-6 mt-8">
         <div className="flex items-center gap-5">
           <div className="flex flex-col items-center gap-2">

@@ -1,22 +1,22 @@
 /** @format */
-import api from '../apis/apiInstance';
+import api from "../apis/apiInstance";
 import type {
   GetScenario,
   Sequence,
   TransformedOption,
-} from '../types/Scenario';
-import ScenarioLayout from '../components/wrappers/ScenarioLayout';
-import StartScreen from '../components/simulation/screen/StartScreen';
-import SequenceScreen from '../components/simulation/screen/SequenceScreen';
-import OptionScreen from '../components/simulation/screen/OptionScreen';
-import EndScreen from '../components/simulation/screen/EndScreen';
-import FeedbackScreen from '../components/simulation/screen/FeedbackScreen';
-import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom'; // 라우팅 연결 추가
+} from "../types/Scenario";
+import ScenarioLayout from "../components/layout/ScenarioLayout";
+import StartScreen from "../components/simulation/screen/StartScreen";
+import SequenceScreen from "../components/simulation/screen/SequenceScreen";
+import OptionScreen from "../components/simulation/screen/OptionScreen";
+import EndScreen from "../components/simulation/screen/EndScreen";
+import FeedbackScreen from "../components/simulation/screen/FeedbackScreen";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom"; // 라우팅 연결 추가
 
-import bgCinema from '../assets/scenarios/cinema/cinema-ticket-bg-img.png';
-import girlNormal from '../assets/scenarios/cinema/cinema-girl-normal.png';
-import { transformOptions } from '../utils/format';
+import bgCinema from "../assets/scenarios/cinema/cinema-ticket-bg-img.png";
+import girlNormal from "../assets/scenarios/cinema/cinema-girl-normal.png";
+import { transformOptions } from "../utils/format";
 
 import { useUserStore } from "../stores/useUserStore";
 
@@ -34,11 +34,11 @@ export default function SimulationPage() {
   };
 
   const [gameState, setGameState] = useState<
-    'loading' | 'error' | 'playing' | 'end'
-  >('loading');
+    "loading" | "error" | "playing" | "end"
+  >("loading");
   const [screen, setScreen] = useState<
-    'start' | 'question' | 'option' | 'feedback' | 'end'
-  >('start');
+    "start" | "question" | "option" | "feedback" | "end"
+  >("start");
   const [scenario, setScenario] = useState<ScenariowithURL>();
   const [sequence, setSequence] = useState<Sequence>();
   const [options, setOptions] = useState<TransformedOption[]>([]);
@@ -59,7 +59,7 @@ export default function SimulationPage() {
         setScenario(data);
       } catch (error) {
         console.error(error);
-        setGameState('error');
+        setGameState("error");
       }
     };
     fetchScenario();
@@ -69,17 +69,17 @@ export default function SimulationPage() {
   useEffect(() => {
     if (sequenceNumber === 0) return;
     const fetchSequence = async () => {
-      setGameState('loading');
+      setGameState("loading");
       try {
         const resp = await api.get(
           `scenarios/${scenarioId}/sequences/${sequenceNumber}`
         );
         const data = resp.data.data;
         setSequence(data);
-        setGameState('playing');
+        setGameState("playing");
       } catch (error) {
         console.error(error);
-        setGameState('error');
+        setGameState("error");
       }
     };
     fetchSequence();
@@ -100,7 +100,7 @@ export default function SimulationPage() {
         setOptions(transformedData);
       } catch (error) {
         console.error(error);
-        setGameState('error');
+        setGameState("error");
       }
     };
     fetchOptions();
@@ -115,37 +115,37 @@ export default function SimulationPage() {
       });
       const sessionId = resp.data.data.sessionId;
       setSessionId(sessionId);
-      console.log(sessionId + 'session start');
+      console.log(sessionId + "session start");
 
       //   session 시작된 경우만 다음 화면으로
-      setGameState('playing');
-      setScreen('question');
+      setGameState("playing");
+      setScreen("question");
       setIsCorrect(false);
     } catch (error) {
       console.error(error);
-      setGameState('error');
+      setGameState("error");
     }
   };
 
   // 옵션 선택 화면으로 전환
   const handleSelectOption = () => {
-    setScreen('option');
+    setScreen("option");
     setIsCorrect(false);
   };
 
   const handleSkip = () => {
-    console.log('스킵');
-    alert('스킵합니다');
+    console.log("스킵");
+    alert("스킵합니다");
 
     setTimeout(() => {
       // 정답인 경우
       const isLastSequence = sequenceNumber >= (scenario?.totalSequences || 0);
 
       if (isLastSequence) {
-        setScreen('end');
+        setScreen("end");
       } else {
         setSequenceNumber((prev) => prev + 1);
-        setScreen('question');
+        setScreen("question");
       }
     }, 1000);
 
@@ -165,11 +165,11 @@ export default function SimulationPage() {
       const { correct } = resp.data.data;
 
       setIsCorrect(correct);
-      setScreen('feedback');
+      setScreen("feedback");
 
       setTimeout(() => {
         if (!correct) {
-          setScreen('option');
+          setScreen("option");
           return;
         }
 
@@ -179,21 +179,21 @@ export default function SimulationPage() {
 
         // TODO: END logic 통일
         if (isLastSequence) {
-          setScreen('end');
+          setScreen("end");
         } else {
           setSequenceNumber((prev) => prev + 1);
-          setScreen('question');
+          setScreen("question");
         }
       }, 2000);
     } catch (error) {
       console.error(error);
-      setGameState('error');
+      setGameState("error");
     }
   };
 
   const handleRestart = () => {
-    setGameState('loading');
-    setScreen('start');
+    setGameState("loading");
+    setScreen("start");
     setSequenceNumber(1);
     setIsCorrect(false);
   };
@@ -203,16 +203,16 @@ export default function SimulationPage() {
       const resp = await api.post(`scenario-sessions/complete`, {
         sessionId,
       });
-      if (resp.data.status !== 'SUCCESS') {
+      if (resp.data.status !== "SUCCESS") {
         throw new Error();
       }
-      console.log(sessionId + 'session end');
+      console.log(sessionId + "session end");
 
-      setGameState('end');
-      setScreen('end');
+      setGameState("end");
+      setScreen("end");
     } catch (error) {
       console.error(error);
-      setGameState('error');
+      setGameState("error");
     }
   };
 
@@ -220,25 +220,25 @@ export default function SimulationPage() {
   const renderContent = () => {
     // 시나리오별
     switch (gameState) {
-      case 'loading':
+      case "loading":
         return <div>로딩 중 ...</div>;
-      case 'error':
+      case "error":
         return <div>에러 발생</div>;
-      case 'playing':
+      case "playing":
         switch (screen) {
-          case 'start':
+          case "start":
             return scenario ? (
               <StartScreen
                 scenario={scenario}
-                difficulty={difficulty ?? ''}
+                difficulty={difficulty ?? ""}
                 onStart={handleGameStart}
               />
             ) : null;
-          case 'question':
+          case "question":
             return sequence ? (
               <SequenceScreen sequence={sequence} onNext={handleSelectOption} />
             ) : null;
-          case 'option':
+          case "option":
             return options && sequence ? (
               <OptionScreen
                 options={options}
@@ -247,12 +247,12 @@ export default function SimulationPage() {
                 onSkip={handleSkip}
                 sessionId={sessionId}
                 sequenceNumber={sequenceNumber}
-                difficulty={difficulty ?? ''}
+                difficulty={difficulty ?? ""}
               />
             ) : null;
-          case 'feedback':
+          case "feedback":
             return <FeedbackScreen isCorrect={isCorrect} />;
-          case 'end':
+          case "end":
             return <EndScreen onRestart={handleRestart} onExit={handleEnd} />;
         }
     }
@@ -269,8 +269,8 @@ export default function SimulationPage() {
         // scenario?.characterImage ||
         girlNormal
       }
-      showCharacter={screen !== 'start' && screen !== 'option'}
-      blurBackground={screen === 'start' || screen === 'option'}
+      showCharacter={screen !== "start" && screen !== "option"}
+      blurBackground={screen === "start" || screen === "option"}
     >
       {renderContent()}
     </ScenarioLayout>
