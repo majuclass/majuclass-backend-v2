@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import NavBar from '../components/NavBar';
 import '../styles/DashBoardPage.css';
-import { Chart as ChartJS, ArcElement, Tooltip, Legend, } from 'chart.js';
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 // import type { TooltipItem } from 'chart.js';
 import { Doughnut } from 'react-chartjs-2';
 import {
@@ -31,23 +31,32 @@ const StudentDashboard: React.FC = () => {
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
 
   // API 데이터 상태
-  const [categoryStats, setCategoryStats] = useState<CategoryStatsResponse | null>(null);
+  const [categoryStats, setCategoryStats] =
+    useState<CategoryStatsResponse | null>(null);
   const [sessions, setSessions] = useState<SessionsResponse | null>(null);
-  const [selectedSession, setSelectedSession] = useState<SessionSequenceStatsResponse | null>(null);
+  const [selectedSession, setSelectedSession] =
+    useState<SessionSequenceStatsResponse | null>(null);
   const [showSequenceStats, setShowSequenceStats] = useState(false);
 
   // 음성 답변 데이터 (sequenceNumber를 키로 사용)
-  const [audioAnswersMap, setAudioAnswersMap] = useState<Record<number, SequenceAudioAnswersDto>>({});
+  const [audioAnswersMap, setAudioAnswersMap] = useState<
+    Record<number, SequenceAudioAnswersDto>
+  >({});
 
   // 음성 답변 모달 상태
   const [showAudioModal, setShowAudioModal] = useState(false);
-  const [selectedAudioAnswers, setSelectedAudioAnswers] = useState<SequenceAudioAnswersDto | null>(null);
+  const [selectedAudioAnswers, setSelectedAudioAnswers] =
+    useState<SequenceAudioAnswersDto | null>(null);
 
   // 카테고리별 통계 로드
   useEffect(() => {
     const loadCategoryStats = async () => {
       try {
-        const data = await getCategoryStats(studentId, currentYear, currentMonth);
+        const data = await getCategoryStats(
+          studentId,
+          currentYear,
+          currentMonth
+        );
         setCategoryStats(data);
       } catch (error) {
         console.error('카테고리 통계 로드 실패:', error);
@@ -65,7 +74,11 @@ const StudentDashboard: React.FC = () => {
   useEffect(() => {
     const loadSessions = async () => {
       try {
-        const data = await getMonthlySessions(studentId, currentYear, currentMonth);
+        const data = await getMonthlySessions(
+          studentId,
+          currentYear,
+          currentMonth
+        );
         setSessions(data);
       } catch (error) {
         console.error('세션 목록 로드 실패:', error);
@@ -94,9 +107,14 @@ const StudentDashboard: React.FC = () => {
         // 3. 음성 답변이 있는 시퀀스만 Map에 추가
         const newAudioMap: Record<number, SequenceAudioAnswersDto> = {};
         audioData.sequences.forEach((seqAudio: SequenceAudioAnswersDto) => {
-          if (Array.isArray(seqAudio.audioAnswers) && seqAudio.audioAnswers.length > 0) {
+          if (
+            Array.isArray(seqAudio.audioAnswers) &&
+            seqAudio.audioAnswers.length > 0
+          ) {
             newAudioMap[seqAudio.sequenceNumber] = seqAudio;
-            console.log(`🎤 시퀀스 ${seqAudio.sequenceNumber}에 음성 답변 ${seqAudio.audioAnswers.length}개 추가`);
+            console.log(
+              `🎤 시퀀스 ${seqAudio.sequenceNumber}에 음성 답변 ${seqAudio.audioAnswers.length}개 추가`
+            );
           }
         });
 
@@ -206,7 +224,8 @@ const StudentDashboard: React.FC = () => {
             const label = context.label || '';
             const value = context.parsed || 0;
             const total = categoryStats?.totalSessions || 0;
-            const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+            const percentage =
+              total > 0 ? ((value / total) * 100).toFixed(1) : 0;
             return `${label}: ${value}회 (${percentage}%)`;
           },
         },
@@ -227,7 +246,11 @@ const StudentDashboard: React.FC = () => {
       className: '',
     };
 
-    return <span className={`status-badge ${statusInfo.className}`}>{statusInfo.text}</span>;
+    return (
+      <span className={`status-badge ${statusInfo.className}`}>
+        {statusInfo.text}
+      </span>
+    );
   };
 
   // 정답률에 따른 색상 클래스
@@ -297,17 +320,26 @@ const StudentDashboard: React.FC = () => {
                   >
                     <div className="session-thumbnail">
                       {session.thumbnailUrl ? (
-                        <img src={session.thumbnailUrl} alt={session.scenarioTitle} />
+                        <img
+                          src={session.thumbnailUrl}
+                          alt={session.scenarioTitle}
+                        />
                       ) : (
                         <div className="thumbnail-placeholder">이미지 없음</div>
                       )}
                     </div>
                     <div className="session-info">
-                      <div className="session-title">{session.scenarioTitle}</div>
+                      <div className="session-title">
+                        {session.scenarioTitle}
+                      </div>
                       <div className="session-meta">
-                        <span className="session-category">{session.categoryName}</span>
+                        <span className="session-category">
+                          {session.categoryName}
+                        </span>
                         <span className="session-date">
-                          {new Date(session.createdAt).toLocaleDateString('ko-KR')}
+                          {new Date(session.createdAt).toLocaleDateString(
+                            'ko-KR'
+                          )}
                         </span>
                       </div>
                     </div>
@@ -324,17 +356,23 @@ const StudentDashboard: React.FC = () => {
 
       {/* 시퀀스별 정답률 모달 */}
       {showSequenceStats && selectedSession && (
-        <div className="modal-overlay" onClick={() => {
-          setShowSequenceStats(false);
-          setAudioAnswersMap({});
-        }}>
+        <div
+          className="modal-overlay"
+          onClick={() => {
+            setShowSequenceStats(false);
+            setAudioAnswersMap({});
+          }}
+        >
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <h2>{selectedSession.scenarioTitle} - 상세 결과</h2>
-              <button className="modal-close" onClick={() => {
-                setShowSequenceStats(false);
-                setAudioAnswersMap({});
-              }}>
+              <button
+                className="modal-close"
+                onClick={() => {
+                  setShowSequenceStats(false);
+                  setAudioAnswersMap({});
+                }}
+              >
                 ✕
               </button>
             </div>
@@ -342,15 +380,23 @@ const StudentDashboard: React.FC = () => {
               <div className="session-summary">
                 <div className="summary-item">
                   <span className="summary-label">전체 시퀀스:</span>
-                  <span className="summary-value">{selectedSession.totalSequences}개</span>
+                  <span className="summary-value">
+                    {selectedSession.totalSequences}개
+                  </span>
                 </div>
                 <div className="summary-item">
                   <span className="summary-label">완료 시퀀스:</span>
-                  <span className="summary-value">{selectedSession.completedSequences}개</span>
+                  <span className="summary-value">
+                    {selectedSession.completedSequences}개
+                  </span>
                 </div>
                 <div className="summary-item">
                   <span className="summary-label">평균 정답률:</span>
-                  <span className={`summary-value ${getAccuracyClass(selectedSession.averageAccuracy)}`}>
+                  <span
+                    className={`summary-value ${getAccuracyClass(
+                      selectedSession.averageAccuracy
+                    )}`}
+                  >
                     {selectedSession.averageAccuracy.toFixed(1)}%
                   </span>
                 </div>
@@ -374,12 +420,20 @@ const StudentDashboard: React.FC = () => {
                       <td className="question-cell">{seq.question}</td>
                       <td>{seq.successAttempt}회</td>
                       <td>
-                        <span className={`accuracy ${getAccuracyClass(seq.accuracyRate)}`}>
+                        <span
+                          className={`accuracy ${getAccuracyClass(
+                            seq.accuracyRate
+                          )}`}
+                        >
                           {seq.accuracyRate.toFixed(1)}%
                         </span>
                       </td>
                       <td>
-                        <span className={`result-badge ${seq.isCorrect ? 'correct' : 'incorrect'}`}>
+                        <span
+                          className={`result-badge ${
+                            seq.isCorrect ? 'correct' : 'incorrect'
+                          }`}
+                        >
                           {seq.isCorrect ? '정답' : '오답'}
                         </span>
                       </td>
@@ -387,9 +441,12 @@ const StudentDashboard: React.FC = () => {
                         {audioAnswersMap[seq.sequenceNumber] ? (
                           <button
                             className="btn-audio"
-                            onClick={() => handleAudioAnswersClick(seq.sequenceNumber)}
+                            onClick={() =>
+                              handleAudioAnswersClick(seq.sequenceNumber)
+                            }
                           >
-                            🎤 듣기 ({audioAnswersMap[seq.sequenceNumber].totalAttempts})
+                            🎤 듣기 (
+                            {audioAnswersMap[seq.sequenceNumber].totalAttempts})
                           </button>
                         ) : (
                           <span className="no-audio">-</span>
@@ -406,29 +463,48 @@ const StudentDashboard: React.FC = () => {
 
       {/* 음성 답변 모달 */}
       {showAudioModal && selectedAudioAnswers && (
-        <div className="modal-overlay" onClick={() => {
-          setShowAudioModal(false);
-          setSelectedAudioAnswers(null);
-        }}>
-          <div className="modal-content audio-modal" onClick={(e) => e.stopPropagation()}>
+        <div
+          className="modal-overlay"
+          onClick={() => {
+            setShowAudioModal(false);
+            setSelectedAudioAnswers(null);
+          }}
+        >
+          <div
+            className="modal-content audio-modal"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="modal-header">
-              <h2>🎤 음성 답변 기록 (시퀀스 {selectedAudioAnswers.sequenceNumber})</h2>
-              <button className="modal-close" onClick={() => {
-                setShowAudioModal(false);
-                setSelectedAudioAnswers(null);
-              }}>
+              <h2>
+                🎤 음성 답변 기록 (시퀀스 {selectedAudioAnswers.sequenceNumber})
+              </h2>
+              <button
+                className="modal-close"
+                onClick={() => {
+                  setShowAudioModal(false);
+                  setSelectedAudioAnswers(null);
+                }}
+              >
                 ✕
               </button>
             </div>
             <div className="modal-body">
-              <p className="audio-count">총 {selectedAudioAnswers.totalAttempts}번 시도</p>
+              <p className="audio-count">
+                총 {selectedAudioAnswers.totalAttempts}번 시도
+              </p>
 
               <div className="audio-answers-list">
                 {selectedAudioAnswers.audioAnswers.map((audio) => (
                   <div key={audio.answerId} className="audio-answer-item">
                     <div className="audio-answer-header">
-                      <span className="attempt-badge">시도 {audio.attemptNo}</span>
-                      <span className={`result-badge ${audio.isCorrect ? 'correct' : 'incorrect'}`}>
+                      <span className="attempt-badge">
+                        시도 {audio.attemptNo}
+                      </span>
+                      <span
+                        className={`result-badge ${
+                          audio.isCorrect ? 'correct' : 'incorrect'
+                        }`}
+                      >
                         {audio.isCorrect ? '✓ 정답' : '✗ 오답'}
                       </span>
                       <span className="audio-time">
