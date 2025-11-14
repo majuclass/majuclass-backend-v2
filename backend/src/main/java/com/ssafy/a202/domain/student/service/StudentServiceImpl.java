@@ -176,7 +176,23 @@ public class StudentServiceImpl implements StudentService {
                 throw new CustomException(ErrorCode.ACCESS_DENIED);
             }
 
+            // 기존 선생님 ID 저장
+            Long oldTeacherId = student.getUser().getId();
+
+            // 선생님 변경
             student.changeTeacher(newTeacher);
+
+            // 해당 학생의 세션이 있는 날짜 목록 조회
+            List<LocalDate> sessionDates = scenarioSessionRepository.findSessionDatesByStudent(studentId);
+
+            // 기존 선생님과 새 선생님의 캘린더 캐시 무효화
+            for (LocalDate date : sessionDates) {
+                invalidateCalendarCache(oldTeacherId, date);  // 기존 선생님 캐시 무효화
+                invalidateCalendarCache(newTeacher.getId(), date);  // 새 선생님 캐시 무효화
+            }
+
+            log.info("Student teacher changed: studentId={}, oldTeacherId={}, newTeacherId={}, invalidatedCacheDates={}",
+                    studentId, oldTeacherId, newTeacher.getId(), sessionDates.size());
         }
 
         log.info("Student updated: userId={}, studentId={}",
@@ -205,11 +221,20 @@ public class StudentServiceImpl implements StudentService {
         // 3. 권한 체크
         validateStudentAccess(user, student);
 
-        // 4. 삭제 처리 (soft delete)
+        // 4. 해당 학생의 세션이 있는 날짜 목록 조회
+        List<LocalDate> sessionDates = scenarioSessionRepository.findSessionDatesByStudent(studentId);
+
+        // 5. 삭제 처리 (soft delete)
         student.delete();
 
-        log.info("Student deleted: userId={}, studentId={}",
-                userId, studentId);
+        // 6. 해당 학생의 세션이 있던 날짜의 캘린더 캐시 무효화
+        Long teacherId = student.getUser().getId();
+        for (LocalDate date : sessionDates) {
+            invalidateCalendarCache(teacherId, date);
+        }
+
+        log.info("Student deleted: userId={}, studentId={}, invalidatedCacheDates={}",
+                userId, studentId, sessionDates.size());
     }
 
     /**
