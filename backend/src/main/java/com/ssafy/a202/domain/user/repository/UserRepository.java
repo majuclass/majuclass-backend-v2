@@ -1,8 +1,10 @@
 package com.ssafy.a202.domain.user.repository;
 
+import com.ssafy.a202.domain.school.entity.School;
 import com.ssafy.a202.domain.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
@@ -34,4 +36,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
      * 이메일 중복 확인 (회원가입 시)
      */
     boolean existsByEmailAndIsDeletedFalse(String email);
+
+    /**
+     * 학교별 활성 사용자 목록 조회
+     */
+    List<User> findBySchoolAndIsDeletedFalse(School school);
 }

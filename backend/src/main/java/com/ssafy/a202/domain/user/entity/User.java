@@ -1,6 +1,7 @@
 package com.ssafy.a202.domain.user.entity;
 
 import com.ssafy.a202.domain.school.entity.School;
+import com.ssafy.a202.domain.student.entity.Student;
 import com.ssafy.a202.global.constants.Role;
 import com.ssafy.a202.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
@@ -72,5 +73,31 @@ public class User extends BaseTimeEntity {
      */
     public void removeStudent(Student student) {
         this.students.remove(student);
+    }
+
+    // ================================
+    // 업데이트 메서드
+    // ================================
+
+    /**
+     * 회원 정보 수정
+     */
+    public void updateInfo(String name, String email) {
+        this.name = name;
+        this.email = email;
+    }
+
+    /**
+     * 비밀번호 변경
+     */
+    public void updatePassword(String encodedPassword) {
+        this.password = encodedPassword;
+    }
+
+    /**
+     * 회원 탈퇴 (soft delete)
+     */
+    public void delete() {
+        this.isDeleted = true;
     }
 }

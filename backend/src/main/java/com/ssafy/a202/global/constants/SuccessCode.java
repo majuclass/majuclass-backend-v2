@@ -22,9 +22,29 @@ public enum SuccessCode {
     // 사용자 관련
     USER_PROFILE_SUCCESS("프로필 조회가 완료되었습니다"),
     USER_LIST_SUCCESS("사용자 목록 조회가 완료되었습니다"),
+    USER_DETAIL_SUCCESS("사용자 상세 조회가 완료되었습니다"),
     USER_CREATE_SUCCESS("사용자가 성공적으로 생성되었습니다"),
     USER_UPDATE_SUCCESS("사용자 정보가 성공적으로 수정되었습니다"),
     USER_DELETE_SUCCESS("사용자가 성공적으로 삭제되었습니다"),
+
+    // 학생 관련
+    STUDENT_LIST_SUCCESS("학생 목록 조회가 완료되었습니다"),
+    STUDENT_DETAIL_SUCCESS("학생 상세 조회가 완료되었습니다"),
+    STUDENT_CREATE_SUCCESS("학생이 성공적으로 추가되었습니다"),
+    STUDENT_UPDATE_SUCCESS("학생 정보가 성공적으로 수정되었습니다"),
+    STUDENT_DELETE_SUCCESS("학생이 성공적으로 삭제되었습니다"),
+
+    // 대시보드 관련
+    CATEGORY_STATS_SUCCESS("카테고리별 통계 조회가 완료되었습니다"),
+    MONTHLY_SESSION_LIST_SUCCESS("월별 세션 목록 조회가 완료되었습니다"),
+    SESSION_SEQUENCE_STATS_SUCCESS("세션 시퀀스별 통계 조회가 완료되었습니다"),
+
+    // 달력 관련
+    CALENDAR_MONTHLY_SUCCESS("월별 달력 데이터 조회가 완료되었습니다"),
+    DAILY_SESSION_LIST_SUCCESS("일별 세션 목록 조회가 완료되었습니다"),
+
+    // 카테고리 관련
+    CATEGORY_LIST_SUCCESS("카테고리 목록 조회가 완료되었습니다"),
 
     // 시나리오 관련
     SCENARIO_LIST_SUCCESS("시나리오 목록 조회가 완료되었습니다"),
@@ -42,7 +62,9 @@ public enum SuccessCode {
     SEQUENCE_RETRIEVE_SUCCESS("시퀀스 조회가 완료되었습니다"),
     OPTIONS_RETRIEVE_SUCCESS("옵션 목록 조회가 완료되었습니다"),
     ANSWER_CHECK_SUCCESS("답안 검증이 완료되었습니다"),
-    AUDIO_ANSWER_CHECK_SUCCESS("음성 답안 검증이 완료되었습니다");
+    AUDIO_ANSWER_CHECK_SUCCESS("음성 답안 검증이 완료되었습니다"),
+    AUDIO_ANSWER_LIST_SUCCESS("오디오 답변 목록 조회가 완료되었습니다"),
+    AUDIO_URL_BY_KEY_GENERATED("S3 키로 오디오 URL 생성이 완료되었습니다");
 
     private final String message;
 }

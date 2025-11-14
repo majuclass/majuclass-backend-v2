@@ -36,8 +36,11 @@ class AuthMiddleware(BaseHTTPMiddleware):
             "/health",
             "/openapi.json",
             "/favicon.ico",
-            "/ai/stt-analyze",
         ]
+
+        # WebSocket 경로는 자체 인증 로직 사용
+        if request.url.path.startswith("/ws/"):
+            return await call_next(request)
 
         if request.url.path in public_path:
             return await call_next(request)
@@ -87,6 +90,10 @@ class AuthMiddleware(BaseHTTPMiddleware):
                         "message" : "유효하지 않은 사용자입니다."
                     }
                 )
+
+            # request.state에 user_id 저장 (라우터에서 사용 가능)
+            request.state.user_id = int(user_id)
+
         except JWTError :
             return JSONResponse(
                 status_code=401,

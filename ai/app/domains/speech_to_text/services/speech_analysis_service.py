@@ -1,5 +1,5 @@
 from app.domains.speech_to_text.utils.s3_downloader import S3Downloader
-from app.domains.speech_to_text.services.stt_service import STTService
+from app.domains.speech_to_text.services.stt_service import WhisperSTTService
 from app.domains.speech_to_text.services.similarity_service import SimilarityService
 from typing import Dict, Any, Optional
 import logging
@@ -8,11 +8,11 @@ class SpeechAnalysisService:
     def __init__(
         self,
         s3_downloader: Optional[S3Downloader] = None,
-        stt_service: Optional[STTService] = None,
+        stt_service: Optional[WhisperSTTService] = None,
         similarity_service: Optional[SimilarityService] = None
     ) -> None:
         self.s3_downloader = s3_downloader or S3Downloader()
-        self.stt_service = stt_service or STTService()
+        self.stt_service = stt_service or WhisperSTTService()
         self.similarity_service = similarity_service or SimilarityService()
 
         logging.info("[SpeechAnalysisService] 서비스 초기화 완료")
@@ -41,7 +41,7 @@ class SpeechAnalysisService:
             # ===== 2단계: STT로 음성을 텍스트로 변환 =====
             print("\n[2/4] 음성을 텍스트로 변환 중...")
             transcribed_text = self.stt_service.transcribe_audio(
-                audio_file_path=temp_file_path,
+                audio_data=temp_file_path,
                 language=language
             )
             print(f"✓ 변환 완료: '{transcribed_text}'")

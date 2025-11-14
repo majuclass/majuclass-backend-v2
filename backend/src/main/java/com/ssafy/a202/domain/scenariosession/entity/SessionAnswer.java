@@ -7,9 +7,9 @@ import lombok.*;
 
 /**
  * 세션 답변 엔티티
- * - 모든 시도(정답/오답) 기록
+ * - 모든 시도(정답/오답) 기록 (난이도 하/중)
  * - 시도 횟수는 서버에서 자동 계산
- * - 상 난이도: 음성 답변 S3 키 추가 저장
+ * - 상 난이도 음성 답변은 SessionSttAnswer에 별도 저장
  */
 @Entity
 @Getter
@@ -30,9 +30,6 @@ public class SessionAnswer extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "seq_id", nullable = false)
     private ScenarioSequence scenarioSequence;
-
-    @Column(name = "answer_s3_key")
-    private String answerS3Key;
 
     @Column(name = "is_correct", nullable = false, columnDefinition = "TINYINT(1)")
     private Boolean isCorrect;

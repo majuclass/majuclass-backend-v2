@@ -5,7 +5,7 @@ WORKDIR /app
 # Gradle 캐싱 최적화를 위해 의존성 먼저 다운로드
 COPY build.gradle settings.gradle ./
 COPY gradle ./gradle
-RUN gradle dependencies --no-daemon || true
+RUN gradle dependencies --no-daemon
 
 # 소스 코드 복사 및 빌드
 COPY . .

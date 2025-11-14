@@ -64,4 +64,19 @@ public class ScenarioSessionController {
         SessionCompleteResponse response = scenarioSessionService.completeSession(request);
         return ApiResponse.success(SuccessCode.SESSION_COMPLETE_SUCCESS, response);
     }
+
+    @Operation(summary = "오디오 답변 목록 조회", description = "특정 세션의 모든 오디오 답변을 시퀀스별로 그룹화하여 조회합니다.")
+    @GetMapping("/audio-answers/{sessionId}")
+    public ApiResponse<AudioAnswerListResponse> getAudioAnswers(@PathVariable Long sessionId) {
+        AudioAnswerListResponse response = scenarioSessionService.getAudioAnswers(sessionId);
+        return ApiResponse.success(SuccessCode.AUDIO_ANSWER_LIST_SUCCESS, response);
+    }
+
+    @Operation(summary = "S3 Key로 오디오 조회용 URL 생성", description = "S3 Key를 받아 오디오 파일 조회용 Pre-signed URL을 생성합니다. (FastAPI STT 분석용)")
+    @PostMapping("/audio-url-by-key")
+    public ApiResponse<AudioUrlByKeyResponse> generateAudioUrlByKey(
+            @Valid @RequestBody AudioUrlByKeyRequest request) {
+        AudioUrlByKeyResponse response = scenarioSessionService.generateAudioUrlByKey(request);
+        return ApiResponse.success(SuccessCode.AUDIO_URL_BY_KEY_GENERATED, response);
+    }
 }

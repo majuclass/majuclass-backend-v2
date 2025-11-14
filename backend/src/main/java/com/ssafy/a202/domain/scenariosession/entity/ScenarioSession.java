@@ -1,8 +1,7 @@
 package com.ssafy.a202.domain.scenariosession.entity;
 
 import com.ssafy.a202.domain.scenario.entity.Scenario;
-import com.ssafy.a202.domain.user.entity.Student;
-import com.ssafy.a202.global.constants.Difficulty;
+import com.ssafy.a202.domain.student.entity.Student;
 import com.ssafy.a202.global.constants.SessionStatus;
 import com.ssafy.a202.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;

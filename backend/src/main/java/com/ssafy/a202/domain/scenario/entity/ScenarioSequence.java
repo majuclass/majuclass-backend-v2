@@ -35,4 +35,18 @@ public class ScenarioSequence extends BaseTimeEntity {
 
     @Column(name = "is_deleted", nullable = false, columnDefinition = "TINYINT(1)")
     private boolean isDeleted;
+
+    /**
+     * 시퀀스 정보 수정
+     */
+    public void updateQuestion(String question) {
+        this.question = question;
+    }
+
+    /**
+     * 시퀀스 삭제 (soft delete)
+     */
+    public void delete() {
+        this.isDeleted = true;
+    }
 }
