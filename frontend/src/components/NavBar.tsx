@@ -25,7 +25,7 @@ export default function NavBar() {
   return (
     <nav className="navbar">
       <div className="navbar-left">
-        <img src="/src/assets/logo.png" alt="로고" className="nav-logo-img" />
+        <img src="/src/public/logo_text" alt="로고" className="nav-logo-img" />
 
         <Link
           to="/main"
@@ -64,9 +64,9 @@ export default function NavBar() {
         </Link>
 
         <Link
-          to="/about"
+          to="/scenarios/ai/create"
           className={`nav-item ${
-            location.pathname === '/about' ? 'active' : ''
+            location.pathname === '/scenarios/ai/create' ? 'active' : ''
           }`}
         >
           <i className="nav-icon">
