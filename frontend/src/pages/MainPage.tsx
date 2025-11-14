@@ -10,12 +10,12 @@ import {
   updateStudent,
   deleteStudent,
   getMonthlyCalendar,
-  getDailySessions,
+  // getDailySessions,
 } from '../apis/mainApi';
 import type {
   StudentResponse,
   CalendarMonthlyResponse,
-  DailySessionListResponse,
+  // DailySessionListResponse,
 } from '../types/MainPage';
 
 import { useUserStore } from '../stores/useUserStore';
@@ -314,24 +314,24 @@ const MainPage: React.FC = () => {
   };
 
   // 상태 배지 렌더링
-  const renderStatusBadge = (status: string) => {
-    const statusMap = {
-      COMPLETED: { text: '완료', className: 'status-completed' },
-      IN_PROGRESS: { text: '진행중', className: 'status-progress' },
-      ABORTED: { text: '중단', className: 'status-aborted' },
-    };
+  // const renderStatusBadge = (status: string) => {
+  //   const statusMap = {
+  //     COMPLETED: { text: '완료', className: 'status-completed' },
+  //     IN_PROGRESS: { text: '진행중', className: 'status-progress' },
+  //     ABORTED: { text: '중단', className: 'status-aborted' },
+  //   };
 
-    const statusInfo = statusMap[status as keyof typeof statusMap] || {
-      text: status,
-      className: '',
-    };
+  //   const statusInfo = statusMap[status as keyof typeof statusMap] || {
+  //     text: status,
+  //     className: '',
+  //   };
 
-    return (
-      <span className={`status-badge ${statusInfo.className}`}>
-        {statusInfo.text}
-      </span>
-    );
-  };
+  //   return (
+  //     <span className={`status-badge ${statusInfo.className}`}>
+  //       {statusInfo.text}
+  //     </span>
+  //   );
+  // };
 
   return (
     <div className="main-page">
