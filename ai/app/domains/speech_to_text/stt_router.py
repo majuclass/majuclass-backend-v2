@@ -125,6 +125,7 @@ async def stt_analyze(
             answer_text=answer_text,
             similarity_score=float(similarity_score),
             is_correct=is_correct,
+            feedback_message="",  # V1은 피드백 미지원 (빈 문자열)
             attempt_no=saved_answer.attempt_no
         )
 
