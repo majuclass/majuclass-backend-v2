@@ -6,6 +6,7 @@ import ScenarioListPage from './pages/ScenarioListPage';
 import ScenarioCreatePage from './pages/ScenarioCreatePage';
 import SelectLevelPage from './pages/SelectLevelPage';
 import SimulationPage from './pages/SimulationPage';
+import DashBoardPage from './pages/DashBoardPage';
 import ErrorPage from './pages/ErrorPage';
 
 /** 라우트 설정 */
@@ -38,7 +39,7 @@ const router = createBrowserRouter([
         path: 'simulation/:scenarioId/:difficulty',
         element: <SimulationPage />,
       },
-      // 404 fallback: NotFound에서 변경
+      { path: 'students/:id', element: <DashBoardPage /> },
       { path: '*', element: <ErrorPage /> },
     ],
   },
