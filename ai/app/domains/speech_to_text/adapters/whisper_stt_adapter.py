@@ -29,7 +29,7 @@ class WhisperSTTAdapter(STTPort):
 
             print(f"[WhisperSTTAdapter] 임시 파일 생성: {temp_file_path}")
 
-            # Whisper STT 호출 (동기 함수)
+            # Whisper STT 호출
             transcribed_text = self.whisper_service.transcribe_audio(
                 audio_data=temp_file_path,
                 language=language
@@ -38,8 +38,8 @@ class WhisperSTTAdapter(STTPort):
             # STTResult 생성
             result = STTResult(
                 text=transcribed_text,
-                confidence=0.95,  # Whisper는 신뢰도를 반환하지 않음 (기본값)
-                duration=0.0      # 오디오 길이 계산 생략 (선택)
+                confidence=0.95,
+                duration=0.0
             )
 
             print(f"[WhisperSTTAdapter] STT 변환 완료: {transcribed_text}")
