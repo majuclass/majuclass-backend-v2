@@ -25,7 +25,7 @@ export default function NavBar() {
   return (
     <nav className="navbar">
       <div className="navbar-left">
-        <img src="/src/public/logo_text" alt="로고" className="nav-logo-img" />
+        <img src="/logo_text.png" alt="로고" className="nav-logo-img" />
 
         <Link
           to="/main"
