@@ -6,4 +6,5 @@ class SpeechToTextResponse(BaseModel):
     answer_text: str
     similarity_score: float
     is_correct: bool
+    feedback_message: str
     attempt_no: int
