@@ -237,6 +237,8 @@
   border-radius: 8px;
   background-color: white;
   transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
 }
 
 .calendar-day.empty {
@@ -249,49 +251,82 @@
   border: 2px solid #3b82f6;
 }
 
-.calendar-day:hover:not(.empty) {
+.calendar-day.has-activity {
+  cursor: pointer;
+}
+
+.calendar-day.has-activity:hover {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
 }
 
 .day-number {
   font-size: 0.875rem;
   font-weight: 600;
   color: #374151;
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.5rem;
 }
 
-.day-activities {
+.day-summary {
   display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
   margin-top: 0.5rem;
 }
 
-.activity-item {
+.student-count {
+  display: inline-block;
+  padding: 0.5rem 0.75rem;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: white;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
+}
+
+/* 학생 세션 목록 (모달용) */
+.student-sessions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.student-session-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.4rem 0.5rem;
-  background-color: #dbeafe;
-  border-radius: 6px;
-  font-size: 0.75rem;
+  padding: 1rem 1.25rem;
+  background-color: #f9fafb;
+  border: 2px solid #e5e7eb;
+  border-radius: 10px;
   cursor: pointer;
   transition: all 0.2s;
 }
 
-.activity-item:hover {
-  background-color: #bfdbfe;
-  transform: scale(1.02);
+.student-session-item:hover {
+  background-color: #eff6ff;
+  border-color: #3b82f6;
+  transform: translateX(4px);
 }
 
-.activity-student {
+.student-name {
+  font-size: 1rem;
   font-weight: 600;
-  color: #1e40af;
+  color: #1f2937;
 }
 
-.activity-count {
-  font-weight: 500;
-  color: #3b82f6;
+.session-count-badge {
+  display: inline-block;
+  padding: 0.4rem 0.75rem;
+  background-color: #3b82f6;
+  color: white;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 700;
 }
 
 /* 모달 */
@@ -588,9 +623,13 @@
     padding: 0.25rem;
   }
 
-  .activity-item {
-    font-size: 0.65rem;
-    padding: 0.3rem 0.4rem;
+  .student-count {
+    font-size: 0.75rem;
+    padding: 0.4rem 0.6rem;
+  }
+
+  .student-session-item {
+    padding: 0.75rem 1rem;
   }
 
   .student-actions {

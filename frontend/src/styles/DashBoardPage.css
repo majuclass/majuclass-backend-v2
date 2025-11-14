@@ -111,6 +111,14 @@
   font-size: 16px;
 }
 
+.loading-data {
+  color: #666;
+  text-align: center;
+  padding: 40px;
+  font-size: 16px;
+  font-weight: 500;
+}
+
 /* 세션 리스트 */
 .sessions-card {
   background-color: #ffffff;
@@ -143,8 +151,10 @@
   background: #555;
 }
 
+/* 🔥 세션 아이템 - 핵심 수정 부분 */
 .session-item {
   display: flex;
+  align-items: center;
   gap: 16px;
   padding: 16px;
   background-color: #fafafa;
@@ -152,7 +162,7 @@
   cursor: pointer;
   transition: all 0.2s ease;
   border: 2px solid transparent;
-  align-items: center;
+  position: relative; /* 추가 */
 }
 
 .session-item:hover {
@@ -193,6 +203,7 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
+  min-width: 0; /* 추가: flex item의 min-width 초기화 */
 }
 
 .session-title {
@@ -216,6 +227,14 @@
   color: #999;
 }
 
+/* 🔥 상태 영역 - 핵심 수정 부분 */
+.session-status {
+  flex-shrink: 0; /* 추가: 줄어들지 않도록 */
+  margin-left: auto; /* 추가: 우측으로 밀기 */
+  display: flex;
+  align-items: center;
+}
+
 /* 상태 배지 */
 .status-badge {
   padding: 6px 12px;
@@ -223,6 +242,7 @@
   font-size: 13px;
   font-weight: 600;
   white-space: nowrap;
+  display: inline-block; /* 추가 */
 }
 
 .status-completed {
@@ -458,6 +478,12 @@
   .session-item {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .session-status {
+    margin-left: 0;
+    width: 100%;
+    justify-content: flex-start;
   }
 
   .session-thumbnail {
