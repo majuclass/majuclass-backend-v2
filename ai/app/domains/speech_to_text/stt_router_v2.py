@@ -85,7 +85,7 @@ async def stt_analyze_v2(
             answer_text=result.answer_text,
             similarity_score=float(result.scores.weighted),
             is_correct=result.is_correct,
-            feedback_message=result.feedback,
+            # feedback_message=result.feedback,
             attempt_no=result.attempt_no
         )
 
