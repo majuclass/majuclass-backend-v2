@@ -51,7 +51,18 @@ class SessionRepository:
             exists = check_result.scalar_one_or_none()
 
             if exists:
-                print(f"[DEBUG] 세션은 존재하지만 조건 불일치: student_id={exists.student_id}, status={exists.session_status}, is_deleted={exists.is_deleted}")
+                # 해당 student의 user_id 확인
+                student_result = await self.db.execute(
+                    select(Student).where(Student.id == exists.student_id)
+                )
+                student = student_result.scalar_one_or_none()
+
+                actual_user_id = student.user_id if student else "N/A"
+                print(f"[DEBUG] 세션은 존재하지만 조건 불일치:")
+                print(f"  - 세션 정보: student_id={exists.student_id}, status={exists.session_status}, is_deleted={exists.is_deleted}")
+                print(f"  - 학생 정보: student.user_id={actual_user_id}")
+                print(f"  - 요청한 user_id={user_id}")
+                print(f"  - 권한 불일치: {actual_user_id} != {user_id}")
             else:
                 print(f"[DEBUG] 세션 자체가 DB에 존재하지 않음")
 
