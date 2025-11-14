@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import NavBar from '../components/NavBar';
 import '../styles/DashBoardPage.css';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 // import type { TooltipItem } from 'chart.js';
@@ -237,7 +236,7 @@ const StudentDashboard: React.FC = () => {
   const renderStatusBadge = (status: string) => {
     const statusMap = {
       COMPLETED: { text: '완료', className: 'status-completed' },
-      IN_PROGRESS: { text: '진행중', className: 'status-progress' },
+      IN_PROGRESS: { text: '중단', className: 'status-progress' }, // 현재는 진행 중인 시나리오를 연결해서 할 수 없으므로
       ABORTED: { text: '중단', className: 'status-aborted' },
     };
 
@@ -271,7 +270,6 @@ const StudentDashboard: React.FC = () => {
 
   return (
     <div className="student-dashboard">
-      <NavBar />
 
       <div className="dashboard-content">
         {/* 좌측: 카테고리별 차트 */}
