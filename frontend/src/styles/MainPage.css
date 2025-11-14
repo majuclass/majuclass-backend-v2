@@ -545,6 +545,24 @@
   font-weight: bold;
 }
 
+.abtstudent {
+  display: flex;
+}
+
+.student-selected-msg {
+  color: #1E90FF; /* 파란색 */
+  font-size: 0.85rem;
+  margin-left: 6px;
+  animation: fadeInOut 2s ease forwards;
+}
+
+@keyframes fadeInOut {
+  0% { opacity: 0; transform: translateY(-3px); }
+  10% { opacity: 1; transform: translateY(0); }
+  80% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(-3px); }
+}
+
 /* 반응형 디자인 */
 @media (max-width: 1024px) {
   .main-content {

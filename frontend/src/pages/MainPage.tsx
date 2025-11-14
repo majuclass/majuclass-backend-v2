@@ -48,6 +48,10 @@ const MainPage: React.FC = () => {
   const currentStudentId = useUserStore((s) => s.studentId);
   const clear = useUserStore((s) => s.clear);
 
+  // 선택 알림 (1~2초 표시)
+  const [highlightedStudentId, setHighlightedStudentId] = useState<number | null>(null);
+
+
   // 학생 목록 로드
   useEffect(() => {
     loadStudents();
@@ -362,11 +366,6 @@ const MainPage: React.FC = () => {
           </div>
 
           <div className="students-list">
-            {currentStudentId && (
-              <div className="selected-student-banner">
-                <span>{useUserStore.getState().studentName}</span> 학생이 선택되었습니다.
-              </div>
-            )}
             {students.length === 0 ? (
               <div className="no-data">학생이 없습니다.</div>
             ) : (
@@ -383,11 +382,22 @@ const MainPage: React.FC = () => {
                       // 선택
                       setSelectedStudent(student);
                       setStudent(student.studentId, student.name);
+
+                      // 선택 안내(1~2초 유지)
+                      setHighlightedStudentId(student.studentId);
+                      setTimeout(() => setHighlightedStudentId(null), 1500);
                     }
                   }}
                 >
                   <div className="student-info">
+                    <div className="abtstudent">
                     <span className="student-name">{student.name}</span>
+                    {highlightedStudentId === student.studentId && (
+                      <span className="student-selected-msg">
+                        ✔ 선택되었습니다
+                      </span>
+                    )}
+                    </div>
                     <span className="student-school">{student.schoolName}</span>
                   </div>
                   <div className="student-actions">
