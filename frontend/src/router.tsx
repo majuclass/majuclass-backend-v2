@@ -7,6 +7,7 @@ import ScenarioCreatePage from './pages/ScenarioCreatePage';
 import SelectLevelPage from './pages/SelectLevelPage';
 import SimulationPage from './pages/SimulationPage';
 import DashBoardPage from './pages/DashBoardPage';
+import ScenarioAiCreatePAge from './pages/ScenarioAICreatePage'
 import ErrorPage from './pages/ErrorPage';
 
 /** 라우트 설정 */
@@ -40,6 +41,7 @@ const router = createBrowserRouter([
         element: <SimulationPage />,
       },
       { path: 'students/:id', element: <DashBoardPage /> },
+      { path: 'scenarios/ai/create', element: <ScenarioAiCreatePAge /> },
       { path: '*', element: <ErrorPage /> },
     ],
   },
