@@ -56,7 +56,7 @@ public class Student extends BaseTimeEntity {
             this.user.removeStudent(this);
         }
 
-        // 새로운 선생님 설정
+        // 새로운 선생님 설정엥
         this.user = user;
 
         // 양방향 관계 설정
