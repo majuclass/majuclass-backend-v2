@@ -7,6 +7,7 @@ from starlette.middleware.cors import CORSMiddleware
 from app.common.api_response import ApiResponse
 from app.domains.auth.middleware import AuthMiddleware
 from app.domains.speech_to_text.stt_router_v2 import router as stt_router_v2
+from app.domains.text_to_speech.tts_router import router as tts_router
 
 # 환경 변수 로드
 load_dotenv()
@@ -41,9 +42,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# 구 분석 라우터.
+# 구 버전 STT 라우터
 # app.include_router(stt_router)
 app.include_router(stt_router_v2)
+
+# TTS 라우터
+app.include_router(tts_router, prefix="/ai", tags=["TTS"])
+
 
 
 @app.get("/")
