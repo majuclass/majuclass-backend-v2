@@ -41,8 +41,10 @@ const MainPage: React.FC = () => {
 
   // 일일 세션 모달 상태
   const [showDailySessionsModal, setShowDailySessionsModal] = useState(false);
-  const [dailySessions, setDailySessions] =
-    useState<DailySessionListResponse | null>(null);
+  const [selectedDayData, setSelectedDayData] = useState<{
+    date: string;
+    students: { studentId: number; studentName: string; sessionCount: number }[];
+  } | null>(null);
 
   const setStudent = useUserStore((s) => s.setStudent);
   const currentStudentId = useUserStore((s) => s.studentId);
@@ -234,24 +236,23 @@ const MainPage: React.FC = () => {
     }
   };
 
-  // 달력 일자 클릭 (일일 세션 조회)
-  const handleDayClick = async (
-    studentId: number,
-    // studentName: string,
-    day: number
-  ) => {
+  // 달력 일자 클릭 (해당 날짜의 학생 목록 표시)
+  const handleDayClick = (day: number) => {
     const dateStr = `${currentYear}-${String(currentMonth).padStart(
       2,
       '0'
     )}-${String(day).padStart(2, '0')}`;
 
-    try {
-      const data = await getDailySessions(studentId, dateStr);
-      setDailySessions(data);
+    const dayData = calendarData?.dailyStats.find(
+      (d) => new Date(d.date).getDate() === day
+    );
+
+    if (dayData && dayData.studentSessions.length > 0) {
+      setSelectedDayData({
+        date: dateStr,
+        students: dayData.studentSessions,
+      });
       setShowDailySessionsModal(true);
-    } catch (error) {
-      console.error('일일 세션 로드 실패:', error);
-      alert('일일 세션 조회에 실패했습니다.');
     }
   };
 
@@ -290,25 +291,19 @@ const MainPage: React.FC = () => {
       days.push(
         <div
           key={`day-${day}`}
-          className={`calendar-day ${isToday ? 'today' : ''}`}
+          className={`calendar-day ${isToday ? 'today' : ''} ${
+            dayData && dayData.studentSessions.length > 0 ? 'has-activity' : ''
+          }`}
+          onClick={() =>
+            dayData && dayData.studentSessions.length > 0 && handleDayClick(day)
+          }
         >
           <div className="day-number">{day}</div>
           {dayData && dayData.studentSessions.length > 0 && (
-            <div className="day-activities">
-              {dayData.studentSessions.map((activity) => (
-                <div
-                  key={activity.studentId}
-                  className="activity-item"
-                  onClick={() => handleDayClick(activity.studentId, day)}
-                >
-                  <span className="activity-student">
-                    {activity.studentName}
-                  </span>
-                  <span className="activity-count">
-                    {activity.sessionCount}회
-                  </span>
-                </div>
-              ))}
+            <div className="day-summary">
+              <span className="student-count">
+                학생 {dayData.studentSessions.length}명
+              </span>
             </div>
           )}
         </div>
@@ -535,20 +530,18 @@ const MainPage: React.FC = () => {
         </div>
       )}
 
-      {/* 일일 세션 모달 */}
-      {showDailySessionsModal && dailySessions && (
+      {/* 일일 활동 모달 */}
+      {showDailySessionsModal && selectedDayData && (
         <div
           className="modal-overlay"
           onClick={() => setShowDailySessionsModal(false)}
         >
           <div
-            className="modal-content large"
+            className="modal-content"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="modal-header">
-              <h2>
-                {dailySessions.studentName} - {dailySessions.date} 활동
-              </h2>
+              <h2>{selectedDayData.date} 활동</h2>
               <button
                 className="modal-close"
                 onClick={() => setShowDailySessionsModal(false)}
@@ -558,41 +551,19 @@ const MainPage: React.FC = () => {
             </div>
             <div className="modal-body">
               <p className="session-count">
-                총 {dailySessions.totalCount}개의 세션
+                총 {selectedDayData.students.length}명의 학생
               </p>
-              <div className="sessions-list">
-                {dailySessions.sessions.map((session) => (
-                  <div key={session.sessionId} className="session-item-modal">
-                    <div className="session-thumbnail">
-                      {session.thumbnailUrl ? (
-                        <img
-                          src={session.thumbnailUrl}
-                          alt={session.scenarioTitle}
-                        />
-                      ) : (
-                        <div className="thumbnail-placeholder">이미지 없음</div>
-                      )}
-                    </div>
-                    <div className="session-info">
-                      <div className="session-title">
-                        {session.scenarioTitle}
-                      </div>
-                      <div className="session-meta">
-                        <span className="session-category">
-                          {session.categoryName}
-                        </span>
-                        <span className="session-time">
-                          {new Date(session.createdAt).toLocaleTimeString(
-                            'ko-KR'
-                          )}
-                          {session.completedAt &&
-                            ` - ${new Date(
-                              session.completedAt
-                            ).toLocaleTimeString('ko-KR')}`}
-                        </span>
-                      </div>
-                    </div>
-                    {renderStatusBadge(session.status)}
+              <div className="student-sessions-list">
+                {selectedDayData.students.map((student) => (
+                  <div
+                    key={student.studentId}
+                    className="student-session-item"
+                    onClick={() => navigate(`/students/${student.studentId}`)}
+                  >
+                    <span className="student-name">{student.studentName}</span>
+                    <span className="session-count-badge">
+                      {student.sessionCount}개
+                    </span>
                   </div>
                 ))}
               </div>

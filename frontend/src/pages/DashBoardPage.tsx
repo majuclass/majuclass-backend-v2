@@ -33,6 +33,7 @@ const StudentDashboard: React.FC = () => {
   const [categoryStats, setCategoryStats] =
     useState<CategoryStatsResponse | null>(null);
   const [sessions, setSessions] = useState<SessionsResponse | null>(null);
+  const [sessionsLoading, setSessionsLoading] = useState(true);
   const [selectedSession, setSelectedSession] =
     useState<SessionSequenceStatsResponse | null>(null);
   const [showSequenceStats, setShowSequenceStats] = useState(false);
@@ -72,6 +73,7 @@ const StudentDashboard: React.FC = () => {
   // 월별 세션 목록 로드
   useEffect(() => {
     const loadSessions = async () => {
+      setSessionsLoading(true);
       try {
         const data = await getMonthlySessions(
           studentId,
@@ -85,6 +87,8 @@ const StudentDashboard: React.FC = () => {
           const axiosError = error as { response?: { data: unknown } };
           console.error('서버 응답:', axiosError.response?.data);
         }
+      } finally {
+        setSessionsLoading(false);
       }
     };
 
@@ -309,7 +313,9 @@ const StudentDashboard: React.FC = () => {
           <div className="detail-card sessions-card">
             <h3 className="card-title">최근 시나리오 활동</h3>
             <div className="sessions-list">
-              {sessions && sessions.sessions.length > 0 ? (
+              {sessionsLoading ? (
+                <div className="loading-data">로딩 중...</div>
+              ) : sessions && sessions.sessions.length > 0 ? (
                 sessions.sessions.map((session) => (
                   <div
                     key={session.sessionId}
@@ -341,7 +347,9 @@ const StudentDashboard: React.FC = () => {
                         </span>
                       </div>
                     </div>
+                    <div className="session-status">
                     {renderStatusBadge(session.status)}
+                    </div>
                   </div>
                 ))
               ) : (
