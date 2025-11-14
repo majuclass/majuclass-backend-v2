@@ -183,7 +183,11 @@ public class StudentServiceImpl implements StudentService {
             student.changeTeacher(newTeacher);
 
             // 해당 학생의 세션이 있는 날짜 목록 조회
-            List<LocalDate> sessionDates = scenarioSessionRepository.findSessionDatesByStudent(studentId);
+            List<LocalDateTime> sessionDateTimes = scenarioSessionRepository.findSessionDatesByStudent(studentId);
+            List<LocalDate> sessionDates = sessionDateTimes.stream()
+                    .map(LocalDateTime::toLocalDate)
+                    .distinct()
+                    .collect(Collectors.toList());
 
             // 기존 선생님과 새 선생님의 캘린더 캐시 무효화
             for (LocalDate date : sessionDates) {
@@ -222,7 +226,11 @@ public class StudentServiceImpl implements StudentService {
         validateStudentAccess(user, student);
 
         // 4. 해당 학생의 세션이 있는 날짜 목록 조회
-        List<LocalDate> sessionDates = scenarioSessionRepository.findSessionDatesByStudent(studentId);
+        List<LocalDateTime> sessionDateTimes = scenarioSessionRepository.findSessionDatesByStudent(studentId);
+        List<LocalDate> sessionDates = sessionDateTimes.stream()
+                .map(LocalDateTime::toLocalDate)
+                .distinct()
+                .collect(Collectors.toList());
 
         // 5. 삭제 처리 (soft delete)
         student.delete();

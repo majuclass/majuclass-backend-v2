@@ -91,12 +91,11 @@ public interface ScenarioSessionRepository extends JpaRepository<ScenarioSession
     );
 
     /**
-     * 특정 학생의 세션이 있는 날짜 목록 조회 (캐시 무효화용)
+     * 특정 학생의 세션 생성 시간 목록 조회 (캐시 무효화용)
      */
-    @Query("SELECT DISTINCT DATE(ss.createdAt) " +
+    @Query("SELECT ss.createdAt " +
             "FROM ScenarioSession ss " +
             "WHERE ss.student.id = :studentId " +
-            "AND ss.isDeleted = false " +
-            "ORDER BY DATE(ss.createdAt)")
-    List<java.time.LocalDate> findSessionDatesByStudent(@Param("studentId") Long studentId);
+            "AND ss.isDeleted = false")
+    List<LocalDateTime> findSessionDatesByStudent(@Param("studentId") Long studentId);
 }
