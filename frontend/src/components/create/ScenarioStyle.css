@@ -1,0 +1,230 @@
+/* ====== 전체 레이아웃 ====== */
+.scenario-container {
+  width: 100%;
+}
+
+.scenario-flex-row {
+  display: flex;
+  flex-direction: row;
+  gap: 20px; /* gap-5 */
+}
+
+/* ====== 좌측 폼 박스(분홍 배경) ====== */
+.scenario-form-box {
+  flex: 1;
+  background-color: #fce7f3; /* bg-pink-50 */
+  border-radius: 16px;       /* rounded-2xl */
+  padding: 32px;             /* p-8 */
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1); /* shadow-sm */
+}
+
+.scenario-form-box h2 {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 16px;
+}
+
+/* ====== 카테고리 섹션 ====== */
+.category-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.category-row p {
+  width: 96px;
+  font-size: 16px;
+}
+
+.category-select {
+  flex: 1;
+  border: 1px solid #d1d5db; /* border-gray-300 */
+  border-radius: 6px;
+  padding: 8px;
+}
+
+.category-select:focus {
+  outline: none;
+  ring: 2px solid #fbcfe8;
+}
+
+/* ====== 파일 선택 버튼 ====== */
+.file-button {
+  cursor: pointer;
+  background-color: #f3f4f6; /* bg-gray-100 */
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  font-size: 14px;
+  color: #4b5563; /* text-gray-700 */
+  transition: background 0.2s ease;
+}
+
+.file-button:hover {
+  background-color: #e5e7eb; /* hover:bg-gray-200 */
+}
+
+/* 파일 이름 박스 */
+.file-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #f9fafb; /* bg-gray-50 */
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.file-chip span {
+  font-size: 12px;
+  color: #6b7280;
+  max-width: 120px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* 파일 삭제 버튼 */
+.file-delete-btn {
+  font-weight: bold;
+  color: #ef4444;
+  cursor: pointer;
+}
+
+.file-delete-btn:hover {
+  color: #dc2626;
+}
+
+/* ====== 미리보기 박스 ====== */
+.preview-wrapper {
+  flex: 1;
+  background-color: #fce7f3; /* bg-pink-50 */
+  border-radius: 16px;
+  padding: 24px;
+  text-align: center;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+.preview-header {
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+  margin-bottom: 16px;
+  align-items: center;
+}
+
+.preview-header img {
+  height: 80px; /* h-20 */
+  object-fit: contain;
+}
+
+.preview-header h2 {
+  font-size: 20px;
+  font-weight: bold;
+  line-height: 1.2;
+}
+
+.preview-header p {
+  color: #4b5563;
+  font-size: 14px;
+}
+
+/* 큰 썸네일 박스 */
+.thumbnail-box {
+  width: 320px;  /* w-80 */
+  height: 224px; /* h-56 */
+  border-radius: 12px;
+  border: 2px dashed #d1d5db; /* border-gray-300 */
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.thumbnail-box.active {
+  border-color: #e5e7eb; /* border-gray-200 */
+}
+
+.thumbnail-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.thumbnail-placeholder p {
+  color: #9ca3af;
+  font-size: 14px;
+}
+
+/* ====== 하단 버튼 ====== */
+.footer-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-top: 24px;
+}
+
+
+
+/* 전체 탭 영역 */
+.seq-tab-row {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  border-radius: 16px;
+}
+
+/* + 추가하기 버튼 */
+.seq-add-btn {
+  margin-left: 8px;
+  padding: 6px 12px;
+  border-radius: 9999px;
+  background-color: #fce7f3;
+  color: #db2777;
+  border: 1px solid #f9a8d4;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.seq-add-btn:hover {
+  background-color: #fbcfe8;
+}
+
+/* 시퀀스 입력 박스 */
+.seq-input-wrapper {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  background-color: #fce7f3;
+  padding: 20px;
+  border-radius: 16px;
+  justify-content: center;
+  min-height: 600px;
+  transition: all 0.3s ease;
+}
+
+/* 아래 버튼 영역 */
+.seq-footer-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-top: 12px;
+}
+
+/* 로딩/에러박스 */
+.loading-box,
+.error-box {
+  padding: 32px;
+  text-align: center;
+}
+
+.error-box {
+  color: #ef4444;
+}

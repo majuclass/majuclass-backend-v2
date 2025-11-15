@@ -38,7 +38,6 @@ export default function ScenarioListPage() {
     try {
       const data = await getStudents();  
       setStudents(data);
-      console.log('[ScenarioListPage] 학생 목록 로드 완료:', data);
     } catch (error) {
       console.error("학생 목록 로드 실패:", error);
     }
