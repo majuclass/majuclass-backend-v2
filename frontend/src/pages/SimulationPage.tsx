@@ -45,9 +45,7 @@ export default function SimulationPage() {
   const [sequenceNumber, setSequenceNumber] = useState(1);
   const [isCorrect, setIsCorrect] = useState<boolean>(false);
   const [sessionId, setSessionId] = useState<number>();
-
   const studentId = useUserStore((s) => s.studentId);
-  console.log("🔥 전역 studentId:", studentId);
 
 
   // 시나리오는 최초 로딩 1회
