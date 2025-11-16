@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional, Annotated
+from typing import Any, Dict, Optional, Annotated, List
 from pydantic import BaseModel, Field
 
 class GenerateScenarioRequest(BaseModel):
@@ -12,4 +12,29 @@ class GenerateScenarioRequest(BaseModel):
 class GenerateScenarioResponse(BaseModel):
     # LLM 결과 + 주입된 S3 키들을 그대로 딤기
     scenario: Dict[str, Any]
-    uploadSummary: Dict[str, Any] 
+    uploadSummary: Dict[str, Any]
+
+class AutoCreateScenarioRequest(BaseModel):
+    category_id: int
+    seq_cnt: Annotated[int, Field(ge=1, le=20)]
+    option_cnt: Annotated[int, Field(ge=1, le=6)]
+    prompt: str
+
+class OptionData(BaseModel):
+    optionNo: int
+    optionText: str
+    optionS3Key: str
+    isAnswer: bool
+
+class SequenceData(BaseModel):
+    seqNo: int
+    question: str
+    options: List[OptionData]
+
+class AutoCreateScenarioResponse(BaseModel):
+    title: str
+    summary: str
+    categoryId: int
+    thumbnailS3Key: str
+    backgroundS3Key: str
+    sequences: List[SequenceData] 
