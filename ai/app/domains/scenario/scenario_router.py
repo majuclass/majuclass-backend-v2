@@ -7,6 +7,8 @@ from app.domains.scenario.models.scenario_models import (
     GenerateScenarioResponse,     # scenario + uploadSummary
     AutoCreateScenarioRequest,
     AutoCreateScenarioResponse,
+    SequenceData,
+    OptionData,
 )
 
 # 서비스 오케스트레이션
@@ -129,8 +131,6 @@ async def auto_create_scenario(
             image_size="1024x1024",
             option_image_size="512x512",
         )
-
-        from app.domains.scenario.models.scenario_models import SequenceData, OptionData
 
         sequences = []
         for seq in scenario.get("sequences", []):
