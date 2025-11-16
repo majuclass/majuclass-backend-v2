@@ -59,31 +59,7 @@ export default function NavBar() {
             <i className="nav-icon">
               <HiOutlineClock />
             </i>
-            <span>학생 시나리오</span>
-          </Link>
-
-          <Link
-            to="/students"
-            className={`nav-item ${
-              location.pathname === '/students' ? 'active' : ''
-            }`}
-          >
-            <i className="nav-icon">
-              <HiOutlineFolder />
-            </i>
-            <span>학생 관리</span>
-          </Link>
-
-          <Link
-            to="/scenarios/ai/create"
-            className={`nav-item ${
-              location.pathname === '/scenarios/ai/create' ? 'active' : ''
-            }`}
-          >
-            <i className="nav-icon">
-              <HiOutlineChatBubbleBottomCenterText />
-            </i>
-            <span>서비스 소개</span>
+            <span>시나리오 실행하기</span>
           </Link>
         </div>
       </div>
@@ -121,17 +97,7 @@ export default function NavBar() {
             메인 페이지
           </Link>
           <Link to="/scenarios" className="nav-item" onClick={toggleMenu}>
-            학생 시나리오
-          </Link>
-          <Link to="/students" className="nav-item" onClick={toggleMenu}>
-            학생 관리
-          </Link>
-          <Link
-            to="/scenarios/ai/create"
-            className="nav-item"
-            onClick={toggleMenu}
-          >
-            서비스 소개
+            시나리오 실행하기
           </Link>
           <div className="mobile-user-info">
             <span className="navbar-greeting">
