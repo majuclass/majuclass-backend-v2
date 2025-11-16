@@ -8,12 +8,19 @@
   background-color: #FFF7D6; /* 이미지 배경색 (#fff7d6 기준) */
   border-bottom: 1px solid #E5E7EB;
   font-family: "Pretendard", sans-serif;
+  position: relative; /* For mobile menu positioning */
 }
 
 .navbar-left {
   display: flex;
   align-items: center;
-  gap: 48px;
+  gap: 64px; /* Increased gap for larger screens */
+}
+
+.navbar-desktop-links {
+  display: flex;
+  align-items: center;
+  gap: 48px; /* Gap between desktop navigation items */
 }
 
 .nav-item {
@@ -25,6 +32,7 @@
   font-weight: 500;
   text-decoration: none;
   transition: all 0.2s ease;
+  white-space: nowrap; /* Prevent text wrapping */
 }
 
 .nav-item:hover {
@@ -46,6 +54,7 @@
   gap: 12px;
   font-size: 18px;
   color: #111827;
+  white-space: nowrap; /* Prevent text wrapping */
 }
 
 .navbar-greeting strong {
@@ -72,4 +81,104 @@
   object-fit: contain;    /* 여백 포함해 비율 유지 */
   border-radius: 8px;     /* (선택) 살짝 둥근 모서리 */
   background: transparent; /* 혹시 흰 배경일 때 대비 */
+}
+
+/* Hamburger Menu Button */
+.navbar-hamburger {
+  display: none; /* Hidden by default on desktop */
+  font-size: 32px;
+  cursor: pointer;
+  color: #111827;
+}
+
+/* Mobile Menu */
+.navbar-mobile-links {
+  display: none; /* Hidden by default */
+  flex-direction: column;
+  position: absolute;
+  top: 100%; /* Position right below the navbar */
+  left: 0;
+  width: 100%;
+  background-color: #FFF7D6;
+  border-top: 1px solid #E5E7EB;
+  padding: 16px 48px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+
+.navbar-mobile-links .nav-item {
+  padding: 12px 0;
+  font-size: 18px;
+  color: #111827;
+  text-decoration: none;
+  border-bottom: 1px solid #E5E7EB;
+}
+
+.navbar-mobile-links .nav-item:last-child {
+  border-bottom: none;
+}
+
+.navbar-mobile-links .nav-item:hover {
+  color: #4F46E5;
+}
+
+.mobile-user-info {
+  padding-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 16px;
+  color: #111827;
+  border-top: 1px solid #E5E7EB;
+  margin-top: 16px;
+}
+
+.mobile-user-info .selected-student {
+  cursor: pointer;
+}
+
+/* Media Queries for Responsiveness */
+@media (max-width: 1024px) {
+  .navbar-left {
+    gap: 24px;
+  }
+
+  .navbar-desktop-links {
+    gap: 24px;
+  }
+
+  .nav-item {
+    font-size: 16px;
+  }
+
+  .navbar-right {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .navbar {
+    padding: 12px 24px;
+  }
+
+  .navbar-left {
+    gap: 16px;
+  }
+
+  .navbar-desktop-links,
+  .navbar-right {
+    display: none; /* Hide desktop links and right section on mobile */
+  }
+
+  .navbar-hamburger {
+    display: block; /* Show hamburger menu on mobile */
+  }
+
+  .navbar-mobile-links {
+    display: flex; /* Show mobile menu when active (controlled by JS) */
+  }
+
+  .navbar-mobile-links.hidden {
+    display: none;
+  }
 }

@@ -92,12 +92,18 @@ export default function ScenarioListPage() {
         </div>
 
         {/* 시나리오 추가 */}
-        <div className="flex justify-end">
+        <div className="flex justify-end gap-4">
           <button
             className="w-full sm:w-auto p-3 font-nsrExtraBold mb-6 bg-gradient-to-r from-pink-400 to-pink-500 hover:from-pink-500 hover:to-pink-600 text-white rounded-full shadow-lg hover:shadow-lg transition-all duration-300 transform hover:scale-105"
             onClick={() => navigate('create')}
           >
             새 이야기 만들기
+          </button>
+          <button
+            className="w-full sm:w-auto p-3 font-nsrExtraBold mb-6 bg-gradient-to-r from-purple-400 to-purple-500 hover:from-purple-500 hover:to-purple-600 text-white rounded-full shadow-lg hover:shadow-lg transition-all duration-300 transform hover:scale-105"
+            onClick={() => navigate('/scenarios/ai/create')}
+          >
+            AI로 생성하기
           </button>
         </div>
 
