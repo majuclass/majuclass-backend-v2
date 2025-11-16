@@ -166,11 +166,6 @@ async def auto_create_scenario(
         print(f"title: {response_data.title}")
         print(f"총 시퀀스: {len(response_data.sequences)}")
 
-        if upload_summary.get("failedRefs"):
-            print(f"[WARNING] 이미지 업로드 실패: {len(upload_summary['failedRefs'])}개")
-            for failed in upload_summary["failedRefs"]:
-                print(f"  - {failed['ref']}: {failed['reason']}")
-
         return ApiResponse.success(
             message="시나리오 자동 생성에 성공하였습니다.",
             data=response_data,
