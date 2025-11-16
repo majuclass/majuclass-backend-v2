@@ -26,10 +26,42 @@ class OptionData(BaseModel):
     optionS3Key: str
     isAnswer: bool
 
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "optionNo": 1,
+                "optionText": "안녕하세요",
+                "optionS3Key": "scenarios/options/uuid-example.jpg",
+                "isAnswer": True
+            }
+        }
+
 class SequenceData(BaseModel):
     seqNo: int
     question: str
     options: List[OptionData]
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "seqNo": 1,
+                "question": "직원에게 어떻게 인사하시겠습니까?",
+                "options": [
+                    {
+                        "optionNo": 1,
+                        "optionText": "안녕하세요",
+                        "optionS3Key": "scenarios/options/uuid-1.jpg",
+                        "isAnswer": True
+                    },
+                    {
+                        "optionNo": 2,
+                        "optionText": "안녕히계세요",
+                        "optionS3Key": "scenarios/options/uuid-2.jpg",
+                        "isAnswer": False
+                    }
+                ]
+            }
+        }
 
 class AutoCreateScenarioResponse(BaseModel):
     title: str
@@ -37,4 +69,35 @@ class AutoCreateScenarioResponse(BaseModel):
     categoryId: int
     thumbnailS3Key: str
     backgroundS3Key: str
-    sequences: List[SequenceData] 
+    sequences: List[SequenceData]
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "title": "영화관에서 팝콘 구매하기",
+                "summary": "영화관에서 매장 직원에게 팝콘을 구매해보아요",
+                "categoryId": 1,
+                "thumbnailS3Key": "scenarios/thumbnails/uuid.jpg",
+                "backgroundS3Key": "scenarios/backgrounds/uuid.jpg",
+                "sequences": [
+                    {
+                        "seqNo": 1,
+                        "question": "직원에게 어떻게 인사하시겠습니까?",
+                        "options": [
+                            {
+                                "optionNo": 1,
+                                "optionText": "안녕하세요",
+                                "optionS3Key": "scenarios/options/uuid-1.jpg",
+                                "isAnswer": True
+                            },
+                            {
+                                "optionNo": 2,
+                                "optionText": "안녕히계세요",
+                                "optionS3Key": "scenarios/options/uuid-2.jpg",
+                                "isAnswer": False
+                            }
+                        ]
+                    }
+                ]
+            }
+        } 
