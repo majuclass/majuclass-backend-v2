@@ -18,14 +18,12 @@ logging.basicConfig(
     format="%(levelname)s %(asctime)s %(name)s: %(message)s"
 )
 
-# FastAPI 앱 인스턴스 생성
 app = FastAPI(
     title="AI Service API",
     description="음성 인식 및 텍스트 분석 API 서비스",
     version="1.0.0"
 )
 
-# 프런트/게이트웨이가 실제로 띄워지는 Origin들을 정확히 나열
 ALLOWED_ORIGINS = [
     "https://www.majuclass.com",
     "https://majuclass.com",
