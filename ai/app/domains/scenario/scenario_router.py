@@ -1,4 +1,3 @@
-# app/domains/scenario/routers/scenario_router.py
 from fastapi import APIRouter, HTTPException, status
 from app.common.api_response import ApiResponse
 
@@ -6,6 +5,8 @@ from app.common.api_response import ApiResponse
 from app.domains.scenario.models.scenario_models import (
     GenerateScenarioRequest,      # prompt, question_count, options_per_question, categoryId, (선택)image sizes
     GenerateScenarioResponse,     # scenario + uploadSummary
+    AutoCreateScenarioRequest,
+    AutoCreateScenarioResponse,
 )
 
 # 서비스 오케스트레이션
@@ -96,4 +97,89 @@ async def generate_scenario(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"시나리오 생성 중 오류가 발생했습니다: {str(e)}",
+        )
+
+
+@router.post(
+    "/auto-create",
+    response_model=ApiResponse[AutoCreateScenarioResponse],
+    summary="시나리오 자동 생성 (DB 저장 없이 반환만)",
+    description=(
+        "LLM을 활용하여 시나리오를 자동 생성하고 이미지를 생성하여 S3에 업로드합니다. "
+        "DB에 저장하지 않고 생성된 데이터만 반환합니다."
+    ),
+    status_code=status.HTTP_200_OK,
+)
+async def auto_create_scenario(
+    request: AutoCreateScenarioRequest,
+) -> ApiResponse[AutoCreateScenarioResponse]:
+    try:
+        print("\n" + "=" * 60)
+        print("[API] 시나리오 자동 생성 요청 수신")
+        print("=" * 60)
+        print(f"prompt: {request.prompt[:80]}...")
+        print(f"seq_cnt: {request.seq_cnt}, option_cnt: {request.option_cnt}")
+        print(f"category_id: {request.category_id}")
+
+        scenario, upload_summary = await scenario_service.generate_scenario_with_presigned(
+            prompt=request.prompt,
+            question_count=request.seq_cnt,
+            options_per_question=request.option_cnt,
+            category_id=request.category_id,
+            image_size="1024x1024",
+            option_image_size="512x512",
+        )
+
+        from app.domains.scenario.models.scenario_models import SequenceData, OptionData
+
+        sequences = []
+        for seq in scenario.get("sequences", []):
+            options = [
+                OptionData(
+                    optionNo=opt["optionNo"],
+                    optionText=opt["optionText"],
+                    optionS3Key=opt["optionS3Key"],
+                    isAnswer=opt["isAnswer"]
+                )
+                for opt in seq.get("options", [])
+            ]
+            sequences.append(
+                SequenceData(
+                    seqNo=seq["seqNo"],
+                    question=seq["question"],
+                    options=options
+                )
+            )
+
+        response_data = AutoCreateScenarioResponse(
+            title=scenario["title"],
+            summary=scenario["summary"],
+            categoryId=scenario["categoryId"],
+            thumbnailS3Key=scenario["thumbnailS3Key"],
+            backgroundS3Key=scenario["backgroundS3Key"],
+            sequences=sequences
+        )
+
+        print("\n" + "=" * 60)
+        print("[API] 시나리오 자동 생성 응답 전송")
+        print("=" * 60)
+        print(f"title: {response_data.title}")
+        print(f"총 시퀀스: {len(response_data.sequences)}")
+
+        return ApiResponse.success(
+            message="시나리오 자동 생성에 성공하였습니다.",
+            data=response_data,
+        )
+
+    except ValueError as e:
+        print(f"\n[API] 잘못된 요청/검증 실패: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"잘못된 요청입니다: {str(e)}",
+        )
+    except Exception as e:
+        print(f"\n[API] 서버 오류: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"시나리오 자동 생성 중 오류가 발생했습니다: {str(e)}",
         )
