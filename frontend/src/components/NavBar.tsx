@@ -1,17 +1,15 @@
 /** @format */
 
 // src/pages/(MainPage)/components/navbar.tsx
-import { Link, useLocation,useNavigate } from "react-router-dom";
-import "../styles/NavBar.css";
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import '../styles/NavBar.css';
 import {
   HiOutlineHome,
   HiOutlineClock,
-  HiOutlineFolder,
-  HiOutlineChatBubbleBottomCenterText,
   HiOutlineUserCircle,
 } from 'react-icons/hi2';
 
-import { useUserStore } from "../stores/useUserStore";
+import { useUserStore } from '../stores/useUserStore';
 
 export default function NavBar() {
   const location = useLocation();
@@ -77,7 +75,6 @@ export default function NavBar() {
       </div>
 
       <div className="navbar-right">
-        
         <div className="selected-student" onClick={handleStudentClick}>
           {studentId && studentName ? (
             <span className="selected-student-name">
