@@ -12,8 +12,20 @@ export const fastapi = axios.create({
   withCredentials: true,
 });
 
-// TODO: authorization 주입
+// Authorization 토큰 자동 주입 (api 인스턴스)
 api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("accessToken");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
+// Authorization 토큰 자동 주입 (fastapi 인스턴스)
+fastapi.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("accessToken");
     if (token) {

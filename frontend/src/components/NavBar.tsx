@@ -1,7 +1,7 @@
 /** @format */
 
 // src/pages/(MainPage)/components/navbar.tsx
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import '../styles/NavBar.css';
 import {
@@ -20,6 +20,22 @@ export default function NavBar() {
   const navigate = useNavigate();
   const { studentId, studentName } = useUserStore();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [teacherName, setTeacherName] = useState('선생님');
+
+  // localStorage에서 사용자 정보 가져오기
+  useEffect(() => {
+    const userInfoStr = localStorage.getItem('userInfo');
+    if (userInfoStr) {
+      try {
+        const userInfo = JSON.parse(userInfoStr);
+        if (userInfo.name) {
+          setTeacherName(userInfo.name);
+        }
+      } catch (error) {
+        console.error('userInfo 파싱 실패:', error);
+      }
+    }
+  }, []);
 
   const handleStudentClick = () => {
     if (!studentId) return;
@@ -53,7 +69,7 @@ export default function NavBar() {
           <Link
             to="/scenarios"
             className={`nav-item ${
-              location.pathname === '/scenario' ? 'active' : ''
+              location.pathname.startsWith('/scenarios') ? 'active' : ''
             }`}
           >
             <i className="nav-icon">
@@ -78,7 +94,7 @@ export default function NavBar() {
         </div>
 
         <span className="navbar-greeting">
-          <strong>김선생님</strong>, 안녕하세요!
+          <strong>{teacherName}</strong>님, 안녕하세요!
         </span>
         {/* <i className="profile-icon">
           <HiOutlineUserCircle />
@@ -101,7 +117,7 @@ export default function NavBar() {
           </Link>
           <div className="mobile-user-info">
             <span className="navbar-greeting">
-              <strong>김선생님</strong>, 안녕하세요!
+              <strong>{teacherName}</strong>님, 안녕하세요!
             </span>
             <div
               className="selected-student"

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
 import api from '../apis/apiInstance';
 import { createAIScenario, type AIScenarioCreateResponse } from '../apis/scenarioAiApi';
 import '../styles/ScenarioAiCreatePage.css';
@@ -20,6 +21,7 @@ const fetchCategories = async () => {
 };
 
 const ScenarioGenerator: React.FC<ScenarioGeneratorProps> = ({ onGenerate }) => {
+  const navigate = useNavigate();
   const [categoryId, setCategoryId] = useState<number | null>(null);
   const [questionCount, setQuestionCount] = useState<number>(5);
   const [exampleCount, setExampleCount] = useState<number>(3);
@@ -28,6 +30,9 @@ const ScenarioGenerator: React.FC<ScenarioGeneratorProps> = ({ onGenerate }) => 
   // AI 생성 상태
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedScenario, setGeneratedScenario] = useState<AIScenarioCreateResponse | null>(null);
+
+  // 시나리오 실제 생성 상태
+  const [isCreating, setIsCreating] = useState(false);
 
   // 카테고리 조회
   const {
@@ -107,6 +112,57 @@ const ScenarioGenerator: React.FC<ScenarioGeneratorProps> = ({ onGenerate }) => 
       }
     } finally {
       setIsGenerating(false);
+    }
+  };
+
+  // 시나리오 실제 생성 (DB 저장)
+  const handleCreateScenario = async () => {
+    if (!generatedScenario) {
+      alert('생성된 시나리오가 없습니다.');
+      return;
+    }
+
+    setIsCreating(true);
+
+    try {
+      const scenarioData = {
+        title: generatedScenario.title,
+        summary: generatedScenario.summary,
+        categoryId: generatedScenario.categoryId,
+        sequences: generatedScenario.sequences,
+        ...(generatedScenario.thumbnailS3Key && { thumbnailS3Key: generatedScenario.thumbnailS3Key }),
+        ...(generatedScenario.backgroundS3Key && { backgroundS3Key: generatedScenario.backgroundS3Key }),
+      };
+
+      console.log('📤 시나리오 생성 요청:', scenarioData);
+
+      const response = await api.post('/scenarios/create', scenarioData);
+
+      console.log('✅ 시나리오 생성 성공:', response.data);
+
+      if (response.data.status === 'SUCCESS') {
+        alert(`시나리오 "${generatedScenario.title}"가 성공적으로 생성되었습니다!`);
+
+        // 시나리오 목록 페이지로 이동
+        navigate('/scenarios');
+      }
+    } catch (error) {
+      console.error('❌ 시나리오 생성 실패:', error);
+
+      if (error && typeof error === 'object' && 'response' in error) {
+        const axiosError = error as {
+          response?: { status: number; data: { message?: string } };
+        };
+
+        const status = axiosError.response?.status;
+        const errorMessage = axiosError.response?.data?.message || '알 수 없는 오류가 발생했습니다.';
+
+        alert(`시나리오 생성 실패 (${status || 'Unknown'})\n\n${errorMessage}`);
+      } else {
+        alert('시나리오 생성에 실패했습니다.\n네트워크 연결을 확인해주세요.');
+      }
+    } finally {
+      setIsCreating(false);
     }
   };
 
@@ -227,10 +283,48 @@ const ScenarioGenerator: React.FC<ScenarioGeneratorProps> = ({ onGenerate }) => 
                 <strong>설명:</strong> {generatedScenario.summary}
               </div>
               <div className="preview-item">
+                <strong>카테고리:</strong>{' '}
+                {categoryList.find((cat) => cat.id === generatedScenario.categoryId)?.categoryName || '알 수 없음'}
+              </div>
+              <div className="preview-item">
                 <strong>질문 개수:</strong> {generatedScenario.sequences.length}개
               </div>
-              <div className="preview-note">
-                ℹ️ 콘솔(F12)에서 전체 데이터를 확인할 수 있습니다.
+
+              {/* 시퀀스별 상세 정보 */}
+              <div className="sequences-detail">
+                <h4 className="sequences-title">📝 질문 및 선택지</h4>
+                {generatedScenario.sequences.map((seq) => (
+                  <div key={seq.seqNo} className="sequence-item">
+                    <div className="sequence-header">
+                      <strong>질문 {seq.seqNo}:</strong> {seq.question}
+                    </div>
+                    <div className="options-list">
+                      {seq.options.map((opt) => (
+                        <div
+                          key={opt.optionNo}
+                          className={`option-item ${opt.isAnswer ? 'correct-answer' : ''}`}
+                        >
+                          <span className="option-number">{opt.optionNo}.</span>
+                          <span className="option-text">{opt.optionText}</span>
+                          {opt.isAnswer && (
+                            <span className="answer-badge">✓ 정답</span>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* 시나리오 생성 버튼 */}
+              <div className="create-button-wrapper">
+                <button
+                  className="create-scenario-button"
+                  onClick={handleCreateScenario}
+                  disabled={isCreating}
+                >
+                  {isCreating ? '시나리오 생성 중...' : '✅ 시나리오 생성하기'}
+                </button>
               </div>
             </div>
           </div>

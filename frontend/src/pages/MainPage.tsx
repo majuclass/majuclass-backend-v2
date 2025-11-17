@@ -53,6 +53,9 @@ const MainPage: React.FC = () => {
   // 선택 알림 (1~2초 표시)
   const [highlightedStudentId, setHighlightedStudentId] = useState<number | null>(null);
 
+  // 케밥 메뉴 상태 (어떤 학생의 메뉴가 열려있는지)
+  const [openMenuId, setOpenMenuId] = useState<number | null>(null);
+
 
   // 학생 목록 로드
   useEffect(() => {
@@ -63,6 +66,23 @@ const MainPage: React.FC = () => {
   useEffect(() => {
     loadCalendarData();
   }, [currentYear, currentMonth]);
+
+  // 외부 클릭 시 케밥 메뉴 닫기
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (!target.closest('.kebab-menu-container')) {
+        setOpenMenuId(null);
+      }
+    };
+
+    if (openMenuId !== null) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside);
+      };
+    }
+  }, [openMenuId]);
 
   const loadStudents = async () => {
     try {
@@ -393,38 +413,57 @@ const MainPage: React.FC = () => {
                       </span>
                     )}
                     </div>
-                    <span className="student-school">{student.schoolName}</span>
                   </div>
-                  <div className="student-actions">
+
+                  {/* 케밥 메뉴 */}
+                  <div className="kebab-menu-container">
                     <button
-                      className="btn-view"
+                      className="kebab-menu-button"
                       onClick={(e) => {
                         e.stopPropagation();
-                        navigate(`/students/${student.studentId}`);
+                        setOpenMenuId(openMenuId === student.studentId ? null : student.studentId);
                       }}
+                      aria-label="메뉴 열기"
                     >
-                      보기
+                      ⋮
                     </button>
-                    <button
-                      className="btn-edit"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setSelectedStudent(student);
-                        setEditStudentName(student.name);
-                        setShowEditModal(true);
-                      }}
-                    >
-                      수정
-                    </button>
-                    <button
-                      className="btn-delete"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDeleteStudent(student.studentId, student.name);
-                      }}
-                    >
-                      삭제
-                    </button>
+
+                    {openMenuId === student.studentId && (
+                      <div className="kebab-menu-dropdown">
+                        <button
+                          className="menu-item"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setOpenMenuId(null);
+                            navigate(`/students/${student.studentId}`);
+                          }}
+                        >
+                          📊 상세보기
+                        </button>
+                        <button
+                          className="menu-item"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setOpenMenuId(null);
+                            setSelectedStudent(student);
+                            setEditStudentName(student.name);
+                            setShowEditModal(true);
+                          }}
+                        >
+                          ✏️ 수정하기
+                        </button>
+                        <button
+                          className="menu-item menu-item-danger"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setOpenMenuId(null);
+                            handleDeleteStudent(student.studentId, student.name);
+                          }}
+                        >
+                          🗑️ 삭제하기
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
               ))

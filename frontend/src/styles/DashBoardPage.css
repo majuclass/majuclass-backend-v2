@@ -124,6 +124,19 @@
   background-color: #ffffff;
 }
 
+/* 검색 및 필터 영역 */
+.sessions-filter-wrapper {
+  margin-bottom: 20px;
+}
+
+.sessions-search-bar {
+  position: relative;
+}
+
+.sessions-search-bar .flex {
+  position: relative;
+}
+
 .sessions-list {
   display: flex;
   flex-direction: column;
