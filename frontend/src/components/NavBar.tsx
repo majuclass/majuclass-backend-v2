@@ -7,8 +7,8 @@ import '../styles/NavBar.css';
 import {
   HiOutlineHome,
   HiOutlineClock,
-  HiOutlineFolder,
-  HiOutlineChatBubbleBottomCenterText,
+  // HiOutlineFolder,
+  // HiOutlineChatBubbleBottomCenterText,
   // HiOutlineUserCircle,
 } from 'react-icons/hi2';
 
