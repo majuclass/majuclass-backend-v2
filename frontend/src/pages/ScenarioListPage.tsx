@@ -36,7 +36,7 @@ export default function ScenarioListPage() {
   const [error, setError] = useState<string | null>(null);
 
   // 무한 스크롤 상태
-  const [page, setPage] = useState(0); // 0-based
+  const [, setPage] = useState(0); // 0-based
   const pageSize = 12;
   const [hasMore, setHasMore] = useState(true);
   const [isInitialLoad, setIsInitialLoad] = useState(true); // 초기 로드 플래그
@@ -57,7 +57,7 @@ export default function ScenarioListPage() {
   // 카테고리 조회
   const {
     data: categories,
-    isLoading: categoriesLoading,
+    // isLoading: categoriesLoading,
   } = useQuery({
     queryKey: ['categories'],
     queryFn: fetchCategories,
