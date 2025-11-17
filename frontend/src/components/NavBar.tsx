@@ -1,24 +1,22 @@
 /** @format */
 
-// src/pages/(MainPage)/components/navbar.tsx
 import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import '../styles/NavBar.css';
 import {
   HiOutlineHome,
   HiOutlineClock,
-  // HiOutlineFolder,
-  // HiOutlineChatBubbleBottomCenterText,
-  // HiOutlineUserCircle,
 } from 'react-icons/hi2';
 
 import { useUserStore } from '../stores/useUserStore';
+import { useAIGenerationStore } from '../stores/useSenarioAICreateStore';
 import { HiOutlineMenu, HiOutlineX } from 'react-icons/hi';
 
 export default function NavBar() {
   const location = useLocation();
   const navigate = useNavigate();
   const { studentId, studentName } = useUserStore();
+  const { isGenerating, generatedScenario } = useAIGenerationStore();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [teacherName, setTeacherName] = useState('선생님');
 
@@ -81,6 +79,22 @@ export default function NavBar() {
       </div>
 
       <div className="navbar-right">
+        {/* AI 생성 상태 인디케이터 */}
+        {isGenerating && (
+          <div className="ai-generation-indicator">
+            <span className="spinner-small"></span>
+            <span className="generation-text">AI 시나리오 생성 중...</span>
+          </div>
+        )}
+
+        {/* 생성 완료 알림 (선택적) */}
+        {!isGenerating && generatedScenario && (
+          <div className="ai-generation-complete" onClick={() => navigate('/scenarios/ai/create')}>
+            <span className="complete-icon">✓</span>
+            <span className="complete-text">시나리오 생성 완료!</span>
+          </div>
+        )}
+
         <div className="selected-student" onClick={handleStudentClick}>
           {studentId && studentName ? (
             <span className="selected-student-name">

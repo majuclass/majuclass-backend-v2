@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import api from '../apis/apiInstance';
-import { createAIScenario, type AIScenarioCreateResponse } from '../apis/scenarioAiApi';
+import { useAIGenerationStore } from '../stores/useSenarioAICreateStore';
 import '../styles/ScenarioAiCreatePage.css';
 
 interface ScenarioGeneratorProps {
@@ -27,12 +27,40 @@ const ScenarioGenerator: React.FC<ScenarioGeneratorProps> = ({ onGenerate }) => 
   const [exampleCount, setExampleCount] = useState<number>(3);
   const [description, setDescription] = useState<string>('');
 
-  // AI 생성 상태
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [generatedScenario, setGeneratedScenario] = useState<AIScenarioCreateResponse | null>(null);
+  // 전역 스토어에서 AI 생성 상태 가져오기
+  const {
+    isGenerating,
+    generatedScenario,
+    error: generationError,
+    startGeneration,
+    clearGeneration,
+  } = useAIGenerationStore();
 
   // 시나리오 실제 생성 상태
   const [isCreating, setIsCreating] = useState(false);
+
+  // 컴포넌트 언마운트 시 에러만 초기화 (생성 결과는 유지)
+  useEffect(() => {
+    return () => {
+      if (generationError) {
+        clearGeneration();
+      }
+    };
+  }, [generationError, clearGeneration]);
+
+  // 생성 완료 시 alert 표시
+  useEffect(() => {
+    if (generatedScenario && !isGenerating) {
+      alert(`시나리오 "${generatedScenario.title}"가 생성되었습니다!`);
+    }
+  }, [generatedScenario, isGenerating]);
+
+  // 에러 발생 시 alert 표시
+  useEffect(() => {
+    if (generationError) {
+      alert(`❌ 시나리오 생성 실패\n\n${generationError}`);
+    }
+  }, [generationError]);
 
   // 카테고리 조회
   const {
@@ -59,60 +87,16 @@ const ScenarioGenerator: React.FC<ScenarioGeneratorProps> = ({ onGenerate }) => 
       return;
     }
 
-    setIsGenerating(true);
-    setGeneratedScenario(null);
+    // 전역 스토어에서 백그라운드 생성 시작
+    await startGeneration({
+      category_id: categoryId,
+      seq_cnt: questionCount,
+      option_cnt: exampleCount,
+      prompt: description,
+    });
 
-    try {
-      const result = await createAIScenario({
-        category_id: categoryId,
-        seq_cnt: questionCount,
-        option_cnt: exampleCount,
-        prompt: description,
-      });
-
-      console.log('✅ AI 시나리오 생성 성공:', result);
-      setGeneratedScenario(result);
-      alert(`시나리오 "${result.title}"가 생성되었습니다!`);
-
-      // 콜백이 있으면 호출
-      onGenerate?.(categoryId, questionCount, exampleCount, description);
-    } catch (error) {
-      console.error('❌ AI 시나리오 생성 실패:', error);
-
-      if (error && typeof error === 'object' && 'response' in error) {
-        const axiosError = error as {
-          response?: { status: number; data: { message?: string } };
-        };
-
-        const status = axiosError.response?.status;
-        const errorMessage = axiosError.response?.data?.message || '알 수 없는 오류가 발생했습니다.';
-
-        // 500 에러: 서버 내부 오류
-        if (status === 500) {
-          alert(
-            `⚠️ 서버 내부 오류 발생\n\n` +
-            `${errorMessage}\n\n` +
-            `가능한 원인:\n` +
-            `• AI 서비스 일시적 장애\n` +
-            `• 요청 처리 중 오류\n\n` +
-            `잠시 후 다시 시도해주세요.\n` +
-            `문제가 지속되면 관리자에게 문의하세요.`
-          );
-        }
-        // 422 에러: 입력 검증 실패
-        else if (status === 422) {
-          alert(`❌ 입력값 검증 실패\n\n${errorMessage}\n\n시나리오 설명을 더 구체적으로 작성해주세요.`);
-        }
-        // 기타 에러
-        else {
-          alert(`시나리오 생성 실패 (${status || 'Unknown'})\n\n${errorMessage}`);
-        }
-      } else {
-        alert('시나리오 생성에 실패했습니다.\n네트워크 연결을 확인해주세요.');
-      }
-    } finally {
-      setIsGenerating(false);
-    }
+    // 콜백이 있으면 호출
+    onGenerate?.(categoryId, questionCount, exampleCount, description);
   };
 
   // 시나리오 실제 생성 (DB 저장)
