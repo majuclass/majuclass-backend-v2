@@ -283,7 +283,8 @@ const ScenarioGenerator: React.FC<ScenarioGeneratorProps> = ({ onGenerate }) => 
                 <strong>설명:</strong> {generatedScenario.summary}
               </div>
               <div className="preview-item">
-                <strong>카테고리 ID:</strong> {generatedScenario.categoryId}
+                <strong>카테고리:</strong>{' '}
+                {categoryList.find((cat) => cat.id === generatedScenario.categoryId)?.categoryName || '알 수 없음'}
               </div>
               <div className="preview-item">
                 <strong>질문 개수:</strong> {generatedScenario.sequences.length}개
