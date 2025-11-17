@@ -114,6 +114,7 @@ async def generate_scenario(
 )
 async def auto_create_scenario(
     request: AutoCreateScenarioRequest,
+    use_rag: bool = True,  # 쿼리 파라미터로 RAG 사용 여부 제어 (기본값 True)
 ) -> ApiResponse[AutoCreateScenarioResponse]:
     try:
         print("\n" + "=" * 60)
@@ -122,6 +123,7 @@ async def auto_create_scenario(
         print(f"prompt: {request.prompt[:80]}...")
         print(f"seq_cnt: {request.seq_cnt}, option_cnt: {request.option_cnt}")
         print(f"category_id: {request.category_id}")
+        print(f"use_rag: {use_rag}")
 
         scenario, upload_summary = await scenario_service.generate_scenario_with_presigned(
             prompt=request.prompt,
@@ -130,6 +132,7 @@ async def auto_create_scenario(
             category_id=request.category_id,
             image_size="1024x1024",
             option_image_size="512x512",
+            use_rag=use_rag,  # RAG 파라미터 전달
         )
 
         sequences = []

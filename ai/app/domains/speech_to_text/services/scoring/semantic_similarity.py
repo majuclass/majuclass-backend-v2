@@ -34,7 +34,7 @@ def _cosine_similarity(
 class SemanticSimilarity:
     def __init__(
         self,
-        model_name: str = "jhgan/ko-sroberta-multitask",
+        model_name: str = "snunlp/KR-SBERT-V40K-klueNLI-augSTS",
         cache_port: Optional[CachePort] = None
     ):
         print(f"[SemanticSimilarity] 모델 로딩 중: {model_name}")
