@@ -230,18 +230,24 @@ export default function PictogramPopover({
           <div style={{ padding: 12 }}>
             {recent.length > 0 && (
               <section style={{ marginBottom: 10 }}>
-                <div style={sectionTitleStyle}>최근 항목</div>
+                <div style={sectionTitleStyle}>최근 선택</div>
                 <IconGrid
                   items={recent}
                   onPick={handlePick}
-                  maxHeight={140}
+                  maxHeight={72}
+                  maxRows={1}
                 />
               </section>
             )}
 
             <section>
               <div style={sectionTitleStyle}>아이콘</div>
-              <IconGrid items={filtered} onPick={handlePick} maxHeight={maxHeight} />
+              <IconGrid 
+                items={filtered} 
+                onPick={handlePick} 
+                maxHeight={maxHeight}
+                maxRows={3} 
+              />
             </section>
           </div>
         </div>
@@ -257,21 +263,47 @@ export default function PictogramPopover({
 }
 
 // ==== 보조 컴포넌트들 ====
-function IconGrid({ items, onPick, maxHeight }: { items: PictogramItem[]; onPick: (i: PictogramItem) => void; maxHeight: number; }) {
+function IconGrid({ 
+  items, 
+  onPick, 
+  maxHeight,
+  maxRows, 
+}: { 
+  items: PictogramItem[]; 
+  onPick: (i: PictogramItem) => void; 
+  maxHeight: number;
+  maxRows?: number; 
+}) {
+  // 한 줄 높이 
+  const rowHeight = 52;
+
+  const effextiveMaxHeight = maxRows
+    ? Math.min(maxHeight, rowHeight * maxRows)
+    : maxHeight;
   return (
     <div
       style={{
         display: "grid",
-        gridTemplateColumns: "repeat(9, 1fr)",
+        gridTemplateColumns: "repeat(auto-fit, minmax(44px, 1fr))",
         gap: 8,
-        maxHeight,
+        maxHeight: effextiveMaxHeight,
         overflow: "auto",
+        justifyItems: "center",
         paddingRight: 4,
       }}
     >
       {items.map((i) => (
-        <button key={i.id} onClick={() => onPick(i)} title={`${i.category} / ${i.name}`} style={iconCellStyle}>
-          <img src={i.src} alt={i.name} style={{ width: 28, height: 28, objectFit: "contain" }} />
+        <button 
+          key={i.id} 
+          onClick={() => onPick(i)} 
+          title={`${i.category} / ${i.name}`} 
+          style={iconCellStyle}
+        >
+          <img 
+            src={i.src} 
+            alt={i.name} 
+            style={{ width: 28, height: 28, objectFit: "contain" }} 
+          />
         </button>
       ))}
     </div>
