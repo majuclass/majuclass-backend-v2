@@ -7,7 +7,9 @@ import '../styles/NavBar.css';
 import {
   HiOutlineHome,
   HiOutlineClock,
-  HiOutlineUserCircle,
+  HiOutlineFolder,
+  HiOutlineChatBubbleBottomCenterText,
+  // HiOutlineUserCircle,
 } from 'react-icons/hi2';
 
 import { useUserStore } from '../stores/useUserStore';
@@ -78,9 +80,9 @@ export default function NavBar() {
         <span className="navbar-greeting">
           <strong>김선생님</strong>, 안녕하세요!
         </span>
-        <i className="profile-icon">
+        {/* <i className="profile-icon">
           <HiOutlineUserCircle />
-        </i>
+        </i> */}
       </div>
 
       {/* Hamburger Menu Button */}

@@ -168,6 +168,55 @@
   color: #d32f2f;
 }
 
+/* 생성된 시나리오 미리보기 */
+.generated-scenario-preview {
+  margin-top: 40px;
+  padding: 30px;
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  border: 2px solid #3b82f6;
+  border-radius: 15px;
+  box-shadow: 0 4px 6px rgba(59, 130, 246, 0.1);
+}
+
+.preview-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1e40af;
+  margin: 0 0 20px 0;
+  text-align: center;
+}
+
+.preview-content {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.preview-item {
+  padding: 15px;
+  background-color: white;
+  border-radius: 10px;
+  font-size: 1rem;
+  line-height: 1.6;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.preview-item strong {
+  color: #1e40af;
+  display: inline-block;
+  min-width: 100px;
+}
+
+.preview-note {
+  margin-top: 10px;
+  padding: 12px;
+  background-color: #fef3c7;
+  border-left: 4px solid #f59e0b;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  color: #92400e;
+}
+
 /* 반응형 디자인 */
 @media (max-width: 768px) {
   .scenario-generator {
@@ -224,6 +273,24 @@
   .generate-button-wrapper {
     justify-content: stretch;
   }
+
+  .generated-scenario-preview {
+    margin-top: 30px;
+    padding: 20px;
+  }
+
+  .preview-title {
+    font-size: 1.2rem;
+  }
+
+  .preview-item {
+    padding: 12px;
+    font-size: 0.95rem;
+  }
+
+  .preview-item strong {
+    min-width: 80px;
+  }
 }
 
 @media (max-width: 480px) {
@@ -250,5 +317,27 @@
 
   .generate-button {
     font-size: 1rem;
+  }
+
+  .generated-scenario-preview {
+    padding: 15px;
+  }
+
+  .preview-title {
+    font-size: 1.1rem;
+  }
+
+  .preview-item {
+    padding: 10px;
+    font-size: 0.9rem;
+  }
+
+  .preview-item strong {
+    display: block;
+    margin-bottom: 5px;
+  }
+
+  .preview-note {
+    font-size: 0.85rem;
   }
 }
