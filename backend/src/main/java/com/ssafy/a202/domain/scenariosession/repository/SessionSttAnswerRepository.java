@@ -24,4 +24,14 @@ public interface SessionSttAnswerRepository extends JpaRepository<SessionSttAnsw
             "AND ssa.audioS3Key IS NOT NULL " +
             "ORDER BY seq.seqNo, ssa.attemptNo")
     List<SessionSttAnswer> findAllAudioAnswersBySessionId(@Param("sessionId") Long sessionId);
+
+    /**
+     * 특정 세션의 모든 STT 답변을 시퀀스 정보와 함께 조회
+     * 시퀀스 번호, 시도 번호 순으로 정렬
+     */
+    @Query("SELECT ssa FROM SessionSttAnswer ssa " +
+            "JOIN FETCH ssa.scenarioSequence seq " +
+            "WHERE ssa.scenarioSession.id = :sessionId " +
+            "ORDER BY seq.seqNo, ssa.attemptNo")
+    List<SessionSttAnswer> findAllBySessionIdWithSequence(@Param("sessionId") Long sessionId);
 }

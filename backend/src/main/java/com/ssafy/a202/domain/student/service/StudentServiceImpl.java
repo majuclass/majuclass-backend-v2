@@ -4,10 +4,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssafy.a202.domain.scenario.entity.ScenarioSequence;
 import com.ssafy.a202.domain.scenariosession.entity.ScenarioSession;
 import com.ssafy.a202.domain.scenariosession.entity.SessionAnswer;
+import com.ssafy.a202.domain.scenariosession.entity.SessionSttAnswer;
 import com.ssafy.a202.domain.scenariosession.repository.ScenarioSessionRepository;
 import com.ssafy.a202.domain.scenariosession.repository.SessionAnswerRepository;
+import com.ssafy.a202.domain.scenariosession.repository.SessionSttAnswerRepository;
 import com.ssafy.a202.domain.student.dto.request.StudentCreateRequest;
 import com.ssafy.a202.domain.student.dto.request.StudentUpdateRequest;
+import com.ssafy.a202.domain.student.dto.response.AnswerAttemptDto;
 import com.ssafy.a202.domain.student.dto.response.CalendarDayStatsDto;
 import com.ssafy.a202.domain.student.dto.response.CalendarMonthlyResponse;
 import com.ssafy.a202.domain.student.dto.response.CategoryStatsDto;
@@ -56,6 +59,7 @@ public class StudentServiceImpl implements StudentService {
     private final UserRepository userRepository;
     private final ScenarioSessionRepository scenarioSessionRepository;
     private final SessionAnswerRepository sessionAnswerRepository;
+    private final SessionSttAnswerRepository sessionSttAnswerRepository;
     private final S3UrlService s3UrlService;
     private final RedisTemplate<String, Object> objectRedisTemplate;
     private final ObjectMapper objectMapper;
@@ -344,28 +348,58 @@ public class StudentServiceImpl implements StudentService {
         // 3. 권한 체크 (세션의 학생에 대한 접근 권한)
         validateStudentAccess(user, session.getStudent());
 
-        // 4. 세션의 모든 답변 조회 (시퀀스 정보 포함)
-        List<SessionAnswer> answers = sessionAnswerRepository.findAllBySessionIdWithSequence(sessionId);
+        // 4. 세션의 모든 답변 조회 (텍스트 답변 + STT 답변)
+        List<SessionAnswer> textAnswers = sessionAnswerRepository.findAllBySessionIdWithSequence(sessionId);
+        List<SessionSttAnswer> sttAnswers = sessionSttAnswerRepository.findAllBySessionIdWithSequence(sessionId);
 
-        // 5. 시퀀스별로 그룹화
-        Map<Long, List<SessionAnswer>> answersBySequence = answers.stream()
-                .collect(Collectors.groupingBy(
-                        answer -> answer.getScenarioSequence().getId()
-                ));
+        log.debug("Text answers count: {}, STT answers count: {}", textAnswers.size(), sttAnswers.size());
+        sttAnswers.forEach(answer -> {
+            log.debug("STT Answer - seqId: {}, attemptNo: {}, isCorrect: {}",
+                    answer.getScenarioSequence().getId(), answer.getAttemptNo(), answer.isCorrect());
+        });
+
+        // 5. 시퀀스별로 답변 정보를 통합
+        // 각 시퀀스에 대해 모든 시도를 attemptNo 순으로 정렬하고 정답 여부를 추적
+        Map<Long, List<AnswerAttemptDto>> answersBySequence = new HashMap<>();
+
+        // 텍스트 답변 추가
+        textAnswers.forEach(answer -> {
+            Long seqId = answer.getScenarioSequence().getId();
+            answersBySequence.computeIfAbsent(seqId, k -> new ArrayList<>())
+                    .add(AnswerAttemptDto.builder()
+                            .attemptNo(answer.getAttemptNo())
+                            .isCorrect(answer.getIsCorrect())
+                            .build());
+        });
+
+        // STT 답변 추가
+        sttAnswers.forEach(answer -> {
+            Long seqId = answer.getScenarioSequence().getId();
+            answersBySequence.computeIfAbsent(seqId, k -> new ArrayList<>())
+                    .add(AnswerAttemptDto.builder()
+                            .attemptNo(answer.getAttemptNo())
+                            .isCorrect(answer.isCorrect())
+                            .build());
+        });
+
+        // 각 시퀀스의 답변들을 attemptNo 순으로 정렬
+        answersBySequence.values().forEach(attempts ->
+                attempts.sort(Comparator.comparingInt(AnswerAttemptDto::attemptNo)));
 
         // 6. 시퀀스별 통계 생성
         List<SequenceStatsDto> sequenceStats = session.getScenario().getScenarioSequences().stream()
                 .filter(seq -> !seq.isDeleted())
                 .sorted(Comparator.comparingInt(ScenarioSequence::getSeqNo))
                 .map(sequence -> {
-                    List<SessionAnswer> sequenceAnswers = answersBySequence.getOrDefault(sequence.getId(), Collections.emptyList());
+                    List<AnswerAttemptDto> sequenceAnswers = answersBySequence.getOrDefault(
+                            sequence.getId(), Collections.emptyList());
 
                     // 정답을 맞춘 답변 찾기 (isCorrect = true)
-                    Optional<SessionAnswer> correctAnswer = sequenceAnswers.stream()
-                            .filter(SessionAnswer::getIsCorrect)
+                    Optional<AnswerAttemptDto> correctAnswer = sequenceAnswers.stream()
+                            .filter(AnswerAttemptDto::isCorrect)
                             .findFirst();
 
-                    Integer successAttempt = correctAnswer.map(SessionAnswer::getAttemptNo).orElse(null);
+                    Integer successAttempt = correctAnswer.map(AnswerAttemptDto::attemptNo).orElse(null);
                     Double accuracyRate = successAttempt != null ? (100.0 / successAttempt) : 0.0;
                     accuracyRate = Math.round(accuracyRate * 100.0) / 100.0; // 소수점 2자리
 
