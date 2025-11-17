@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import api from '../apis/apiInstance';
@@ -39,6 +39,10 @@ const ScenarioGenerator: React.FC<ScenarioGeneratorProps> = ({ onGenerate }) => 
   // 시나리오 실제 생성 상태
   const [isCreating, setIsCreating] = useState(false);
 
+  // 알람 중복 방지 플래그
+  const hasShownGenerationAlert = useRef(false);
+  const hasShownErrorAlert = useRef(false);
+
   // 컴포넌트 언마운트 시 에러만 초기화 (생성 결과는 유지)
   useEffect(() => {
     return () => {
@@ -48,19 +52,29 @@ const ScenarioGenerator: React.FC<ScenarioGeneratorProps> = ({ onGenerate }) => 
     };
   }, [generationError, clearGeneration]);
 
-  // 생성 완료 시 alert 표시
+  // 생성 완료 시 alert 표시 (중복 방지)
   useEffect(() => {
-    if (generatedScenario && !isGenerating) {
+    if (generatedScenario && !isGenerating && !hasShownGenerationAlert.current) {
       alert(`시나리오 "${generatedScenario.title}"가 생성되었습니다!`);
+      hasShownGenerationAlert.current = true;
     }
   }, [generatedScenario, isGenerating]);
 
-  // 에러 발생 시 alert 표시
+  // 에러 발생 시 alert 표시 (중복 방지)
   useEffect(() => {
-    if (generationError) {
+    if (generationError && !hasShownErrorAlert.current) {
       alert(`❌ 시나리오 생성 실패\n\n${generationError}`);
+      hasShownErrorAlert.current = true;
     }
   }, [generationError]);
+
+  // 새로운 시나리오 생성 시작 시 플래그 리셋
+  useEffect(() => {
+    if (isGenerating) {
+      hasShownGenerationAlert.current = false;
+      hasShownErrorAlert.current = false;
+    }
+  }, [isGenerating]);
 
   // 카테고리 조회
   const {
