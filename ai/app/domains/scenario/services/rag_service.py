@@ -1,7 +1,7 @@
 from typing import List, Dict, Any, Optional
 from langchain_community.vectorstores import Chroma
 from langchain.schema import Document
-from embedding_service import EmbeddingService
+from .embedding_service import EmbeddingService
 
 
 class ScenarioRAGService:
