@@ -18,14 +18,14 @@ import bgCinema from '../assets/scenarios/cinema/cinema-ticket-bg-img.png';
 import girlNormal from '../assets/scenarios/cinema/cinema-girl-normal.png';
 import { transformOptions } from '../utils/format';
 
-import { useUserStore } from "../stores/useUserStore";
+import { useUserStore } from '../stores/useUserStore';
+import type { STTResponse } from '../components/simulation/audio/WebSocketTest';
 
 /** 시뮬레이션 실행 제어 컨트롤러
  * @param scenarioId - 불러올 시나리오 고유 ID
  */
 export default function SimulationPage() {
   const { scenarioId, difficulty } = useParams();
-  
 
   //   시나리오 인터페이스 확장 위해 type alias 사용
   // TODO: 차후 확장 추가
@@ -46,7 +46,6 @@ export default function SimulationPage() {
   const [isCorrect, setIsCorrect] = useState<boolean>(false);
   const [sessionId, setSessionId] = useState<number>();
   const studentId = useUserStore((s) => s.studentId);
-
 
   // 시나리오는 최초 로딩 1회
   useEffect(() => {
@@ -189,6 +188,30 @@ export default function SimulationPage() {
     }
   };
 
+  // 난이도 '상' 용 STT Feedback
+  const handleSTTFeedback = (sttRes: STTResponse) => {
+    const correct = sttRes.is_correct;
+
+    setIsCorrect(correct);
+    setScreen('feedback');
+
+    setTimeout(() => {
+      if (!correct) {
+        setScreen('question'); // 재도전
+        return;
+      }
+
+      const isLastSequence = sequenceNumber >= (scenario?.totalSequences || 0);
+
+      if (isLastSequence) {
+        setScreen('end');
+      } else {
+        setSequenceNumber((prev) => prev + 1);
+        setScreen('question');
+      }
+    }, 2000);
+  };
+
   const handleRestart = () => {
     setGameState('loading');
     setScreen('start');
@@ -246,6 +269,7 @@ export default function SimulationPage() {
                 sessionId={sessionId}
                 sequenceNumber={sequenceNumber}
                 difficulty={difficulty ?? ''}
+                onSTTResult={handleSTTFeedback}
               />
             ) : null;
           case 'feedback':
