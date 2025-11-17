@@ -134,13 +134,13 @@ export default function ScenarioCard({
       >
         {/* FRONT */}
         <article
-          className="absolute inset-0 rounded-3xl bg-white shadow-sm hover:shadow-md border-2 border-gray-200 overflow-hidden transition-shadow cursor-pointer"
+          className="transform transition-transform duration-200 hover:-translate-y-7 hover:shadow-xl absolute inset-0 rounded-2xl bg-white shadow-sm hover:shadow-md border-2 border-gray-200 overflow-hidden transition-shadow cursor-pointer"
           style={{ backfaceVisibility: 'hidden' }}
           aria-hidden={isFlipped}
           onClick={() => void openBack()}
         >
           {/* 이미지 영역 (60%) */}
-          <div className="w-full h-[150px] rounded-t-[28px] bg-gray-100 flex items-center justify-center overflow-hidden">
+          <div className="w-full h-[150px] rounded-t-2xl bg-gray-100 flex items-center justify-center overflow-hidden">
             {!thumbError && detail.thumbnailUrl ? (
               <img
                 src={detail.thumbnailUrl}
@@ -155,19 +155,23 @@ export default function ScenarioCard({
           </div>
 
           {/* 제목 영역 (20%) */}
-          <div className="px-4 py-2 h-[60px] flex items-center justify-between">
-            <h1
-              className="font-bold text-base truncate text-lg"
-              title={detail.title}
-            >
-              {detail.title}
-            </h1>
-            {detail.categoryName && (
-              <span className="text-xs px-2 py-2 rounded-full bg-gray-100 text-gray-600">
-                {detail.categoryName}
-              </span>
-            )}
+          <div className="px-4 py-2 h-[60px] flex items-center rounded-xl bg-white">
+            <div className="flex items-center gap-2 ml-4 min-w-0">
+              <h1
+                className="font-bold text-lg truncate"
+                title={detail.title}
+              >
+                {detail.title}
+              </h1>
+
+              {detail.categoryName && (
+                <span className="text-xs px-2 py-0.4 rounded-md bg-gray-100 text-gray-600 shrink-0 ml-1">
+                  {detail.categoryName}
+                </span>
+              )}
+            </div>
           </div>
+
 
           {/* 버튼 영역 (20%) */}
           <div className="px-6 pb-5 flex items-center justify-between gap-2">
@@ -192,7 +196,7 @@ export default function ScenarioCard({
                 }
                 navigate(startHref);
               }}
-              className="flex-1 h-9 rounded-lg bg-sky-400 hover:bg-sky-500 text-white text-sm"
+              className="flex-1 h-9 rounded-lg bg-[#1FA0FF] hover:bg-sky-500 text-white text-sm"
             >
               시작하기
             </button>
