@@ -1,15 +1,11 @@
 /** @format */
 
-// src/pages/(MainPage)/components/navbar.tsx
 import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import '../styles/NavBar.css';
 import {
   HiOutlineHome,
   HiOutlineClock,
-  // HiOutlineFolder,
-  // HiOutlineChatBubbleBottomCenterText,
-  // HiOutlineUserCircle,
 } from 'react-icons/hi2';
 
 import { useUserStore } from '../stores/useUserStore';
