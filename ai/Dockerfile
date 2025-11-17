@@ -66,7 +66,8 @@ import logging; \
 logging.basicConfig(level=logging.INFO); \
 logger = logging.getLogger(__name__); \
 logger.info('Downloading Korean SentenceTransformer model...'); \
-model = SentenceTransformer('jhgan/ko-sroberta-multitask'); \
+#model = SentenceTransformer('jhgan/ko-sroberta-multitask'); \
+model = SentenceTransformer('snunlp/KR-SBERT-V40K-klueNLI-augSTS'); \
 logger.info('Model download complete and cached'); \
 "
 
