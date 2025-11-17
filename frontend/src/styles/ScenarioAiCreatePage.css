@@ -217,6 +217,143 @@
   color: #92400e;
 }
 
+/* 시퀀스 상세 정보 */
+.sequences-detail {
+  margin-top: 25px;
+  padding: 20px;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.sequences-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #1e40af;
+  margin: 0 0 20px 0;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #e0f2fe;
+}
+
+.sequence-item {
+  margin-bottom: 25px;
+  padding: 20px;
+  background: linear-gradient(135deg, #fafafa 0%, #f5f5f5 100%);
+  border: 1px solid #e5e5e5;
+  border-radius: 10px;
+  transition: all 0.2s ease;
+}
+
+.sequence-item:last-child {
+  margin-bottom: 0;
+}
+
+.sequence-item:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+}
+
+.sequence-header {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+.sequence-header strong {
+  color: #1e40af;
+}
+
+.options-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.option-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 15px;
+  background-color: white;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.option-item:hover {
+  border-color: #d1d5db;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.option-item.correct-answer {
+  background-color: #f0fdf4;
+  border-color: #86efac;
+}
+
+.option-number {
+  font-weight: 700;
+  color: #6b7280;
+  min-width: 25px;
+}
+
+.option-text {
+  flex: 1;
+  color: #374151;
+  font-size: 1rem;
+}
+
+.answer-badge {
+  padding: 4px 12px;
+  background-color: #22c55e;
+  color: white;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border-radius: 12px;
+  white-space: nowrap;
+}
+
+/* 시나리오 생성 버튼 */
+.create-button-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 2px solid #e0f2fe;
+}
+
+.create-scenario-button {
+  padding: 18px 60px;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: white;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.create-scenario-button:hover:not(:disabled) {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+}
+
+.create-scenario-button:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.create-scenario-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
 /* 반응형 디자인 */
 @media (max-width: 768px) {
   .scenario-generator {
@@ -291,6 +428,36 @@
   .preview-item strong {
     min-width: 80px;
   }
+
+  .sequences-detail {
+    padding: 15px;
+  }
+
+  .sequences-title {
+    font-size: 1.1rem;
+  }
+
+  .sequence-item {
+    padding: 15px;
+  }
+
+  .sequence-header {
+    font-size: 1rem;
+  }
+
+  .option-item {
+    padding: 10px 12px;
+  }
+
+  .option-text {
+    font-size: 0.95rem;
+  }
+
+  .create-scenario-button {
+    width: 100%;
+    padding: 15px 40px;
+    font-size: 1.1rem;
+  }
 }
 
 @media (max-width: 480px) {
@@ -339,5 +506,42 @@
 
   .preview-note {
     font-size: 0.85rem;
+  }
+
+  .sequences-detail {
+    padding: 12px;
+  }
+
+  .sequences-title {
+    font-size: 1rem;
+  }
+
+  .sequence-item {
+    padding: 12px;
+    margin-bottom: 15px;
+  }
+
+  .sequence-header {
+    font-size: 0.95rem;
+  }
+
+  .option-item {
+    padding: 8px 10px;
+    flex-wrap: wrap;
+  }
+
+  .option-text {
+    font-size: 0.9rem;
+  }
+
+  .answer-badge {
+    font-size: 0.75rem;
+    padding: 3px 8px;
+  }
+
+  .create-scenario-button {
+    width: 100%;
+    padding: 12px 30px;
+    font-size: 1rem;
   }
 }

@@ -38,10 +38,13 @@ const StudentDashboard: React.FC = () => {
     useState<SessionSequenceStatsResponse | null>(null);
   const [showSequenceStats, setShowSequenceStats] = useState(false);
 
-  // 음성 답변 데이터 (sequenceNumber를 키로 사용)
+  // 음성 답변 데이터 (sessionId -> sequenceNumber -> 음성 데이터)
   const [audioAnswersMap, setAudioAnswersMap] = useState<
-    Record<number, SequenceAudioAnswersDto>
+    Record<number, Record<number, SequenceAudioAnswersDto>>
   >({});
+
+  // 전체 세션 중 음성 데이터가 하나라도 있는지 여부
+  const [hasAnyAudioData, setHasAnyAudioData] = useState(false);
 
   // 음성 답변 모달 상태
   const [showAudioModal, setShowAudioModal] = useState(false);
@@ -95,6 +98,54 @@ const StudentDashboard: React.FC = () => {
     loadSessions();
   }, [studentId, currentYear, currentMonth]);
 
+  // 세션 목록 로드 후 음성 답변 데이터 프리페칭
+  useEffect(() => {
+    if (!sessions || sessions.sessions.length === 0) {
+      setHasAnyAudioData(false);
+      setAudioAnswersMap({});
+      return;
+    }
+
+    const prefetchAudioData = async () => {
+      console.log('🎤 음성 답변 데이터 프리페칭 시작...');
+      const newAudioMap: Record<number, Record<number, SequenceAudioAnswersDto>> = {};
+      let hasAudio = false;
+
+      // 최근 세션부터 순차적으로 로드
+      for (const session of sessions.sessions) {
+        try {
+          const audioData = await getAudioAnswers(session.sessionId);
+
+          // 음성 답변이 있는 시퀀스만 Map에 추가
+          const sessionAudioMap: Record<number, SequenceAudioAnswersDto> = {};
+          audioData.sequences.forEach((seqAudio: SequenceAudioAnswersDto) => {
+            if (
+              Array.isArray(seqAudio.audioAnswers) &&
+              seqAudio.audioAnswers.length > 0
+            ) {
+              sessionAudioMap[seqAudio.sequenceNumber] = seqAudio;
+              hasAudio = true;
+            }
+          });
+
+          if (Object.keys(sessionAudioMap).length > 0) {
+            newAudioMap[session.sessionId] = sessionAudioMap;
+            console.log(`✅ 세션 ${session.sessionId} 음성 데이터 로드 완료`);
+          }
+        } catch (error) {
+          // 음성 답변이 없거나 로드 실패 시 무시하고 계속 진행
+          console.log(`ℹ️ 세션 ${session.sessionId} 음성 데이터 없음`);
+        }
+      }
+
+      setAudioAnswersMap(newAudioMap);
+      setHasAnyAudioData(hasAudio);
+      console.log(`🎤 프리페칭 완료 - 음성 데이터 있음: ${hasAudio}`);
+    };
+
+    prefetchAudioData();
+  }, [sessions]);
+
   // 세션 클릭 핸들러
   const handleSessionClick = async (sessionId: number) => {
     try {
@@ -102,30 +153,37 @@ const StudentDashboard: React.FC = () => {
       const data = await getSessionSequenceStats(sessionId);
       setSelectedSession(data);
 
-      // 2. 세션 전체 음성 답변 로드 (단일 API 호출)
-      try {
-        const audioData = await getAudioAnswers(sessionId);
-        console.log('✅ 세션 음성 답변 로드 성공:', audioData);
+      // 2. 음성 답변 데이터 확인 (캐싱된 데이터 활용)
+      if (audioAnswersMap[sessionId]) {
+        // 이미 프리페칭된 데이터가 있으면 재사용
+        console.log(`✅ 세션 ${sessionId} 음성 데이터 캐시 사용`);
+      } else {
+        // 캐시에 없으면 새로 로드 (프리페칭 실패한 경우)
+        try {
+          const audioData = await getAudioAnswers(sessionId);
+          console.log(`✅ 세션 ${sessionId} 음성 답변 로드 성공:`, audioData);
 
-        // 3. 음성 답변이 있는 시퀀스만 Map에 추가
-        const newAudioMap: Record<number, SequenceAudioAnswersDto> = {};
-        audioData.sequences.forEach((seqAudio: SequenceAudioAnswersDto) => {
-          if (
-            Array.isArray(seqAudio.audioAnswers) &&
-            seqAudio.audioAnswers.length > 0
-          ) {
-            newAudioMap[seqAudio.sequenceNumber] = seqAudio;
-            console.log(
-              `🎤 시퀀스 ${seqAudio.sequenceNumber}에 음성 답변 ${seqAudio.audioAnswers.length}개 추가`
-            );
+          // 음성 답변이 있는 시퀀스만 Map에 추가
+          const sessionAudioMap: Record<number, SequenceAudioAnswersDto> = {};
+          audioData.sequences.forEach((seqAudio: SequenceAudioAnswersDto) => {
+            if (
+              Array.isArray(seqAudio.audioAnswers) &&
+              seqAudio.audioAnswers.length > 0
+            ) {
+              sessionAudioMap[seqAudio.sequenceNumber] = seqAudio;
+            }
+          });
+
+          if (Object.keys(sessionAudioMap).length > 0) {
+            setAudioAnswersMap((prev) => ({
+              ...prev,
+              [sessionId]: sessionAudioMap,
+            }));
+            setHasAnyAudioData(true);
           }
-        });
-
-        console.log('📊 최종 음성 답변 맵:', newAudioMap);
-        setAudioAnswersMap(newAudioMap);
-      } catch (audioError) {
-        console.log('ℹ️ 음성 답변 없음 또는 로드 실패:', audioError);
-        setAudioAnswersMap({});
+        } catch (audioError) {
+          console.log(`ℹ️ 세션 ${sessionId} 음성 답변 없음 또는 로드 실패`);
+        }
       }
 
       setShowSequenceStats(true);
@@ -264,11 +322,14 @@ const StudentDashboard: React.FC = () => {
   };
 
   // 음성 답변 보기 핸들러
-  const handleAudioAnswersClick = (sequenceNumber: number) => {
-    const audioData = audioAnswersMap[sequenceNumber];
-    if (audioData) {
-      setSelectedAudioAnswers(audioData);
-      setShowAudioModal(true);
+  const handleAudioAnswersClick = (sessionId: number, sequenceNumber: number) => {
+    const sessionAudioData = audioAnswersMap[sessionId];
+    if (sessionAudioData) {
+      const audioData = sessionAudioData[sequenceNumber];
+      if (audioData) {
+        setSelectedAudioAnswers(audioData);
+        setShowAudioModal(true);
+      }
     }
   };
 
@@ -364,20 +425,14 @@ const StudentDashboard: React.FC = () => {
       {showSequenceStats && selectedSession && (
         <div
           className="modal-overlay"
-          onClick={() => {
-            setShowSequenceStats(false);
-            setAudioAnswersMap({});
-          }}
+          onClick={() => setShowSequenceStats(false)}
         >
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <h2>{selectedSession.scenarioTitle} - 상세 결과</h2>
               <button
                 className="modal-close"
-                onClick={() => {
-                  setShowSequenceStats(false);
-                  setAudioAnswersMap({});
-                }}
+                onClick={() => setShowSequenceStats(false)}
               >
                 ✕
               </button>
@@ -416,50 +471,59 @@ const StudentDashboard: React.FC = () => {
                     <th>시도 횟수</th>
                     <th>정답률</th>
                     <th>결과</th>
-                    <th>음성 답변</th>
+                    {hasAnyAudioData && <th>음성 답변</th>}
                   </tr>
                 </thead>
                 <tbody>
-                  {selectedSession.sequenceStats.map((seq) => (
-                    <tr key={seq.sequenceId}>
-                      <td>{seq.sequenceNumber}</td>
-                      <td className="question-cell">{seq.question}</td>
-                      <td>{seq.successAttempt}회</td>
-                      <td>
-                        <span
-                          className={`accuracy ${getAccuracyClass(
-                            seq.accuracyRate
-                          )}`}
-                        >
-                          {seq.accuracyRate.toFixed(1)}%
-                        </span>
-                      </td>
-                      <td>
-                        <span
-                          className={`result-badge ${
-                            seq.isCorrect ? 'correct' : 'incorrect'
-                          }`}
-                        >
-                          {seq.isCorrect ? '정답' : '오답'}
-                        </span>
-                      </td>
-                      <td>
-                        {audioAnswersMap[seq.sequenceNumber] ? (
-                          <button
-                            className="btn-audio"
-                            onClick={() =>
-                              handleAudioAnswersClick(seq.sequenceNumber)
-                            }
+                  {selectedSession.sequenceStats.map((seq) => {
+                    const sessionAudioData = audioAnswersMap[selectedSession.sessionId];
+                    const sequenceAudioData = sessionAudioData?.[seq.sequenceNumber];
+
+                    return (
+                      <tr key={seq.sequenceId}>
+                        <td>{seq.sequenceNumber}</td>
+                        <td className="question-cell">{seq.question}</td>
+                        <td>{seq.successAttempt}회</td>
+                        <td>
+                          <span
+                            className={`accuracy ${getAccuracyClass(
+                              seq.accuracyRate
+                            )}`}
                           >
-                            🎤 듣기 (
-                            {audioAnswersMap[seq.sequenceNumber].totalAttempts})
-                          </button>
-                        ) : (
-                          <span className="no-audio">-</span>
+                            {seq.accuracyRate.toFixed(1)}%
+                          </span>
+                        </td>
+                        <td>
+                          <span
+                            className={`result-badge ${
+                              seq.isCorrect ? 'correct' : 'incorrect'
+                            }`}
+                          >
+                            {seq.isCorrect ? '정답' : '오답'}
+                          </span>
+                        </td>
+                        {hasAnyAudioData && (
+                          <td>
+                            {sequenceAudioData ? (
+                              <button
+                                className="btn-audio"
+                                onClick={() =>
+                                  handleAudioAnswersClick(
+                                    selectedSession.sessionId,
+                                    seq.sequenceNumber
+                                  )
+                                }
+                              >
+                                🎤 듣기 ({sequenceAudioData.totalAttempts})
+                              </button>
+                            ) : (
+                              <span className="no-audio">-</span>
+                            )}
+                          </td>
                         )}
-                      </td>
-                    </tr>
-                  ))}
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>

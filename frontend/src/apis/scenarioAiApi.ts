@@ -1,6 +1,8 @@
 /* @format */
 
-import api from "./apiInstance";
+import { fastapi } from "./apiInstance";
+
+// import api from "./apiInstance";
 
 /* AI 시나리오 자동 생성 Request */
 export interface AIScenarioCreateRequest {
@@ -37,6 +39,6 @@ export interface AIOptionResponse {
 export const createAIScenario = async (
   request: AIScenarioCreateRequest
 ): Promise<AIScenarioCreateResponse> => {
-  const response = await api.post("/ai/auto-create", request);
+  const response = await fastapi.post("/auto-create", request);
   return response.data.data;
 };

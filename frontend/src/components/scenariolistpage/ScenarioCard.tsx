@@ -39,9 +39,9 @@ export default function ScenarioCard({
   // 이미지 에러 핸들링
   const [thumbError, setThumbError] = useState(false);
   useEffect(() => {
-    // detail 변경 시 에러 상태 초기화
+    // detail 변경 또는 카드가 앞면으로 돌아올 때 에러 상태 초기화
     setThumbError(false);
-  }, [detail.thumbnailUrl, detail.id]);
+  }, [detail.thumbnailUrl, detail.id, isFlipped]);
 
   // 플립 토글
   const openBack = async () => {
@@ -75,6 +75,8 @@ export default function ScenarioCard({
 
   const closeBack = () => {
     setIsFlipped(false);
+    // 앞면으로 돌아올 때 원래 props 데이터로 복원 (썸네일 이미지 유지)
+    setDetail(scenario);
     queueMicrotask(() => frontBtnRef.current?.focus());
   };
 
@@ -132,9 +134,10 @@ export default function ScenarioCard({
       >
         {/* FRONT */}
         <article
-          className="absolute inset-0 rounded-3xl bg-white shadow-sm hover:shadow-md border-2 border-gray-200 overflow-hidden transition-shadow"
+          className="absolute inset-0 rounded-3xl bg-white shadow-sm hover:shadow-md border-2 border-gray-200 overflow-hidden transition-shadow cursor-pointer"
           style={{ backfaceVisibility: 'hidden' }}
           aria-hidden={isFlipped}
+          onClick={() => void openBack()}
         >
           {/* 이미지 영역 (60%) */}
           <div className="w-full h-[150px] rounded-t-[28px] bg-gray-100 flex items-center justify-center overflow-hidden">
@@ -170,7 +173,10 @@ export default function ScenarioCard({
           <div className="px-6 pb-5 flex items-center justify-between gap-2">
             <button
               ref={frontBtnRef}
-              onClick={() => void openBack()}
+              onClick={(e) => {
+                e.stopPropagation();
+                void openBack();
+              }}
               aria-expanded={isFlipped}
               aria-controls={`card-back-${detail.id}`}
               className="flex-1 h-9 rounded-lg border border-gray-200 hover:bg-gray-50 text-sm"
@@ -178,12 +184,13 @@ export default function ScenarioCard({
               세부정보 보기
             </button>
             <button
-              onClick={() => {
+              onClick={(e) => {
+                e.stopPropagation();
                 if (!studentId) {
-                  openStudentModal(detail.id); 
+                  openStudentModal(detail.id);
                   return;
                 }
-                navigate(startHref); 
+                navigate(startHref);
               }}
               className="flex-1 h-9 rounded-lg bg-sky-400 hover:bg-sky-500 text-white text-sm"
             >
@@ -196,10 +203,11 @@ export default function ScenarioCard({
         {/* BACK */}
         <article
           id={`card-back-${detail.id}`}
-          className="absolute inset-0 rounded-2xl bg-white shadow-md border border-gray-100 p-4 flex flex-col"
+          className="absolute inset-0 rounded-2xl bg-white shadow-md border border-gray-100 p-4 flex flex-col cursor-pointer"
           style={{ transform: 'rotateY(180deg)', backfaceVisibility: 'hidden' }}
           aria-hidden={!isFlipped}
           aria-live="polite"
+          onClick={closeBack}
         >
           {/* 상단 메타 */}
           <div className="flex items-center justify-between mb-2">
@@ -251,7 +259,8 @@ export default function ScenarioCard({
           <div className="mt-3 flex items-center justify-between gap-2">
             <button
               ref={backFirstFocusRef}
-              onClick={() => {
+              onClick={(e) => {
+                e.stopPropagation();
                 if (!studentId) {
                   openStudentModal(detail.id);   // 학생 선택 모달 띄우기
                   return;
@@ -264,7 +273,10 @@ export default function ScenarioCard({
             </button>
 
             <button
-              onClick={closeBack}
+              onClick={(e) => {
+                e.stopPropagation();
+                closeBack();
+              }}
               className="flex-1 h-9 rounded-lg border border-gray-200 hover:bg-gray-50 text-sm"
             >
               닫기
