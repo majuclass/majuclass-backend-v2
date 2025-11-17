@@ -5,12 +5,12 @@ from typing import Any, Dict, List
 
 import httpx
 
-GMS_BASE = os.getenv("GMS_BASE")
-GMS_KEY  = os.getenv("GMS_KEY")
+GMS_BASE = os.getenv("GMS_BASE", "")
+GMS_KEY  = os.getenv("GMS_KEY", "")
 
 
-def _system_schema(q_cnt: int, o_cnt: int) -> str:
-    return (
+def _system_schema(q_cnt: int, o_cnt: int, category_id: int = None) -> str:
+    base_prompt = (
         "오직 JSON만 출력.\n"
         '스키마: {"title":string,"summary":string,'
         '"sequences":[{"seqNo":number,"question":string,'
@@ -20,6 +20,11 @@ def _system_schema(q_cnt: int, o_cnt: int) -> str:
         "- optionText는 아주 짧은 라벨형 문구(8~12자, 문장부호/이모지/존칭/구어체 금지)\n"
         "- 명확하고 교육 친화적인 표현, 한국어\n"
     )
+
+    if category_id is not None:
+        base_prompt += f"- 이 시나리오는 카테고리 ID {category_id}에 맞는 주제와 내용으로 생성해야 합니다\n"
+
+    return base_prompt
 
 
 def _clamp_short_label(s: str, min_len: int = 2, max_len: int = 12) -> str:
@@ -135,6 +140,7 @@ class LLMService:
         prompt: str,
         question_count: int,
         options_per_question: int,
+        category_id: int = None,
         retries: int = 1,
     ) -> Dict[str, Any]:
         """
@@ -146,7 +152,7 @@ class LLMService:
         last_err: Exception | None = None
         while attempt <= retries:
             try:
-                raw = await self._call_gms(prompt, question_count, options_per_question)
+                raw = await self._call_gms(prompt, question_count, options_per_question, category_id)
                 data = _normalize_and_validate(raw, question_count, options_per_question)
                 return data
             except Exception as e:
@@ -156,8 +162,8 @@ class LLMService:
 
     # ------------------------ Internals ------------------------
 
-    async def _call_gms(self, prompt: str, q_cnt: int, o_cnt: int) -> Dict[str, Any]:
-        system = _system_schema(q_cnt, o_cnt)
+    async def _call_gms(self, prompt: str, q_cnt: int, o_cnt: int, category_id: int = None) -> Dict[str, Any]:
+        system = _system_schema(q_cnt, o_cnt, category_id)
         messages = [
             {"role": "developer", "content": "Answer in Korean"},
             {"role": "system", "content": system},
