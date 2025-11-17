@@ -1,7 +1,8 @@
 /** @format */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import '../styles/DashBoardPage.css';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 // import type { TooltipItem } from 'chart.js';
@@ -19,6 +20,18 @@ import type {
   SequenceAudioAnswersDto,
   // SequenceStatsDto,
 } from '../types/Dashboard';
+import api from '../apis/apiInstance';
+
+type Category = {
+  id: number;
+  categoryName: string;
+};
+
+// 카테고리 조회 API
+const fetchCategories = async () => {
+  const resp = await api.get('categories');
+  return resp.data.data as Category[];
+};
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -28,6 +41,11 @@ const StudentDashboard: React.FC = () => {
 
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth() + 1);
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
+
+  // 검색 및 필터 상태
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filterCategoryId, setFilterCategoryId] = useState<number | undefined>(undefined);
+  const [filterStatus, setFilterStatus] = useState<string>('');
 
   // API 데이터 상태
   const [categoryStats, setCategoryStats] =
@@ -50,6 +68,44 @@ const StudentDashboard: React.FC = () => {
   const [showAudioModal, setShowAudioModal] = useState(false);
   const [selectedAudioAnswers, setSelectedAudioAnswers] =
     useState<SequenceAudioAnswersDto | null>(null);
+
+  // 카테고리 조회
+  const {
+    data: categories,
+  } = useQuery({
+    queryKey: ['categories'],
+    queryFn: fetchCategories,
+    staleTime: 1000 * 60 * 60 * 24, // 24시간
+  });
+
+  const categoryList = categories || [];
+
+  // 검색 및 필터 적용된 세션 목록
+  const filteredSessions = useMemo(() => {
+    if (!sessions || !sessions.sessions) return [];
+
+    let result = [...sessions.sessions];
+
+    // 제목으로 검색
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      result = result.filter((session) =>
+        session.scenarioTitle.toLowerCase().includes(query)
+      );
+    }
+
+    // 카테고리 필터
+    if (filterCategoryId !== undefined) {
+      result = result.filter((session) => session.categoryId === filterCategoryId);
+    }
+
+    // 상태 필터
+    if (filterStatus) {
+      result = result.filter((session) => session.status === filterStatus);
+    }
+
+    return result;
+  }, [sessions, searchQuery, filterCategoryId, filterStatus]);
 
   // 카테고리별 통계 로드
   useEffect(() => {
@@ -373,11 +429,87 @@ const StudentDashboard: React.FC = () => {
         <div className="dashboard-right">
           <div className="detail-card sessions-card">
             <h3 className="card-title">최근 시나리오 활동</h3>
+
+            {/* 검색 및 필터 */}
+            <div className="sessions-filter-wrapper">
+              <div className="sessions-search-bar">
+                <div className="flex items-center border-2 border-gray-300 rounded-full shadow-sm focus-within:border-blue-500 transition-colors bg-white">
+                  {/* 카테고리 드롭다운 */}
+                  <select
+                    value={filterCategoryId ?? ''}
+                    onChange={(e) => setFilterCategoryId(e.target.value ? Number(e.target.value) : undefined)}
+                    className="px-3 py-2 text-sm font-semibold text-gray-700 bg-transparent border-none outline-none cursor-pointer rounded-l-full appearance-none pr-7"
+                    style={{
+                      backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236b7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`,
+                      backgroundRepeat: 'no-repeat',
+                      backgroundPosition: 'right 0.25rem center',
+                      backgroundSize: '1rem'
+                    }}
+                  >
+                    <option value="">전체 카테고리</option>
+                    {categoryList.map((category) => (
+                      <option key={category.id} value={category.id}>
+                        {category.categoryName}
+                      </option>
+                    ))}
+                  </select>
+
+                  {/* 구분선 */}
+                  <div className="h-6 w-px bg-gray-300"></div>
+
+                  {/* 상태 드롭다운 */}
+                  <select
+                    value={filterStatus}
+                    onChange={(e) => setFilterStatus(e.target.value)}
+                    className="px-3 py-2 text-sm font-semibold text-gray-700 bg-transparent border-none outline-none cursor-pointer appearance-none pr-7"
+                    style={{
+                      backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236b7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`,
+                      backgroundRepeat: 'no-repeat',
+                      backgroundPosition: 'right 0.25rem center',
+                      backgroundSize: '1rem'
+                    }}
+                  >
+                    <option value="">전체 상태</option>
+                    <option value="COMPLETED">완료</option>
+                    <option value="ABORTED">중단</option>
+                  </select>
+
+                  {/* 구분선 */}
+                  <div className="h-6 w-px bg-gray-300"></div>
+
+                  {/* 검색 입력 */}
+                  <input
+                    type="text"
+                    placeholder="시나리오 제목으로 검색..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="flex-1 px-3 py-2 text-sm border-none outline-none rounded-r-full"
+                  />
+
+                  {/* 검색 아이콘 */}
+                  <svg
+                    className="absolute right-3 w-4 h-4 text-gray-400 pointer-events-none"
+                    style={{ position: 'absolute', right: '12px' }}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                    />
+                  </svg>
+                </div>
+              </div>
+            </div>
+
             <div className="sessions-list">
               {sessionsLoading ? (
                 <div className="loading-data">로딩 중...</div>
-              ) : sessions && sessions.sessions.length > 0 ? (
-                sessions.sessions.map((session) => (
+              ) : filteredSessions.length > 0 ? (
+                filteredSessions.map((session) => (
                   <div
                     key={session.sessionId}
                     className="session-item"
@@ -413,6 +545,8 @@ const StudentDashboard: React.FC = () => {
                     </div>
                   </div>
                 ))
+              ) : sessions && sessions.sessions.length > 0 ? (
+                <div className="no-data">검색 결과가 없습니다.</div>
               ) : (
                 <div className="no-data">활동 기록이 없습니다.</div>
               )}
