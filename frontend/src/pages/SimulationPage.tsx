@@ -21,7 +21,7 @@ import { transformOptions } from '../utils/format';
 import { useUserStore } from '../stores/useUserStore';
 import type { STTResponse } from '../components/simulation/audio/WebSocketTest';
 
-/** 시뮬레이션 실행 제어 컨트롤러
+/* 시뮬레이션 실행 제어 컨트롤러
  * @param scenarioId - 불러올 시나리오 고유 ID
  */
 export default function SimulationPage() {

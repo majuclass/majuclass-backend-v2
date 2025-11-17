@@ -362,13 +362,13 @@ const MainPage: React.FC = () => {
             <h2>학생 목록</h2>
             <div className="action-buttons">
               <button className="btn-add" onClick={() => setShowAddModal(true)}>
-                + 추가
+                + 학생 추가
               </button>
               <button
                 className="btn-csv"
                 onClick={() => fileInputRef.current?.click()}
               >
-                📁 CSV 업로드
+                📁 파일 업로드
               </button>
               <input
                 ref={fileInputRef}
