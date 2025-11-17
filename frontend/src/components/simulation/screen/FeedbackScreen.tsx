@@ -8,11 +8,11 @@ interface FeedbackScreenProps {
  * 정/오답 여부 출력 화면 - feedback 시 이전 화면에서 overlay
  */
 export default function FeedbackScreen({ isCorrect }: FeedbackScreenProps) {
-  const message = isCorrect ? "정답" : "한번 더";
+  const message = isCorrect ? '정답' : '한번 더';
   const color = isCorrect
-    ? "text-blue-500 border-blue-500"
-    : "text-emerald-500 border-emerald-red500";
-  const symbol = isCorrect ? "O" : "✔";
+    ? 'text-blue-500 border-blue-500'
+    : 'text-emerald-500 border-emerald-red500';
+  const symbol = isCorrect ? 'O' : '✔';
 
   return (
     <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/30 backdrop-blur-sm z-50">

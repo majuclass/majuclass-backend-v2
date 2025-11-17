@@ -1,9 +1,9 @@
 /** @format */
 
-import type { Sequence, TransformedOption } from "../../../types/Scenario";
-import OptionButton from "../OptionButton";
-import girlHead from "../../../assets/scenarios/cinema/cinema-girl-head.png";
-import Record from "../audio/WebSocketTest";
+import type { Sequence, TransformedOption } from '../../../types/Scenario';
+import OptionButton from '../OptionButton';
+import girlHead from '../../../assets/scenarios/cinema/cinema-girl-head.png';
+import Record, { type STTResponse } from '../audio/WebSocketTest';
 
 type OptionScreenProps = {
   options: TransformedOption[];
@@ -13,6 +13,7 @@ type OptionScreenProps = {
   sessionId?: number;
   sequenceNumber?: number;
   difficulty?: string;
+  onSTTResult?: (res: STTResponse) => void;
 };
 
 export default function OptionScreen({
@@ -23,18 +24,23 @@ export default function OptionScreen({
   sessionId,
   sequenceNumber,
   difficulty,
+  onSTTResult,
 }: OptionScreenProps) {
-  const colors = ["pink", "yellow", "green", "blue"] as const; // 색상 순서 지정
+  const colors = ['pink', 'yellow', 'green', 'blue'] as const; // 색상 순서 지정
 
   return (
     <div className="flex flex-col items-center min-h-screen p-6">
       <button onClick={onSkip} className="text-2xl">
-        {">> 스킵하기"}
+        {'>> 스킵하기'}
       </button>
       {/* 난이도 "상"일 때만 녹음 버튼 표시 */}
-      {difficulty === "HARD" && sessionId && (
+      {difficulty === 'HARD' && sessionId && (
         <div className="absolute bottom-48 z-30">
-          <Record sessionId={sessionId} sequenceNumber={sequenceNumber ?? 1} />
+          <Record
+            sessionId={sessionId}
+            sequenceNumber={sequenceNumber ?? 1}
+            onSTTResult={onSTTResult}
+          />
         </div>
       )}
       <div className="flex items-center">
@@ -51,7 +57,7 @@ export default function OptionScreen({
         // ${options.length === 3 ? "grid-cols-3" : ""}
       >
         {options.map((option, index) => {
-          if (option.type === "image") {
+          if (option.type === 'image') {
             return (
               <div className="flex justify-center items-center">
                 <OptionButton
@@ -71,7 +77,7 @@ export default function OptionScreen({
             );
           }
 
-          if (option.type === "text") {
+          if (option.type === 'text') {
             return (
               <OptionButton
                 key={option.id}

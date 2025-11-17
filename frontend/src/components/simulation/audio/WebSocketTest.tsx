@@ -1,20 +1,34 @@
 /** @format */
 
-import { useEffect, useRef, useState } from "react";
-import "./AudioRecordingButton.css";
+import { useEffect, useRef, useState } from 'react';
+import './AudioRecordingButton.css';
 
-import Lottie from "lottie-react";
-import micRecording from "../../../assets/scenarios/animations/recording.json";
-import startrecord from "../../../assets/scenarios/animations/start-record.json";
-import api from "../../../apis/apiInstance";
-import {fastapi} from "../../../apis/apiInstance";
+import Lottie from 'lottie-react';
+import micRecording from '../../../assets/scenarios/animations/recording.json';
+import startrecord from '../../../assets/scenarios/animations/start-record.json';
+import api from '../../../apis/apiInstance';
+import { fastapi } from '../../../apis/apiInstance';
 
-type Record = {
-  sessionId: number; 
-  sequenceNumber: number; 
+export type STTResponse = {
+  session_stt_answer_id: number;
+  transcribed_text: string;
+  answer_text: string;
+  similarity_score: number;
+  is_correct: boolean;
+  attempt_no: number;
 };
 
-export default function Record({ sessionId, sequenceNumber }: Record) {
+type Record = {
+  sessionId: number;
+  sequenceNumber: number;
+  onSTTResult?: (result: STTResponse) => void;
+};
+
+export default function Record({
+  sessionId,
+  sequenceNumber,
+  onSTTResult,
+}: Record) {
   const [isRecording, setIsRecording] = useState(false);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
   const [ready, setReady] = useState(false);
@@ -31,12 +45,12 @@ export default function Record({ sessionId, sequenceNumber }: Record) {
     const prepare = async () => {
       try {
         const ctx = new AudioContext({ sampleRate: SAMPLE_RATE });
-        await ctx.audioWorklet.addModule("/pcm16-processor.js");
+        await ctx.audioWorklet.addModule('/pcm16-processor.js');
         // AudioWorklet만의 개별 Thread 생성 시점
         await ctx.close(); // 초기 등록만 하고 닫기
         setReady(true);
       } catch (err) {
-        console.error("AudioWorklet 등록 실패:", err);
+        console.error('AudioWorklet 등록 실패:', err);
       }
     };
     prepare();
@@ -45,7 +59,7 @@ export default function Record({ sessionId, sequenceNumber }: Record) {
   // 녹음 시작
   const start = async () => {
     if (!ready) {
-      alert("초기화 중입니다. 잠시 후 다시 시도하세요.");
+      alert('초기화 중입니다. 잠시 후 다시 시도하세요.');
       return;
     }
 
@@ -58,7 +72,7 @@ export default function Record({ sessionId, sequenceNumber }: Record) {
 
     // 새 AudioContext 생성
     const ctx = new AudioContext({ sampleRate: SAMPLE_RATE });
-    await ctx.audioWorklet.addModule("/pcm16-processor.js");
+    await ctx.audioWorklet.addModule('/pcm16-processor.js');
     audioCtxRef.current = ctx;
 
     // 마이크 접근
@@ -67,7 +81,7 @@ export default function Record({ sessionId, sequenceNumber }: Record) {
     const source = ctx.createMediaStreamSource(stream);
 
     // WorkletNode 생성
-    const node = new AudioWorkletNode(ctx, "pcm16-processor");
+    const node = new AudioWorkletNode(ctx, 'pcm16-processor');
     workletRef.current = node;
 
     // PCM 데이터 수집
@@ -113,7 +127,7 @@ export default function Record({ sessionId, sequenceNumber }: Record) {
     try {
       await uploadToS3(wav);
     } catch (err) {
-      console.error("업로드 실패:", err);
+      console.error('업로드 실패:', err);
     }
 
     // 정리
@@ -138,13 +152,13 @@ export default function Record({ sessionId, sequenceNumber }: Record) {
     };
 
     let offset = 0;
-    writeStr(offset, "RIFF");
+    writeStr(offset, 'RIFF');
     offset += 4;
     view.setUint32(offset, 36 + total * 2, true);
     offset += 4;
-    writeStr(offset, "WAVE");
+    writeStr(offset, 'WAVE');
     offset += 4;
-    writeStr(offset, "fmt ");
+    writeStr(offset, 'fmt ');
     offset += 4;
     view.setUint32(offset, 16, true);
     offset += 4;
@@ -160,7 +174,7 @@ export default function Record({ sessionId, sequenceNumber }: Record) {
     offset += 2;
     view.setUint16(offset, 16, true);
     offset += 2;
-    writeStr(offset, "data");
+    writeStr(offset, 'data');
     offset += 4;
     view.setUint32(offset, total * 2, true);
     offset += 4;
@@ -171,92 +185,98 @@ export default function Record({ sessionId, sequenceNumber }: Record) {
         view.setInt16(idx, chunk[i], true);
     }
 
-    return new Blob([buffer], { type: "audio/wav" });
+    return new Blob([buffer], { type: 'audio/wav' });
   };
 
   // Presigned URL 요청
   const getPresignedUrl = async (): Promise<{ url: string; s3Key: string }> => {
-  const token = localStorage.getItem("accessToken");
+    const token = localStorage.getItem('accessToken');
 
-  
-  const res = await api.post(
-    "/scenario-sessions/audio-upload-url",
-    {
-      sessionId,
-      sequenceNumber,
-      contentType: "audio/wav",
-    },
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
-
-  if (res.status !== 200) {
-    throw new Error(`Presigned URL 발급 실패 (${res.status})`);
-  }
-
-  const presignedUrl = res.data?.data?.presignedUrl;
-  const s3Key = res.data?.data?.s3Key;
-
-  console.log("파일 경로:", s3Key);
-
-   return { url: presignedUrl, s3Key };
-};
-
-// S3 업로드 함수
-const uploadToS3 = async (wavBlob: Blob) => {
-  const { url, s3Key } = await getPresignedUrl();
-  console.log("Presigned URL:", url);
-  console.log(
-    "Signed Headers:",
-    url.includes("SignedHeaders=content-type") ? "YES" : "NO"
-  );
-
-  const res = await fetch(url, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "audio/wav",
-    },
-    body: wavBlob,
-  });
-
-  if (!res.ok) {
-    const text = await res.text();
-    throw new Error(`S3 업로드 실패 (${res.status}): ${text}`);
-  }
-
-  console.log("S3 업로드 성공, STT 요청 시작...");
-   await requestSTTAnalyze(sessionId, sequenceNumber, s3Key);
-};
-
-// STT 분석 요청 함수
-const requestSTTAnalyze = async (sessionId: number, seqNo: number, s3Key: string) => {
-  const token = localStorage.getItem("accessToken");
-
-  try {
-    const res = await fastapi.post(
-      `/stt-analyze/${sessionId}/${seqNo}`,
+    const res = await api.post(
+      '/scenario-sessions/audio-upload-url',
       {
-        audio_s3_key: s3Key,
+        sessionId,
+        sequenceNumber,
+        contentType: 'audio/wav',
       },
       {
         headers: {
           Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
         },
       }
     );
 
-    console.log("STT 분석 결과:", res.data);
-    return res.data;
-  } catch (err) {
-    console.error("STT 분석 요청 실패:", err);
-    throw err;
-  }
-};
+    if (res.status !== 200) {
+      throw new Error(`Presigned URL 발급 실패 (${res.status})`);
+    }
 
+    const presignedUrl = res.data?.data?.presignedUrl;
+    const s3Key = res.data?.data?.s3Key;
+
+    console.log('파일 경로:', s3Key);
+
+    return { url: presignedUrl, s3Key };
+  };
+
+  // S3 업로드 함수
+  const uploadToS3 = async (wavBlob: Blob) => {
+    const { url, s3Key } = await getPresignedUrl();
+    console.log('Presigned URL:', url);
+    console.log(
+      'Signed Headers:',
+      url.includes('SignedHeaders=content-type') ? 'YES' : 'NO'
+    );
+
+    const res = await fetch(url, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'audio/wav',
+      },
+      body: wavBlob,
+    });
+
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error(`S3 업로드 실패 (${res.status}): ${text}`);
+    }
+
+    console.log('S3 업로드 성공, STT 요청 시작...');
+    const result = await requestSTTAnalyze(sessionId, sequenceNumber, s3Key);
+    console.log('[STT RAW RESPONSE]', res);
+    const sttData: STTResponse = result.data;
+
+    if (onSTTResult) onSTTResult(sttData);
+  };
+
+  // STT 분석 요청 함수
+  const requestSTTAnalyze = async (
+    sessionId: number,
+    seqNo: number,
+    s3Key: string
+  ) => {
+    const token = localStorage.getItem('accessToken');
+
+    try {
+      const res = await fastapi.post(
+        `/stt-analyze/${sessionId}/${seqNo}`,
+        {
+          audio_s3_key: s3Key,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      console.log('STT 분석 결과:', res.data);
+      return res.data;
+    } catch (err) {
+      console.error('STT 분석 요청 실패:', err);
+      throw err;
+    }
+  };
 
   return (
     <div className="wrap">
