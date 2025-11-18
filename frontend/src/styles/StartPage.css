@@ -21,14 +21,30 @@ src/styles/StartPage.css
 }
 
 /* ===== Lottie 배경 ===== */
-.bg-lottie {
+.bg-lottie-wrapper {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
   z-index: 0;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bg-lottie {
+  width: 120%;
+  height: 120%;
   opacity: 0.6;
+}
+
+.bg-lottie svg {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  max-height: none !important;
 }
 
 /* ===== 콘텐츠 래퍼 ===== */
@@ -39,51 +55,74 @@ src/styles/StartPage.css
   max-width: 1920px;
   min-height: 100vh;
   margin: 0 auto;
-  padding: 40px 60px;
-  display: grid; /* 변경: grid 사용 */
-  grid-template-columns: 1fr auto 1fr; /* 변경: 3단 그리드 (왼쪽, 중앙, 오른쪽) */
+  padding: 60px 80px;
+  display: grid;
+  grid-template-columns: 1.5fr 1fr; /* 왼쪽을 더 넓게 */
   align-items: center;
-  gap: 40px; /* 그리드 아이템 간 간격 */
+  gap: 100px; /* 간격 더 넓게 */
 }
 
 /* ===== 소개글 섹션 (중앙) ===== */
 .introduction-section {
-  grid-column: 2; /* 변경: 중앙(2번째) 열에 배치 */
+  grid-column: 1;
   text-align: center;
   color: var(--text-primary);
-  animation: fadeIn 1s ease-out;
+  animation: fadeInUp 1.2s ease-out;
   z-index: 3;
-  max-width: 600px;
-  margin: 0 auto; /* 중앙 정렬 (이전 margin-left 제거) */
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0;
 }
 
 .intro-title {
-  font-size: 52px;
-  font-weight: 700;
-  margin-bottom: 16px;
-  letter-spacing: -1px;
-  color: #D97706; /* 변경: 노란색 톤 */
+  font-size: 96px;
+  font-weight: 900;
+  margin-bottom: 32px;
+  letter-spacing: -3px;
+  background: linear-gradient(135deg, #F59E0B 0%, #D97706 50%, #B45309 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 4px 20px rgba(245, 158, 11, 0.3));
+  position: relative;
+  display: inline-block;
+}
+
+.intro-title::after {
+  content: '';
+  position: absolute;
+  bottom: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  height: 5px;
+  background: linear-gradient(90deg, transparent, #F59E0B, transparent);
+  border-radius: 3px;
 }
 
 .intro-subtitle {
-  font-size: 24px;
-  font-weight: 500;
-  margin-bottom: 24px;
-  color: #F59E0B; /* 변경: 노란색 톤 */
+  font-size: 30px;
+  font-weight: 700;
+  margin-bottom: 32px;
+  color: #1F2937;
+  line-height: 1.6;
+  text-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
 }
 
 .intro-description {
-  font-size: 16px;
-  line-height: 1.8;
-  color: var(--text-secondary);
-  max-width: 500px;
+  font-size: 20px;
+  line-height: 2;
+  color: #374151;
+  max-width: 750px;
   margin: 0 auto;
+  font-weight: 500;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
-@keyframes fadeIn {
+@keyframes fadeInUp {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(40px);
   }
   to {
     opacity: 1;
@@ -214,22 +253,22 @@ src/styles/StartPage.css
 
 /* ===== 로그인 섹션 (오른쪽) ===== */
 .login-section {
-  grid-column: 3; /* 변경: 오른쪽(3번째) 열에 배치 */
+  grid-column: 2;
   width: 100%;
-  max-width: 500px;
-  justify-self: end; /* 그리드 셀의 오른쪽 끝으로 정렬 */
+  max-width: 480px;
+  justify-self: end; /* 오른쪽 끝으로 */
+  margin-right: 60px; /* 오른쪽 끝에서 왼쪽으로 60px 이동 */
 }
 
 /* ===== 로그인 카드 ===== */
 .login-card {
   width: 100%;
-  max-width: 500px;
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
   border-radius: 24px;
   padding: 52px 44px;
   box-shadow: var(--card-shadow);
-  animation: slideInRight 0.6s ease-out;
+  animation: slideInRight 0.8s ease-out;
 }
 
 .login-card:hover {
@@ -504,141 +543,103 @@ src/styles/StartPage.css
 /* 1600px 이하 */
 @media (max-width: 1600px) {
   .content-wrapper {
-    padding: 40px 50px;
-  }
-  
-  .character-section {
-    left: 50px;
-    bottom: 50px;
-  }
-  
-  .login-section {
-    margin-right: 0; /* 변경: 오른쪽 마진 제거 */
+    padding: 50px 60px;
+    gap: 80px;
   }
 
   .introduction-section {
-    max-width: 500px;
+    max-width: 800px;
   }
 
   .intro-title {
-    font-size: 48px;
+    font-size: 80px;
   }
 
   .intro-subtitle {
-    font-size: 22px;
+    font-size: 26px;
+  }
+
+  .intro-description {
+    font-size: 18px;
+  }
+
+  .login-section {
+    max-width: 450px;
   }
 }
 
 /* 1440px 이하 */
 @media (max-width: 1440px) {
   .content-wrapper {
-    padding: 40px;
-    gap: 30px;
-  }
-  
-  .character {
-    width: 240px;
-  }
-  
-  .speech-bubble {
-    min-width: 240px;
-    max-width: 340px;
-    padding: 18px 24px;
-  }
-  
-  .greeting-text {
-    font-size: 16px;
-  }
-  
-  .greeting-subtitle {
-    font-size: 13px;
-  }
-  
-  .login-section {
-    flex: 0 0 460px;
-  }
-  
-  .login-card {
-    max-width: 460px;
-    padding: 48px 40px;
-  }
-  
-  .login-title {
-    font-size: 32px;
+    padding: 40px 50px;
+    gap: 60px;
   }
 
   .introduction-section {
-    max-width: 450px;
+    max-width: 700px;
   }
 
   .intro-title {
-    font-size: 42px;
+    font-size: 72px;
   }
 
   .intro-subtitle {
-    font-size: 20px;
+    font-size: 24px;
   }
 
   .intro-description {
-    font-size: 15px;
+    font-size: 17px;
+  }
+
+  .login-section {
+    max-width: 420px;
+  }
+
+  .login-card {
+    padding: 48px 40px;
+  }
+
+  .login-title {
+    font-size: 32px;
   }
 }
 
 /* 1200px 이하 - 태블릿 & 중간 화면 */
 @media (max-width: 1200px) {
   .content-wrapper {
-    display: flex; /* grid에서 flex로 변경 */
+    display: flex;
     flex-direction: column;
-    justify-content: flex-start;
-    padding: 30px 20px;
-    gap: 40px;
+    justify-content: center;
+    padding: 40px 30px;
+    gap: 50px;
   }
 
   .introduction-section {
-    grid-column: auto; /* grid 속성 리셋 */
-    display: block; /* 숨김 해제 */
-    order: 2; /* 순서: 2. 소개글 (로그인 카드 아래) */
-    margin: 0 auto; /* 위쪽 마진 제거, 중앙 정렬 */
-    max-width: 500px;
+    text-align: center;
+    max-width: 700px;
+    margin: 0 auto;
+    order: 2; /* 로그인 카드 아래 */
   }
-  
-  .character-section {
-    display: flex; /* 숨김 해제 */
-    position: static;
-    order: 3; /* 순서: 3. 캐릭터 */
-    margin-top: auto;
-    padding-bottom: 20px;
+
+  .intro-title {
+    font-size: 64px;
   }
-  
-  .character {
-    width: 180px;
+
+  .intro-subtitle {
+    font-size: 22px;
   }
-  
-  .speech-bubble {
-    position: static;
-    transform: none;
-    margin-bottom: 20px;
-    min-width: 220px;
-    max-width: 100%;
+
+  .intro-description {
+    font-size: 17px;
   }
-  
-  .speech-bubble::before {
-    top: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-  }
-  
+
   .login-section {
-    grid-column: auto; /* grid 속성 리셋 */
-    justify-self: auto; /* grid 속성 리셋 */
-    position: static;
-    order: 1; /* 순서: 1. 로그인 */
-    flex: none;
     width: 100%;
-    max-width: 480px;
-    margin: 80px auto 0; /* 위쪽 마진 추가 */
+    max-width: 500px;
+    margin: 0 auto;
+    order: 1; /* 로그인 카드 위 */
   }
-  
+
   .login-card {
     max-width: 100%;
     padding: 44px 36px;
@@ -648,57 +649,40 @@ src/styles/StartPage.css
 /* 768px 이하 - 모바일 */
 @media (max-width: 768px) {
   .content-wrapper {
-    padding: 20px 16px;
-    gap: 30px;
+    padding: 30px 20px;
+    gap: 40px;
   }
 
   .introduction-section {
-    margin-top: 60px;
+    max-width: 100%;
   }
 
   .intro-title {
-    font-size: 36px;
+    font-size: 48px;
   }
 
   .intro-subtitle {
-    font-size: 18px;
+    font-size: 19px;
   }
 
   .intro-description {
-    font-size: 14px;
+    font-size: 16px;
   }
-  
-  .character {
-    width: 160px;
-  }
-  
-  .speech-bubble {
-    min-width: 180px;
-    padding: 14px 18px;
-  }
-  
-  .greeting-text {
-    font-size: 13px;
-  }
-  
-  .greeting-subtitle {
-    font-size: 11px;
-  }
-  
+
   .login-section {
     max-width: 100%;
   }
-  
+
   .login-card {
     padding: 36px 28px;
     border-radius: 20px;
   }
-  
+
   .login-title {
     font-size: 28px;
     margin-bottom: 32px;
   }
-  
+
   .form-field input,
   .login-button {
     height: 52px;
@@ -709,52 +693,36 @@ src/styles/StartPage.css
 /* 480px 이하 - 작은 모바일 */
 @media (max-width: 480px) {
   .content-wrapper {
-    padding: 16px 12px;
-  }
-
-  .introduction-section {
-    margin-top: 40px;
+    padding: 20px 16px;
+    gap: 30px;
   }
 
   .intro-title {
-    font-size: 32px;
+    font-size: 40px;
+  }
+
+  .intro-title::after {
+    height: 3px;
   }
 
   .intro-subtitle {
-    font-size: 16px;
+    font-size: 17px;
   }
-  
-  .character {
-    width: 140px;
+
+  .intro-description {
+    font-size: 15px;
   }
-  
-  .speech-bubble {
-    min-width: 160px;
-    padding: 12px 16px;
-  }
-  
-  .greeting-text {
-    font-size: 12px;
-  }
-  
-  .greeting-subtitle {
-    font-size: 10px;
-  }
-  
-  .login-section {
-    margin: 0 auto;
-  }
-  
+
   .login-card {
     padding: 28px 20px;
     border-radius: 18px;
   }
-  
+
   .login-title {
     font-size: 24px;
     margin-bottom: 28px;
   }
-  
+
   .form-field input,
   .login-button {
     height: 48px;
