@@ -30,8 +30,12 @@ export default function OptionScreen({
 
   return (
     <div className="flex flex-col items-center min-h-screen p-6">
-      <button onClick={onSkip} className="text-2xl">
-        {'>> 스킵하기'}
+      {/* 스킵하기 버튼 - 우측 상단 고정 */}
+      <button
+        onClick={onSkip}
+        className="fixed top-4 right-10 z-50 text-2xl cursor-pointer select-none"
+      >
+        {'스킵하기 >>'}
       </button>
       {/* 난이도 "상"일 때만 녹음 버튼 표시 - 우측 하단 고정 */}
       {difficulty === 'HARD' && sessionId && (
