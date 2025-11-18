@@ -290,11 +290,12 @@ export default function Record({
         </div>
       )}
 
-      {audioUrl && (
+      {/* 오디오 플레이어 */}
+      {/* {audioUrl && (
         <div className="audio-play">
           <audio controls src={audioUrl} />
         </div>
-      )}
+      )} */}
     </div>
   );
 }
