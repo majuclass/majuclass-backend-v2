@@ -79,11 +79,11 @@ src/styles/StartPage.css
   font-weight: 900;
   margin-bottom: 32px;
   letter-spacing: -3px;
-  background: linear-gradient(135deg, #F59E0B 0%, #D97706 50%, #B45309 100%);
+  background: linear-gradient(135deg, #FF9A3C 0%, #FF8C42 50%, #FF7A33 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  filter: drop-shadow(0 4px 20px rgba(245, 158, 11, 0.3));
+  filter: drop-shadow(0 4px 20px rgba(255, 154, 60, 0.4));
   position: relative;
   display: inline-block;
 }
@@ -96,7 +96,7 @@ src/styles/StartPage.css
   transform: translateX(-50%);
   width: 60%;
   height: 5px;
-  background: linear-gradient(90deg, transparent, #F59E0B, transparent);
+  background: linear-gradient(90deg, transparent, #FF9A3C, transparent);
   border-radius: 3px;
 }
 
