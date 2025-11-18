@@ -16,7 +16,7 @@ export default function NavBar() {
   const location = useLocation();
   const navigate = useNavigate();
   const { studentId, studentName } = useUserStore();
-  const { isGenerating, generatedScenario, clearGeneration } = useAIGenerationStore();
+  const { isGenerating, generatedScenario, } = useAIGenerationStore();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [teacherName, setTeacherName] = useState('선생님');
 
@@ -42,6 +42,10 @@ export default function NavBar() {
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
+  };
+
+  const handleGenerationComplete = () => {
+    navigate('/scenarios/ai/create');
   };
 
   return (
@@ -87,9 +91,9 @@ export default function NavBar() {
           </div>
         )}
 
-        {/* 생성 완료 알림 (클릭 시 사라짐) */}
+        {/* 생성 완료 알림 (클릭 시 페이지 이동) */}
         {!isGenerating && generatedScenario && (
-          <div className="ai-generation-complete" onClick={clearGeneration}>
+          <div className="ai-generation-complete" onClick={handleGenerationComplete}>
             <span className="complete-icon">✓</span>
             <span className="complete-text">시나리오 생성 완료!</span>
           </div>

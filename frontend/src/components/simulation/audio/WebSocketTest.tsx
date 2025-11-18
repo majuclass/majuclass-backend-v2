@@ -30,7 +30,7 @@ export default function Record({
   onSTTResult,
 }: Record) {
   const [isRecording, setIsRecording] = useState(false);
-  const [audioUrl, setAudioUrl] = useState<string | null>(null);
+  const [, setAudioUrl] = useState<string | null>(null);
   const [ready, setReady] = useState(false);
 
   const audioCtxRef = useRef<AudioContext | null>(null);
@@ -290,11 +290,12 @@ export default function Record({
         </div>
       )}
 
-      {audioUrl && (
+      {/* 오디오 플레이어 */}
+      {/* {audioUrl && (
         <div className="audio-play">
           <audio controls src={audioUrl} />
         </div>
-      )}
+      )} */}
     </div>
   );
 }

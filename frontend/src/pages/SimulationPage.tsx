@@ -197,7 +197,7 @@ export default function SimulationPage() {
 
     setTimeout(() => {
       if (!correct) {
-        setScreen('question'); // 재도전
+        setScreen('option'); // 재도전
         return;
       }
 

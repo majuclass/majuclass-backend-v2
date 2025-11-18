@@ -33,9 +33,9 @@ export default function OptionScreen({
       <button onClick={onSkip} className="text-2xl">
         {'>> 스킵하기'}
       </button>
-      {/* 난이도 "상"일 때만 녹음 버튼 표시 */}
+      {/* 난이도 "상"일 때만 녹음 버튼 표시 - 우측 하단 고정 */}
       {difficulty === 'HARD' && sessionId && (
-        <div className="absolute bottom-48 z-30">
+        <div className="fixed bottom-8 right-8 z-30">
           <Record
             sessionId={sessionId}
             sequenceNumber={sequenceNumber ?? 1}

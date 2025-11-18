@@ -3,13 +3,13 @@ import { useState, useEffect, useMemo } from 'react';
 import Lottie from 'lottie-react';
 import '../styles/StartPage.css';
 import LoginCard from '../components/startpage/LoginCard';
-import NormalCharacter from '../assets/startpage/Normal.png';
-import HelloCharacter from '../assets/startpage/Hello.png';
-import BackgroundAnimation from '../assets/startpage/Animated background - no balloon.json';
+// import NormalCharacter from '../assets/startpage/Normal.png';
+// import HelloCharacter from '../assets/startpage/Hello.png';
+import BackgroundAnimation from '../assets/startpage/Animated background.json';
 
 export default function StartPage() {
-  const [showHello, setShowHello] = useState(false);
-  const [showBubble, setShowBubble] = useState(false);
+  const [, setShowHello] = useState(false);
+  const [, setShowBubble] = useState(false);
 
   const animation = useMemo(() => BackgroundAnimation, []);
 
@@ -24,7 +24,17 @@ export default function StartPage() {
 
   return (
     <main className="startpage-bg">
-      <Lottie animationData={animation} loop autoplay className="bg-lottie" />
+      <div className="bg-lottie-wrapper">
+        <Lottie
+          animationData={animation}
+          loop
+          autoplay
+          className="bg-lottie"
+          rendererSettings={{
+            preserveAspectRatio: 'xMidYMid meet'
+          }}
+        />
+      </div>
 
       <section className="content-wrapper">
         {/* 소개글 영역 */}
@@ -40,7 +50,7 @@ export default function StartPage() {
         </div>
 
         {/* 캐릭터 영역 */}
-        <div className="character-section">
+        {/* <div className="character-section">
           <div className="character-container">
             <img
               src={showHello ? HelloCharacter : NormalCharacter}
@@ -62,7 +72,7 @@ export default function StartPage() {
               </div>
             )}
           </div>
-        </div>
+        </div> */}
 
         {/* 로그인 영역 */}
         <aside className="login-section">
