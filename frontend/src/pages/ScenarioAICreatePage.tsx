@@ -42,19 +42,6 @@ const ScenarioGenerator: React.FC<ScenarioGeneratorProps> = ({ onGenerate }) => 
   // 알람 중복 방지 플래그
   const hasShownGenerationAlert = useRef(false);
   const hasShownErrorAlert = useRef(false);
-  const hasVisitedPage = useRef(false);
-
-  // 페이지 진입 시 생성 완료 메시지 확인했다고 표시 (NavBar에서 사라지게)
-  useEffect(() => {
-    if (generatedScenario && !hasVisitedPage.current) {
-      hasVisitedPage.current = true;
-      // 약간의 딜레이 후 메시지 제거 (사용자가 페이지 확인할 시간)
-      const timer = setTimeout(() => {
-        clearGeneration();
-      }, 1000);
-      return () => clearTimeout(timer);
-    }
-  }, [generatedScenario, clearGeneration]);
 
   // 컴포넌트 언마운트 시 에러만 초기화 (생성 결과는 유지)
   useEffect(() => {

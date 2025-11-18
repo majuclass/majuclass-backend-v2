@@ -16,7 +16,7 @@ export default function NavBar() {
   const location = useLocation();
   const navigate = useNavigate();
   const { studentId, studentName } = useUserStore();
-  const { isGenerating, generatedScenario, } = useAIGenerationStore();
+  const { isGenerating, generatedScenario, showNotification, hideNotification } = useAIGenerationStore();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [teacherName, setTeacherName] = useState('선생님');
 
@@ -45,6 +45,7 @@ export default function NavBar() {
   };
 
   const handleGenerationComplete = () => {
+    hideNotification(); // 알림만 숨기기 (데이터는 유지)
     navigate('/scenarios/ai/create');
   };
 
@@ -92,7 +93,7 @@ export default function NavBar() {
         )}
 
         {/* 생성 완료 알림 (클릭 시 페이지 이동) */}
-        {!isGenerating && generatedScenario && (
+        {!isGenerating && generatedScenario && showNotification && (
           <div className="ai-generation-complete" onClick={handleGenerationComplete}>
             <span className="complete-icon">✓</span>
             <span className="complete-text">시나리오 생성 완료!</span>
