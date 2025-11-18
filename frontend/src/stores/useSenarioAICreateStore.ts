@@ -7,6 +7,7 @@ interface AIGenerationState {
   isGenerating: boolean;
   generatedScenario: AIScenarioCreateResponse | null;
   error: string | null;
+  showNotification: boolean; // NavBar 알림 표시 여부
 
   // 액션
   startGeneration: (params: {
@@ -17,6 +18,7 @@ interface AIGenerationState {
   }) => Promise<void>;
 
   clearGeneration: () => void;
+  hideNotification: () => void; // 알림만 숨기기 (데이터는 유지)
 }
 
 export const useAIGenerationStore = create<AIGenerationState>((set) => ({
@@ -24,6 +26,7 @@ export const useAIGenerationStore = create<AIGenerationState>((set) => ({
   isGenerating: false,
   generatedScenario: null,
   error: null,
+  showNotification: false,
 
   // AI 시나리오 생성 시작
   startGeneration: async (params) => {
@@ -31,6 +34,7 @@ export const useAIGenerationStore = create<AIGenerationState>((set) => ({
       isGenerating: true,
       error: null,
       generatedScenario: null,
+      showNotification: false,
     });
 
     console.log('🚀 [백그라운드] AI 시나리오 생성 시작...', params);
@@ -44,6 +48,7 @@ export const useAIGenerationStore = create<AIGenerationState>((set) => ({
         generatedScenario: result,
         isGenerating: false,
         error: null,
+        showNotification: true, // 생성 완료 시 알림 표시
       });
 
       // 브라우저 알림 (선택적 - 권한이 있을 때만)
@@ -85,12 +90,18 @@ export const useAIGenerationStore = create<AIGenerationState>((set) => ({
     }
   },
 
-  // 생성 상태 초기화
+  // 알림만 숨기기 (데이터는 유지)
+  hideNotification: () => {
+    set({ showNotification: false });
+  },
+
+  // 생성 상태 초기화 (모든 데이터 삭제)
   clearGeneration: () => {
     set({
       isGenerating: false,
       generatedScenario: null,
       error: null,
+      showNotification: false,
     });
   },
 }));
