@@ -8,8 +8,8 @@ import LoginCard from '../components/startpage/LoginCard';
 import BackgroundAnimation from '../assets/startpage/Animated background.json';
 
 export default function StartPage() {
-  const [showHello, setShowHello] = useState(false);
-  const [showBubble, setShowBubble] = useState(false);
+  const [, setShowHello] = useState(false);
+  const [, setShowBubble] = useState(false);
 
   const animation = useMemo(() => BackgroundAnimation, []);
 

@@ -30,7 +30,7 @@ export default function Record({
   onSTTResult,
 }: Record) {
   const [isRecording, setIsRecording] = useState(false);
-  const [audioUrl, setAudioUrl] = useState<string | null>(null);
+  const [, setAudioUrl] = useState<string | null>(null);
   const [ready, setReady] = useState(false);
 
   const audioCtxRef = useRef<AudioContext | null>(null);

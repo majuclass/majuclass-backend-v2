@@ -16,7 +16,7 @@ export default function NavBar() {
   const location = useLocation();
   const navigate = useNavigate();
   const { studentId, studentName } = useUserStore();
-  const { isGenerating, generatedScenario, clearGeneration } = useAIGenerationStore();
+  const { isGenerating, generatedScenario, } = useAIGenerationStore();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [teacherName, setTeacherName] = useState('선생님');
 
