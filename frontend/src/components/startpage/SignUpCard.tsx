@@ -117,7 +117,7 @@ export default function SignUpCard({ onSwitchToLogin }: SignUpCardProps) {
                   : 'border-gray-300 focus:ring-blue-400'
               }
             `}
-            placeholder="아이디를 입력하세요 (3~50자)"
+            placeholder="아이디를 입력하세요"
             autoComplete="username"
             disabled={loading}
             aria-invalid={!!(touched.username && localErrors.username)}
@@ -228,7 +228,7 @@ export default function SignUpCard({ onSwitchToLogin }: SignUpCardProps) {
                     : 'border-gray-300 focus:ring-blue-400'
                 }
               `}
-              placeholder="비밀번호를 입력하세요 (8~64자)"
+              placeholder="비밀번호를 입력하세요"
               autoComplete="new-password"
               disabled={loading}
               aria-invalid={!!(touched.password && localErrors.password)}
