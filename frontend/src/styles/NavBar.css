@@ -1,0 +1,340 @@
+/* src/pages/(MainPage)/components/navbar.css */
+
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 100px; /* 상하좌우 패딩 */
+  background-color: #fff7d6; /* 이미지 배경색 (#fff7d6 기준) */
+  border-bottom: 1px solid #e5e7eb;
+  font-family: 'NanumSquareRoundBold', sans-serif;
+  position: relative; /* For mobile menu positioning */
+}
+
+.user-name {
+  font-family: 'NanumSquareRoundExtraBold', sans-serif;
+  font-weight: 800;
+  color: #4338ca;
+}
+
+.navbar-left {
+  display: flex;
+  align-items: center;
+  gap: 64px; /* Increased gap for larger screens */
+}
+
+.navbar-desktop-links {
+  display: flex;
+  align-items: center;
+  gap: 48px; /* Gap between desktop navigation items */
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #111827;
+  font-size: 18px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  white-space: nowrap; /* Prevent text wrapping */
+}
+
+.nav-item:hover {
+  color: #4f46e5;
+  transform: translateY(-1px);
+}
+
+.nav-item.active {
+  color: #4338ca;
+}
+
+.nav-icon {
+  font-size: 22px;
+}
+
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 18px;
+  color: #111827;
+  white-space: nowrap; /* Prevent text wrapping */
+}
+
+/* AI 생성 상태 인디케이터 */
+.ai-generation-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background-color: #eef2ff;
+  border: 1px solid #c7d2fe;
+  border-radius: 20px;
+  font-size: 14px;
+  color: #4338ca;
+  font-weight: 500;
+}
+
+.spinner-small {
+  width: 14px;
+  height: 14px;
+  border: 2px solid #c7d2fe;
+  border-top-color: #4338ca;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.generation-text {
+  font-size: 14px;
+}
+
+/* AI 생성 완료 알림 */
+.ai-generation-complete {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background-color: #dcfce7;
+  border: 1px solid #86efac;
+  border-radius: 20px;
+  font-size: 14px;
+  color: #166534;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.ai-generation-complete:hover {
+  background-color: #bbf7d0;
+  transform: translateY(-1px);
+}
+
+.complete-icon {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.complete-text {
+  font-size: 14px;
+}
+
+/* 사용자 메뉴 컨테이너 */
+.user-menu-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.navbar-greeting strong {
+  font-weight: 700;
+}
+
+/* 드롭다운 토글 버튼 */
+.dropdown-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  transition: transform 0.2s ease;
+}
+
+.dropdown-toggle:hover {
+  transform: scale(1.1);
+}
+
+/* 드롭다운 화살표 */
+.dropdown-arrow {
+  font-size: 14px;
+  color: #6B7280;
+  transition: transform 0.3s ease;
+  display: inline-block;
+}
+
+.dropdown-arrow.open {
+  transform: rotate(180deg);
+}
+
+/* 드롭다운 메뉴 */
+.dropdown-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: white;
+  border: 1px solid #E5E7EB;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  min-width: 160px;
+  z-index: 1000;
+  overflow: hidden;
+  animation: dropdownSlideIn 0.2s ease-out;
+}
+
+@keyframes dropdownSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 드롭다운 아이템 */
+.dropdown-item {
+  width: 100%;
+  padding: 12px 16px;
+  background: none;
+  border: none;
+  text-align: left;
+  font-size: 16px;
+  color: #111827;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dropdown-item:hover {
+  background-color: #F3F4F6;
+  color: #DC2626;
+}
+
+.profile-icon {
+  font-size: 32px;
+}
+
+.nav-icon svg,
+.profile-icon svg {
+  width: 1em;
+  height: 1em;
+  display: block;
+}
+
+/* 로고 컨테이너 */
+.nav-logo {
+  display: flex;
+  align-items: center;
+  margin-right: 20px;
+}
+
+/* 로고 이미지 스타일 */
+.nav-logo-img {
+  height: 56px; /* 로고 크기 증가 40px -> 56px */
+  width: auto; /* 비율 유지 */
+  object-fit: contain; /* 여백 포함해 비율 유지 */
+  border-radius: 8px; /* (선택) 살짝 둥근 모서리 */
+  background: transparent; /* 혹시 흰 배경일 때 대비 */
+}
+
+/* Hamburger Menu Button */
+.navbar-hamburger {
+  display: none; /* Hidden by default on desktop */
+  font-size: 32px;
+  cursor: pointer;
+  color: #111827;
+}
+
+/* Mobile Menu */
+.navbar-mobile-links {
+  display: none; /* Hidden by default */
+  flex-direction: column;
+  position: absolute;
+  top: 100%; /* Position right below the navbar */
+  left: 0;
+  width: 100%;
+  background-color: #fff7d6;
+  border-top: 1px solid #e5e7eb;
+  padding: 16px 48px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+
+.navbar-mobile-links .nav-item {
+  padding: 12px 0;
+  font-size: 18px;
+  color: #111827;
+  text-decoration: none;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.navbar-mobile-links .nav-item:last-child {
+  border-bottom: none;
+}
+
+.navbar-mobile-links .nav-item:hover {
+  color: #4f46e5;
+}
+
+.mobile-user-info {
+  padding-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 16px;
+  color: #111827;
+  border-top: 1px solid #e5e7eb;
+  margin-top: 16px;
+}
+
+.mobile-user-info .selected-student {
+  cursor: pointer;
+}
+
+/* Media Queries for Responsiveness */
+@media (max-width: 1024px) {
+  .navbar-left {
+    gap: 24px;
+  }
+
+  .navbar-desktop-links {
+    gap: 24px;
+  }
+
+  .nav-item {
+    font-size: 16px;
+  }
+
+  .navbar-right {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .navbar {
+    padding: 12px 24px;
+  }
+
+  .navbar-left {
+    gap: 16px;
+  }
+
+  .navbar-desktop-links,
+  .navbar-right {
+    display: none; /* Hide desktop links and right section on mobile */
+  }
+
+  .navbar-hamburger {
+    display: block; /* Show hamburger menu on mobile */
+  }
+
+  .navbar-mobile-links {
+    display: flex; /* Show mobile menu when active (controlled by JS) */
+  }
+
+  .navbar-mobile-links.hidden {
+    display: none;
+  }
+}

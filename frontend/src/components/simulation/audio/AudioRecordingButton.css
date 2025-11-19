@@ -1,0 +1,58 @@
+/* 녹음 버튼 컨테이너 - 고정 크기 유지 */
+.wrap {
+    width: 130px;
+    height: 130px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.record-start {
+    width: 130px;
+    height: 130px;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.record-start:hover {
+    transform: scale(1.05);
+}
+
+.record-start:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.recording-lottie {
+    width: 130px;
+    height: 130px;
+    cursor: pointer;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+/* 오디오 플레이어 - 버튼 위쪽에 배치 */
+.audio-play {
+    position: absolute;
+    bottom: 140px;
+    right: 0;
+    width: 300px;
+    background: white;
+    padding: 8px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.audio-play audio {
+    width: 100%;
+}

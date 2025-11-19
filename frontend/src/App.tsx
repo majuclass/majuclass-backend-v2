@@ -1,11 +1,23 @@
 /** @format */
+import { RouterProvider } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import ErrorBoundary from './components/wrappers/ErrorBoundary';
+import router from './router';
 
-function App() {
+// 전역 Provider들을 한 곳에 모아주는 wrapper
+export default function App() {
+  // tanstack query
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: { retry: 3 }, // 실패시 재시도 3회
+    },
+  });
+
   return (
-    <>
-      <h1 className="text-3xl font-bold underline">Hello world!</h1>
-    </>
+    <QueryClientProvider client={queryClient}>
+      <ErrorBoundary>
+        <RouterProvider router={router} />
+      </ErrorBoundary>
+    </QueryClientProvider>
   );
 }
-
-export default App;
