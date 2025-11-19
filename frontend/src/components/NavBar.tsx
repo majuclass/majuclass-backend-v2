@@ -132,14 +132,6 @@ export default function NavBar() {
           )}
         </div>
 
-<<<<<<< HEAD
-        <span className="navbar-greeting">
-          <strong className="user-name">{teacherName}</strong>님, 안녕하세요!
-        </span>
-        {/* <i className="profile-icon">
-          <HiOutlineUserCircle />
-        </i> */}
-=======
         <div className="user-menu-container">
           <span className="navbar-greeting">
             <strong>{teacherName}</strong>님, 안녕하세요!
@@ -168,7 +160,6 @@ export default function NavBar() {
             </div>
           )}
         </div>
->>>>>>> 7f5fe0b ([FE] feature: 회원가입 및 로그아웃 기능 추가 완료)
       </div>
 
       {/* Hamburger Menu Button */}
