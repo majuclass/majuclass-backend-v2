@@ -186,7 +186,9 @@ const ScenarioGenerator: React.FC<ScenarioGeneratorProps> = ({ onGenerate }) => 
 
   return (
     <div className="scenario-generator">
-      <h1 className="generator-title">AI 시나리오 생성 도우미</h1>
+      <h1 className="generator-title">
+        <span>AI</span> 시나리오 생성 도우미
+      </h1>
       
       <div className="generator-container">
         <div className="generator-controls">

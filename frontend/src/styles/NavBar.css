@@ -5,10 +5,16 @@
   align-items: center;
   justify-content: space-between;
   padding: 8px 100px; /* 상하좌우 패딩 */
-  background-color: #FFF7D6; /* 이미지 배경색 (#fff7d6 기준) */
-  border-bottom: 1px solid #E5E7EB;
-  font-family: "Pretendard", sans-serif;
+  background-color: #fff7d6; /* 이미지 배경색 (#fff7d6 기준) */
+  border-bottom: 1px solid #e5e7eb;
+  font-family: 'NanumSquareRoundBold', sans-serif;
   position: relative; /* For mobile menu positioning */
+}
+
+.user-name {
+  font-family: 'NanumSquareRoundExtraBold', sans-serif;
+  font-weight: 800;
+  color: #4338ca;
 }
 
 .navbar-left {
@@ -36,12 +42,12 @@
 }
 
 .nav-item:hover {
-  color: #4F46E5;
+  color: #4f46e5;
   transform: translateY(-1px);
 }
 
 .nav-item.active {
-  color: #4338CA;
+  color: #4338ca;
 }
 
 .nav-icon {
@@ -63,25 +69,27 @@
   align-items: center;
   gap: 8px;
   padding: 8px 16px;
-  background-color: #EEF2FF;
-  border: 1px solid #C7D2FE;
+  background-color: #eef2ff;
+  border: 1px solid #c7d2fe;
   border-radius: 20px;
   font-size: 14px;
-  color: #4338CA;
+  color: #4338ca;
   font-weight: 500;
 }
 
 .spinner-small {
   width: 14px;
   height: 14px;
-  border: 2px solid #C7D2FE;
-  border-top-color: #4338CA;
+  border: 2px solid #c7d2fe;
+  border-top-color: #4338ca;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .generation-text {
@@ -94,8 +102,8 @@
   align-items: center;
   gap: 8px;
   padding: 8px 16px;
-  background-color: #DCFCE7;
-  border: 1px solid #86EFAC;
+  background-color: #dcfce7;
+  border: 1px solid #86efac;
   border-radius: 20px;
   font-size: 14px;
   color: #166534;
@@ -105,7 +113,7 @@
 }
 
 .ai-generation-complete:hover {
-  background-color: #BBF7D0;
+  background-color: #bbf7d0;
   transform: translateY(-1px);
 }
 
@@ -126,7 +134,12 @@
   font-size: 32px;
 }
 
-.nav-icon svg, .profile-icon svg { width: 1em; height: 1em; display: block; }
+.nav-icon svg,
+.profile-icon svg {
+  width: 1em;
+  height: 1em;
+  display: block;
+}
 
 /* 로고 컨테이너 */
 .nav-logo {
@@ -137,10 +150,10 @@
 
 /* 로고 이미지 스타일 */
 .nav-logo-img {
-  height: 56px;           /* 로고 크기 증가 40px -> 56px */
-  width: auto;            /* 비율 유지 */
-  object-fit: contain;    /* 여백 포함해 비율 유지 */
-  border-radius: 8px;     /* (선택) 살짝 둥근 모서리 */
+  height: 56px; /* 로고 크기 증가 40px -> 56px */
+  width: auto; /* 비율 유지 */
+  object-fit: contain; /* 여백 포함해 비율 유지 */
+  border-radius: 8px; /* (선택) 살짝 둥근 모서리 */
   background: transparent; /* 혹시 흰 배경일 때 대비 */
 }
 
@@ -160,8 +173,8 @@
   top: 100%; /* Position right below the navbar */
   left: 0;
   width: 100%;
-  background-color: #FFF7D6;
-  border-top: 1px solid #E5E7EB;
+  background-color: #fff7d6;
+  border-top: 1px solid #e5e7eb;
   padding: 16px 48px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   z-index: 1000;
@@ -172,7 +185,7 @@
   font-size: 18px;
   color: #111827;
   text-decoration: none;
-  border-bottom: 1px solid #E5E7EB;
+  border-bottom: 1px solid #e5e7eb;
 }
 
 .navbar-mobile-links .nav-item:last-child {
@@ -180,7 +193,7 @@
 }
 
 .navbar-mobile-links .nav-item:hover {
-  color: #4F46E5;
+  color: #4f46e5;
 }
 
 .mobile-user-info {
@@ -190,7 +203,7 @@
   gap: 8px;
   font-size: 16px;
   color: #111827;
-  border-top: 1px solid #E5E7EB;
+  border-top: 1px solid #e5e7eb;
   margin-top: 16px;
 }
 

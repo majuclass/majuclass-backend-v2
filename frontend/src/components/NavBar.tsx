@@ -3,10 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import '../styles/NavBar.css';
-import {
-  HiOutlineHome,
-  HiOutlineClock,
-} from 'react-icons/hi2';
+import { HiOutlineHome, HiOutlineClock } from 'react-icons/hi2';
 
 import { useUserStore } from '../stores/useUserStore';
 import { useAIGenerationStore } from '../stores/useSenarioAICreateStore';
@@ -16,7 +13,12 @@ export default function NavBar() {
   const location = useLocation();
   const navigate = useNavigate();
   const { studentId, studentName } = useUserStore();
-  const { isGenerating, generatedScenario, showNotification, hideNotification } = useAIGenerationStore();
+  const {
+    isGenerating,
+    generatedScenario,
+    showNotification,
+    hideNotification,
+  } = useAIGenerationStore();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [teacherName, setTeacherName] = useState('선생님');
 
@@ -94,7 +96,10 @@ export default function NavBar() {
 
         {/* 생성 완료 알림 (클릭 시 페이지 이동) */}
         {!isGenerating && generatedScenario && showNotification && (
-          <div className="ai-generation-complete" onClick={handleGenerationComplete}>
+          <div
+            className="ai-generation-complete"
+            onClick={handleGenerationComplete}
+          >
             <span className="complete-icon">✓</span>
             <span className="complete-text">시나리오 생성 완료!</span>
           </div>
@@ -103,7 +108,7 @@ export default function NavBar() {
         <div className="selected-student" onClick={handleStudentClick}>
           {studentId && studentName ? (
             <span className="selected-student-name">
-              <strong>{studentName}</strong> 학생 관리 상태입니다
+              <strong className="user-name">{studentName}</strong> 학생 관리 상태입니다
             </span>
           ) : (
             <span className="selected-student-empty">
@@ -113,7 +118,7 @@ export default function NavBar() {
         </div>
 
         <span className="navbar-greeting">
-          <strong>{teacherName}</strong>님, 안녕하세요!
+          <strong className="user-name">{teacherName}</strong>님, 안녕하세요!
         </span>
         {/* <i className="profile-icon">
           <HiOutlineUserCircle />
@@ -136,7 +141,7 @@ export default function NavBar() {
           </Link>
           <div className="mobile-user-info">
             <span className="navbar-greeting">
-              <strong>{teacherName}</strong>님, 안녕하세요!
+              <strong className="user-name">{teacherName}</strong>님, 안녕하세요!
             </span>
             <div
               className="selected-student"
@@ -147,7 +152,7 @@ export default function NavBar() {
             >
               {studentId && studentName ? (
                 <span className="selected-student-name">
-                  <strong>{studentName}</strong> 학생
+                  <strong className="user-name">{studentName}</strong> 학생
                 </span>
               ) : (
                 <span className="selected-student-empty">선택된 학생 없음</span>
