@@ -1,5 +1,7 @@
 /** @format */
 
+import { useNavigate } from "react-router-dom"; // 생성 후 이동하도록 네비
+
 import { useEffect, useState } from "react";
 import { useScenarioCreateStore } from "../../stores/useScenarioCreateStore";
 import TextButton from "../TextButton";
@@ -13,6 +15,7 @@ interface SequenceFormProps {
 }
 
 export default function SequenceForm({ onPrev }: SequenceFormProps) {
+  const navigate = useNavigate();
   const sequences = useScenarioCreateStore((s) => s.sequences);
   const { addSequence } = useScenarioCreateStore();
   const { deleteSequence } = useScenarioCreateStore();
@@ -148,6 +151,10 @@ export default function SequenceForm({ onPrev }: SequenceFormProps) {
       console.log("[create-scenario] response:", resp.status, resp.data);
       if (resp.data.status === "SUCCESS") {
         console.log("생성 성공");
+
+        // 성공 시 alert + 페이지 이동
+        alert(`시나리오 "${title}"가 성공적으로 생성되었습니다!`);
+        navigate('/scenarios')
       }
     } catch (error) {
       // 변경: 에러 상세 로그 (상태/본문/URL)

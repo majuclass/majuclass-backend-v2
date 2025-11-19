@@ -397,7 +397,7 @@ const StudentDashboard: React.FC = () => {
         <div className="dashboard-left">
           <div className="detail-card chart-card">
             <div className="card-header">
-              <h3 className="card-title">카테고리별 활동</h3>
+              <h3 className="card-title">{currentMonth}월 활동</h3>
               <div className="month-selector">
                 <button className="month-nav-btn" onClick={handlePrevMonth}>
                   ←
