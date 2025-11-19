@@ -1,4 +1,3 @@
-# app/domains/scenario/services/image_service.py
 import os
 import base64
 import httpx
@@ -64,16 +63,32 @@ class ImageService:
             "flat illustration, icon-like, no text on image, high contrast, "
             "simple shapes, kid-friendly, clean background"
         )
-        return f"{question} 상황에서 '{option_text}'를 상징하는 소품/아이콘, {style}"
+        return f"{question} 상황에서 '{option_text}'를 상징하는 소품 혹은 아이콘 1개, {style} 그리고 절대 텍스트는 사용하지마"
 
     @staticmethod
     def build_cover_prompt(scenario_prompt: str, kind: Literal["thumbnail", "background"]) -> str:
         """
-        썸네일/배경 공통 지침: 텍스트 없이 깔끔하고 대비 높은 플랫 일러스트
+        썸네일/배경 이미지 지침:
+        - background: 시나리오 상황에 맞는 주변 환경 이미지
+        - thumbnail: 해당 상황에서 일어날 만한 상황/장면 이미지
+        - 공통: 한국 배경, 귀여운 스타일, 텍스트 절대 금지
         """
-        tag = "표지 일러스트" if kind == "thumbnail" else "배경 일러스트"
-        style = "flat illustration, no text, clean background, high contrast"
-        return f"{scenario_prompt} {tag}, {style}"
+        if kind == "background":
+            # 배경: 시나리오 상황에 맞는 주변 환경
+            return (
+                f"Create a cute, kawaii-style environment background image for this scenario: {scenario_prompt}. "
+                f"Show the surrounding environment and setting that matches this situation in Korean context. "
+                f"Cute flat illustration style, soft pastel colors, adorable and friendly atmosphere, "
+                f"no text, no characters, no words, no letters, focus on the environment only."
+            )
+        else:  # thumbnail
+            # 썸네일: 상황에서 일어날 만한 장면
+            return (
+                f"Create a cute, kawaii-style scene illustration for this scenario: {scenario_prompt}. "
+                f"Show a situation or event that would happen in this scenario in Korean context. "
+                f"Cute flat illustration style, soft pastel colors, adorable characters and objects, "
+                f"kid-friendly, charming and engaging scene, no text, no words, no letters."
+            )
 
     # ---------- 생성기 ----------
     async def generate_bytes(
