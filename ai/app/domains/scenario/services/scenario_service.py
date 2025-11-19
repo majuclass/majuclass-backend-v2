@@ -1,4 +1,3 @@
-# ai/app/domains/scenario/services/scenario_service.py
 import asyncio
 from typing import Tuple, Dict, Any, List
 

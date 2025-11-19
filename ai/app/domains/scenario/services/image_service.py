@@ -1,4 +1,3 @@
-# app/domains/scenario/services/image_service.py
 import os
 import base64
 import httpx
@@ -57,23 +56,42 @@ class ImageService:
     def build_option_prompt(question: str, option_text: str) -> str:
         """
         하 난이도(이미지 선택)용 옵션 이미지 지침:
-        - 텍스트 없는 플랫 일러스트/아이콘
-        - 상황/선택지를 연상시키되 과도한 디테일 지양
+        - 선택지 텍스트에 맞는 상황(situation) 이미지
+        - 한국 배경, 귀여운 스타일, 의인화 금지, 텍스트 절대 금지
         """
-        style = (
-            "flat illustration, icon-like, no text on image, high contrast, "
-            "simple shapes, kid-friendly, clean background"
+        return (
+            f"Create a cute, kawaii-style situation illustration for this option: '{option_text}' in the context of '{question}'. "
+            f"Show a realistic situation scene that represents this option in Korean context. "
+            f"Cute flat illustration style, soft pastel colors, kid-friendly, "
+            f"no anthropomorphism, no personification, realistic objects and scenes only. "
+            f"ABSOLUTELY NO text, NO words, NO letters, NO characters, NO numbers, NO symbols, NO signs, NO writing of any kind on the image. "
+            f"Do not include any Korean text, English text, or any written language."
         )
-        return f"{question} 상황에서 '{option_text}'를 상징하는 소품/아이콘, {style}"
 
     @staticmethod
     def build_cover_prompt(scenario_prompt: str, kind: Literal["thumbnail", "background"]) -> str:
         """
-        썸네일/배경 공통 지침: 텍스트 없이 깔끔하고 대비 높은 플랫 일러스트
+        썸네일/배경 이미지 지침:
+        - background: 시나리오 상황에 맞는 주변 환경 이미지
+        - thumbnail: 해당 상황에서 일어날 만한 상황/장면 이미지
+        - 공통: 한국 배경, 귀여운 스타일, 텍스트 절대 금지
         """
-        tag = "표지 일러스트" if kind == "thumbnail" else "배경 일러스트"
-        style = "flat illustration, no text, clean background, high contrast"
-        return f"{scenario_prompt} {tag}, {style}"
+        if kind == "background":
+            # 배경: 시나리오 상황에 맞는 주변 환경
+            return (
+                f"Create a cute, kawaii-style environment background image for this scenario: {scenario_prompt}. "
+                f"Show the surrounding environment and setting that matches this situation in Korean context. "
+                f"Cute flat illustration style, soft pastel colors, adorable and friendly atmosphere, "
+                f"no text, no characters, no words, no letters, focus on the environment only."
+            )
+        else:  # thumbnail
+            # 썸네일: 상황에서 일어날 만한 장면
+            return (
+                f"Create a cute, kawaii-style scene illustration for this scenario: {scenario_prompt}. "
+                f"Show a situation or event that would happen in this scenario in Korean context. "
+                f"Cute flat illustration style, soft pastel colors, adorable characters and objects, "
+                f"kid-friendly, charming and engaging scene, no text, no words, no letters."
+            )
 
     # ---------- 생성기 ----------
     async def generate_bytes(
