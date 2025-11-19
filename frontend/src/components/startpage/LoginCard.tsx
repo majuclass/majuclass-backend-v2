@@ -4,7 +4,11 @@
 import React, { useMemo, useState } from "react";
 import { useLogin } from "../../hooks/startpage/UserLogin";
 
-export default function LoginCard() {
+interface LoginCardProps {
+  onSwitchToSignUp: () => void;
+}
+
+export default function LoginCard({ onSwitchToSignUp }: LoginCardProps) {
   const {
     username,
     setUsername,
@@ -164,6 +168,18 @@ export default function LoginCard() {
         >
           {loading ? "로그인 중..." : "로그인"}
         </button>
+
+        {/* 회원가입 링크 */}
+        <div className="text-center text-sm text-gray-600 mt-4">
+          계정이 없으신가요?{' '}
+          <button
+            type="button"
+            onClick={onSwitchToSignUp}
+            className="text-blue-500 hover:text-blue-600 font-semibold"
+          >
+            회원가입
+          </button>
+        </div>
       </form>
     </div>
   );

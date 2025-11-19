@@ -3,6 +3,7 @@ import { useState, useEffect, useMemo } from 'react';
 import Lottie from 'lottie-react';
 import '../styles/StartPage.css';
 import LoginCard from '../components/startpage/LoginCard';
+import SignUpCard from '../components/startpage/SignUpCard';
 // import NormalCharacter from '../assets/startpage/Normal.png';
 // import HelloCharacter from '../assets/startpage/Hello.png';
 import BackgroundAnimation from '../assets/startpage/Animated background.json';
@@ -10,6 +11,7 @@ import BackgroundAnimation from '../assets/startpage/Animated background.json';
 export default function StartPage() {
   const [, setShowHello] = useState(false);
   const [, setShowBubble] = useState(false);
+  const [isLogin, setIsLogin] = useState(true); // 로그인 카드 / 회원가입 카드 전환
 
   const animation = useMemo(() => BackgroundAnimation, []);
 
@@ -49,34 +51,13 @@ export default function StartPage() {
           </p>
         </div>
 
-        {/* 캐릭터 영역 */}
-        {/* <div className="character-section">
-          <div className="character-container">
-            <img
-              src={showHello ? HelloCharacter : NormalCharacter}
-              alt="캐릭터"
-              className={`character ${showHello ? 'hello' : 'normal'}`}
-              draggable={false}
-            />
-
-            {showBubble && (
-              <div className="speech-bubble">
-                <div className="bubble-content">
-                  <span className="greeting-text">
-                    마주교실에 오신 것을 환영합니다!
-                  </span>
-                </div>
-                <div className="greeting-subtitle">
-                  학생들의 성장을 함께하는 공간입니다
-                </div>
-              </div>
-            )}
-          </div>
-        </div> */}
-
-        {/* 로그인 영역 */}
+        {/* 로그인/회원가입 영역 */}
         <aside className="login-section">
-          <LoginCard />
+          {isLogin ? (
+            <LoginCard onSwitchToSignUp={() => setIsLogin(false)} />
+          ) : (
+            <SignUpCard onSwitchToLogin={() => setIsLogin(true)} />
+          )}
         </aside>
       </section>
     </main>
