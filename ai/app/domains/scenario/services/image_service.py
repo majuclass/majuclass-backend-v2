@@ -56,14 +56,17 @@ class ImageService:
     def build_option_prompt(question: str, option_text: str) -> str:
         """
         하 난이도(이미지 선택)용 옵션 이미지 지침:
-        - 텍스트 없는 플랫 일러스트/아이콘
-        - 상황/선택지를 연상시키되 과도한 디테일 지양
+        - 선택지 텍스트에 맞는 상황(situation) 이미지
+        - 한국 배경, 귀여운 스타일, 의인화 금지, 텍스트 절대 금지
         """
-        style = (
-            "flat illustration, icon-like, no text on image, high contrast, "
-            "simple shapes, kid-friendly, clean background"
+        return (
+            f"Create a cute, kawaii-style situation illustration for this option: '{option_text}' in the context of '{question}'. "
+            f"Show a realistic situation scene that represents this option in Korean context. "
+            f"Cute flat illustration style, soft pastel colors, kid-friendly, "
+            f"no anthropomorphism, no personification, realistic objects and scenes only. "
+            f"ABSOLUTELY NO text, NO words, NO letters, NO characters, NO numbers, NO symbols, NO signs, NO writing of any kind on the image. "
+            f"Do not include any Korean text, English text, or any written language."
         )
-        return f"{question} 상황에서 '{option_text}'를 상징하는 소품 혹은 아이콘 1개, {style} 그리고 절대 텍스트는 사용하지마"
 
     @staticmethod
     def build_cover_prompt(scenario_prompt: str, kind: Literal["thumbnail", "background"]) -> str:
