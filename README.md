@@ -1,11 +1,11 @@
 # 마주교실 (Maju Class)
 
-**SSAFY 13기 자율 프로젝트 | 팀 사이**
+# [🏫 마주교실 바로가기](https://www.majuclass.com)
+**SSAFY 13기 자율 프로젝트 | 팀 사이**  
 
 ## 📚 프로젝트 소개
 
 **마주교실**은 발달장애·통합학급 학생들이 일상 사회 상황을 안전하게 연습할 수 있는 시뮬레이션 기반 교육 플랫폼입니다. 교사는 카페 주문, 영화표 구매 등 실생활 시나리오를 생성하고, 학생들은 난이도별 시뮬레이션을 통해 사회적 상호작용을 학습합니다.
-
 ---
 
 ## 🏗️ 시스템 아키텍처
@@ -15,14 +15,14 @@
 ├── Frontend (React + TypeScript)
 │   └── 포트: 5173 (개발) / 80 (프로덕션)
 ├── Backend API (Spring Boot)
-│   └── 포트: 8080 (context: /api)
+│   └── 포트: 8080
 ├── AI Service (FastAPI)
 │   └── 포트: 8000
 ├── Database (MySQL 8.4)
 │   └── 포트: 3306
 ├── Cache (Redis 7)
 │   └── 포트: 6379
-└── Storage (AWS S3)
+└── Storage (AWS S3, ChromaDB)
 ```
 
 ---
@@ -47,7 +47,7 @@
 - **Core**: Python 3.11, FastAPI
 - **AI/ML**: OpenAI GPT, Whisper (STT), ChromaDB
 - **임베딩**: 한국어 특화 모델
-- **처리**: LangChain (RAG), PyTorch
+- **처리**: LangChain (RAG), SentenceTransformers, PyTorch
 
 ### Infrastructure
 - **컨테이너**: Docker Compose
@@ -62,16 +62,16 @@
 - **학생 관리**: CRUD, CSV 일괄 등록
 - **시나리오 생성**: 
   - 수동 생성 (질문/답변/픽토그램)
-  - AI 자동 생성 (GPT 기반, 백그라운드 처리)
+  - AI 자동 생성 (RAG 기반, 백그라운드 처리)
 - **학습 분석**: 통계 대시보드, 월별 캘린더
 
 ### 학생 기능  
 - **난이도별 시뮬레이션**:
-  - EASY: 픽토그램 선택
+  - EASY: 이미지 선택
   - NORMAL: 텍스트 선택
-  - HARD: 음성 답변 (STT 분석)
+  - HARD: 음성 답변 (STS 분석)
 - **실시간 피드백**: 정답/오답 즉시 확인
-- **음성 지원**: TTS 질문 읽기, STT 답변 분석
+- **음성 지원**: TTS 질문 읽기, STS 답변 분석
 
 ---
 
@@ -150,15 +150,13 @@ npm run dev  # http://localhost:5173
 
 **Backend:**
 ```bash
-cd backend
-./gradlew bootRun  # http://localhost:8080/api
+docker compose up spring
 ```
 
 **AI Service:**
 ```bash
 cd ai
-pip install -r requirements.txt
-uvicorn app.main:app --reload  # http://localhost:8000
+docker compose up astapi
 ```
 
 ---
@@ -201,12 +199,12 @@ uvicorn app.main:app --reload  # http://localhost:8000
 3. 백그라운드 처리 및 실시간 알림
 4. 벡터 데이터베이스 활용
 
-### STT 평가 시스템
+### STS 음성 유사도 평가 시스템
 1. 음성 인식 모델 기반 변환
 2. 다차원 평가:
    - 의미적 유사도
    - 음성 매칭 점수
-   - 키워드 추출 및 매칭
+   - 키워드 추출 및 교집합 
 3. AI 기반 피드백 생성
 
 ### 실시간 캐싱 전략
@@ -220,7 +218,7 @@ uvicorn app.main:app --reload  # http://localhost:8000
 
 ### 브랜치 전략
 - **메인 브랜치**: `master`
-- **개발 브랜치**: 기능별 브랜치 생성
+- **개발 브랜치**: FE-dev, BE-dev, 기능별 브랜치 생성
 - **커밋 컨벤션**: Conventional Commits
 
 ### 코드 스타일
