@@ -35,13 +35,27 @@ class SemanticSimilarity:
     def __init__(
         self,
         model_name: str = "snunlp/KR-SBERT-V40K-klueNLI-augSTS",
-        cache_port: Optional[CachePort] = None
+        cache_port: Optional[CachePort] = None,
+        use_ensemble: bool = True,
+        ensemble_model: str = "jhgan/ko-sbert-sts"
     ):
-        print(f"[SemanticSimilarity] 모델 로딩 중: {model_name}")
-        self.model = SentenceTransformer(model_name)
         self.cache_port = cache_port
-        self.model_name = model_name
-        print(f"[SemanticSimilarity] 모델 로딩 완료")
+        self.use_ensemble = use_ensemble
+
+        if use_ensemble:
+            print(f"[SemanticSimilarity] 앙상블 모드: 2개 모델 로딩")
+            print(f"  [1/2] 메인 모델: {model_name}")
+            self.model = SentenceTransformer(model_name)
+            print(f"  [2/2] 보조 모델: {ensemble_model}")
+            self.ensemble_model = SentenceTransformer(ensemble_model)
+            self.model_name = f"ensemble:{model_name}+{ensemble_model}"
+            print(f"[SemanticSimilarity] 앙상블 모델 로딩 완료")
+        else:
+            print(f"[SemanticSimilarity] 단일 모델 로딩 중: {model_name}")
+            self.model = SentenceTransformer(model_name)
+            self.ensemble_model = None
+            self.model_name = model_name
+            print(f"[SemanticSimilarity] 모델 로딩 완료")
 
     def calculate_similarity(
         self,
@@ -96,8 +110,19 @@ class SemanticSimilarity:
         return self._encode_direct(text)
 
     def _encode_direct(self, text: str) -> np.ndarray:
-        embedding = self.model.encode(text, convert_to_tensor=False)
-        return embedding
+        if not self.use_ensemble or self.ensemble_model is None:
+            # 단일 모델
+            embedding = self.model.encode(text, convert_to_tensor=False)
+            return embedding
+
+        # 앙상블: 2개 모델의 임베딩 평균
+        emb1 = self.model.encode(text, convert_to_tensor=False)
+        emb2 = self.ensemble_model.encode(text, convert_to_tensor=False)
+
+        # 가중 평균 (메인 모델 60%, 보조 모델 40%)
+        ensemble_embedding = emb1 * 0.6 + emb2 * 0.4
+
+        return ensemble_embedding
 
     async def _get_cached_embedding(self, text: str) -> np.ndarray:
         if not self.cache_port:
