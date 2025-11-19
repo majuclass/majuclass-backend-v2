@@ -20,6 +20,7 @@ export default function NavBar() {
     hideNotification,
   } = useAIGenerationStore();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [teacherName, setTeacherName] = useState('선생님');
 
   // localStorage에서 사용자 정보 가져오기
@@ -49,6 +50,20 @@ export default function NavBar() {
   const handleGenerationComplete = () => {
     hideNotification(); // 알림만 숨기기 (데이터는 유지)
     navigate('/scenarios/ai/create');
+  };
+
+  const toggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen);
+  };
+
+  const handleLogout = () => {
+    // localStorage 초기화
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+    localStorage.removeItem('userInfo');
+
+    // 홈으로 리다이렉트
+    navigate('/');
   };
 
   return (
@@ -90,7 +105,7 @@ export default function NavBar() {
         {isGenerating && (
           <div className="ai-generation-indicator">
             <span className="spinner-small"></span>
-            <span className="generation-text">AI 시나리오 생성 중...</span>
+            <span className="generation-text">시나리오 생성 중..</span>
           </div>
         )}
 
@@ -117,12 +132,43 @@ export default function NavBar() {
           )}
         </div>
 
+<<<<<<< HEAD
         <span className="navbar-greeting">
           <strong className="user-name">{teacherName}</strong>님, 안녕하세요!
         </span>
         {/* <i className="profile-icon">
           <HiOutlineUserCircle />
         </i> */}
+=======
+        <div className="user-menu-container">
+          <span className="navbar-greeting">
+            <strong>{teacherName}</strong>님, 안녕하세요!
+          </span>
+
+          {/* 드롭다운 버튼 */}
+          <button
+            className="dropdown-toggle"
+            onClick={toggleDropdown}
+            aria-label="사용자 메뉴"
+          >
+            <span className={`dropdown-arrow ${isDropdownOpen ? 'open' : ''}`}>
+              ▼
+            </span>
+          </button>
+
+          {/* 드롭다운 메뉴 */}
+          {isDropdownOpen && (
+            <div className="dropdown-menu">
+              <button
+                className="dropdown-item"
+                onClick={handleLogout}
+              >
+                🚪 로그아웃
+              </button>
+            </div>
+          )}
+        </div>
+>>>>>>> 7f5fe0b ([FE] feature: 회원가입 및 로그아웃 기능 추가 완료)
       </div>
 
       {/* Hamburger Menu Button */}
