@@ -1,59 +1,30 @@
-# Spring Boot
 HELP.md
 .gradle
 build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
-.env
 
-### Java ###
-*.class
-*.log
-*.jar
-*.war
-*.nar
-*.ear
-*.zip
-*.tar.gz
-*.rar
-hs_err_pid*
-replay_pid*
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+bin/
+!**/src/main/**/bin/
+!**/src/test/**/bin/
 
 ### IntelliJ IDEA ###
-.idea/
+.idea
 *.iws
 *.iml
 *.ipr
 out/
 !**/src/main/**/out/
 !**/src/test/**/out/
-
-### Eclipse ###
-.metadata
-bin/
-tmp/
-*.tmp
-*.bak
-*.swp
-*~.nib
-local.properties
-.settings/
-.loadpath
-.recommenders
-.apt_generated
-.classpath
-.factorypath
-.project
-.springBeans
-.sts4-cache
-!**/src/main/**/bin/
-!**/src/test/**/bin/
-
-### VS Code ###
-.vscode/
-.history/
-*.code-workspace
 
 ### NetBeans ###
 /nbproject/private/
@@ -62,16 +33,9 @@ local.properties
 /nbdist/
 /.nb-gradle/
 
-### macOS ###
-.DS_Store
-.AppleDouble
-.LSOverride
+### VS Code ###
+.vscode/
 
-### Windows ###
-Thumbs.db
-Thumbs.db:encryptable
-ehthumbs.db
-ehthumbs_vista.db
-[Dd]esktop.ini
-$RECYCLE.BIN/
-*.lnk
+### Environment Variables ###
+.env
+/.claude/settings.local.json
