@@ -1,0 +1,9 @@
+INSERT INTO a202.students (is_deleted, created_at, id, school_id, updated_at, user_id, name) VALUES (1, '2025-11-18 10:27:36.000000', 1, 1, '2025-11-18 10:27:41.000000', 2, '테스트조수인');
+INSERT INTO a202.students (is_deleted, created_at, id, school_id, updated_at, user_id, name) VALUES (0, '2025-11-18 10:28:13.000000', 2, 1, '2025-11-18 10:27:56.000000', 2, '심양관');
+INSERT INTO a202.students (is_deleted, created_at, id, school_id, updated_at, user_id, name) VALUES (0, '2025-11-18 10:28:17.000000', 3, 1, '2025-11-18 10:28:21.000000', 2, '신해봄');
+INSERT INTO a202.students (is_deleted, created_at, id, school_id, updated_at, user_id, name) VALUES (0, '2025-11-18 10:28:36.000000', 4, 1, '2025-11-18 10:28:47.000000', 2, '이아영');
+INSERT INTO a202.students (is_deleted, created_at, id, school_id, updated_at, user_id, name) VALUES (0, '2025-11-18 10:29:00.000000', 5, 1, '2025-11-18 10:29:04.000000', 2, '조수인');
+INSERT INTO a202.students (is_deleted, created_at, id, school_id, updated_at, user_id, name) VALUES (0, '2025-11-18 10:29:15.000000', 6, 1, '2025-11-18 10:29:19.000000', 2, '류연서');
+INSERT INTO a202.students (is_deleted, created_at, id, school_id, updated_at, user_id, name) VALUES (0, '2025-11-18 10:57:14.842901', 7, 1, '2025-11-18 10:57:14.842901', 3, '1_테스트용학생');
+INSERT INTO a202.students (is_deleted, created_at, id, school_id, updated_at, user_id, name) VALUES (0, '2025-11-18 10:57:22.379254', 8, 1, '2025-11-18 10:57:22.379254', 3, '2_테스트용학생');
+INSERT INTO a202.students (is_deleted, created_at, id, school_id, updated_at, user_id, name) VALUES (0, '2025-11-18 13:14:59.510236', 9, 2, '2025-11-18 13:14:59.510236', 4, '테스트학생');
