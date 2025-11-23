@@ -1,7 +1,7 @@
 package com.ssafy.a202.common.security;
 
 
-import com.ssafy.a202.global.constants.Role;
+import com.ssafy.a202.domain.user.entity.UserRole;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -32,21 +32,14 @@ public class JwtProvider {
         this.refreshTokenExpiration = refreshTokenExpiration;
     }
 
-    // ================================
-    // 토큰 생성 메서드들
-    // ================================
-
-    /**
-     * Access Token 생성
-     */
-    public String generateAccessToken(Long userId, String username, Role role) {
+    public String generateAccessToken(Long userId, String username, UserRole role) {
         return generateToken(userId, username, role, "access", accessTokenExpiration);
     }
 
     /**
      * Refresh Token 생성
      */
-    public String generateRefreshToken(Long userId, String username, Role role) {
+    public String generateRefreshToken(Long userId, String username, UserRole role) {
         return generateToken(userId, username, role, "refresh", refreshTokenExpiration);
     }
 
@@ -54,7 +47,7 @@ public class JwtProvider {
      * JWT 토큰 생성 (내부 구현)
      * HS256 (HMAC-SHA256) 알고리즘 명시적 사용
      */
-    private String generateToken(Long userId, String username, Role role, String tokenType, long expiration) {
+    private String generateToken(Long userId, String username, UserRole role, String tokenType, long expiration) {
         Date now = new Date();
         Date exp = new Date(now.getTime() + expiration);
 
@@ -107,10 +100,10 @@ public class JwtProvider {
     /**
      * 토큰에서 역할 추출
      */
-    public Role getRoleFromToken(String token) {
+    public UserRole getRoleFromToken(String token) {
         Claims claims = getClaimsFromToken(token);
         String role = claims.get("role", String.class); // String으로 읽기
-        return Role.valueOf(role);  // String → Role enum 변환
+        return UserRole.valueOf(role);  // String → Role enum 변환
     }
 
     /**

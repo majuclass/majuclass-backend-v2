@@ -1,9 +1,8 @@
 package com.ssafy.a202.common.security;
 
-import com.ssafy.a202.domain.auth.service.TokenBlacklistService;
 import com.ssafy.a202.domain.user.entity.User;
+import com.ssafy.a202.domain.user.entity.UserRole;
 import com.ssafy.a202.domain.user.repository.UserRepository;
-import com.ssafy.a202.global.constants.Role;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -27,7 +26,6 @@ import java.util.Optional;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtProvider jwtProvider;
-    private final TokenBlacklistService tokenBlacklistService;
     private final UserRepository userRepository;
 
     @Override
@@ -45,12 +43,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 jwtProvider.validateToken(token);
 
                 // 블랙리스트 확인
-                if (tokenBlacklistService.isBlacklisted(token)) {
-                    log.debug("Token is blacklisted (logged out)");
-                    SecurityContextHolder.clearContext();
-                    filterChain.doFilter(request, response);
-                    return;
-                }
+//                if (tokenBlacklistService.isBlacklisted(token)) {
+//                    log.debug("Token is blacklisted (logged out)");
+//                    SecurityContextHolder.clearContext();
+//                    filterChain.doFilter(request, response);
+//                    return;
+//                }
 
                 // 토큰 타입 확인 (access 토큰만 허용)
                 String tokenType = jwtProvider.getTokenTypeFromToken(token);
@@ -64,7 +62,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 // 토큰에서 사용자 정보 추출
                 Long userId = jwtProvider.getUserIdFromToken(token);
                 String username = jwtProvider.getUsernameFromToken(token);
-                Role role = jwtProvider.getRoleFromToken(token);
+                UserRole role = jwtProvider.getRoleFromToken(token);
 
                 // 사용자 삭제 여부 확인 (회원 탈퇴 또는 관리자에 의한 삭제)
                 Optional<User> userOptional = userRepository.findById(userId);
