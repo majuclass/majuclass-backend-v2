@@ -1,7 +1,6 @@
 package com.ssafy.a202.domain.category.entity;
 
 
-import com.ssafy.a202.common.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;

@@ -1,6 +1,6 @@
 package com.ssafy.a202.common.security;
 
-import com.ssafy.a202.global.constants.Role;
+import com.ssafy.a202.domain.user.entity.UserRole;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
@@ -16,7 +16,7 @@ public class UserPrincipal implements UserDetails {
 
     private final Long userId;
     private final String username;
-    private final Role role;
+    private final UserRole role;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

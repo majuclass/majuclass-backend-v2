@@ -13,6 +13,11 @@ spring:
   application:
     name: a202
 
+  # 자동 설정 제외
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration
+
   # 타임존 설정
   jackson:
     time-zone: Asia/Seoul

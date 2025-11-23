@@ -1,5 +1,8 @@
 package com.ssafy.a202.domain.user.entity;
 
+import lombok.Getter;
+
+@Getter
 public enum UserRole {
     TEACHER("선생님"),
     ADMIN("운영자"),
@@ -9,9 +12,5 @@ public enum UserRole {
 
     UserRole(String displayName) {
         this.displayName = displayName;
-    }
-
-    public String getDisplayName() {
-        return displayName;
     }
 }
