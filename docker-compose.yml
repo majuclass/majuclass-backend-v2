@@ -9,7 +9,7 @@ volumes:
   chroma_data:
 
 services:
-  db:
+  mysql:
     image: mysql:8.4
     container_name: a202-mysql
     environment:
@@ -28,7 +28,7 @@ services:
       retries: 20
       start_period: 10s
     networks: [appnet]
-    profiles: ["default", "db"]
+    profiles: ["default", "mysql"]
 
   fastapi:
     build:
@@ -36,7 +36,7 @@ services:
       dockerfile: Dockerfile
     container_name: a202-fastapi
     environment:
-      DB_HOST: db
+      DB_HOST: mysql
       DB_PORT: ${DB_PORT}
       DB_USER: ${DB_USERNAME}
       DB_PASSWORD: ${DB_PASSWORD}
@@ -44,7 +44,7 @@ services:
     env_file:
       - .env
     depends_on:
-      db:
+      mysql:
         condition: service_healthy
       redis:
         condition: service_started
@@ -65,7 +65,7 @@ services:
     container_name: a202-spring
     environment:
       SPRING_DATASOURCE_URL: >
-        jdbc:mysql://db:3306/${DB_NAME}
+        jdbc:mysql://mysql:3306/${DB_NAME}
         ?useSSL=false&allowPublicKeyRetrieval=true
         &serverTimezone=Asia/Seoul&characterEncoding=UTF-8
       SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
@@ -76,7 +76,7 @@ services:
     env_file:
       - .env
     depends_on:
-      db:
+      mysql:
         condition: service_healthy
       redis:
         condition: service_started
