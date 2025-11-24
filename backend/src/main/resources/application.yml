@@ -18,21 +18,27 @@ spring:
     exclude:
       - org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration
 
-  # 타임존 설정
+  # Jackson 설정
   jackson:
     time-zone: Asia/Seoul
+    property-naming-strategy: SNAKE_CASE
 
   # 데이터베이스 설정
+#  datasource:
+#    url: jdbc:mysql://${DB_HOST}:${DB_PORT}/${DB_NAME}
+#    username: ${DB_USERNAME}
+#    password: ${DB_PASSWORD}
+#    driver-class-name: com.mysql.cj.jdbc.Driver
   datasource:
-    url: jdbc:mysql://${DB_HOST}:${DB_PORT}/${DB_NAME}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    url: jdbc:mysql://127.0.0.1:3306/a202
+    username: majuclass
+    password: majuclass
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   # JPA 설정
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     show-sql: false
     open-in-view: false
     properties:
