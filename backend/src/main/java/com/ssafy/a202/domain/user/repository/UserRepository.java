@@ -1,5 +1,6 @@
 package com.ssafy.a202.domain.user.repository;
 
+import com.ssafy.a202.domain.scenario.entity.Option;
 import com.ssafy.a202.domain.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -12,4 +13,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     boolean existsByUsernameAndDeletedAtIsNull(String username);
 
     boolean existsByEmailAndDeletedAtIsNull(String email);
+
+    Optional<User> findByIdAndDeletedAtIsNull(Long userId);
 }
