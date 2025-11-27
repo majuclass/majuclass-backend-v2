@@ -15,7 +15,7 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
 /**
- * @UserId 어노테이션이 붙은 파라미터에 JWT 토큰의 사용자 ID를 자동 주입하는 Resolver
+ * //@UserId 어노테이션이 붙은 파라미터에 JWT 토큰의 사용자 ID를 자동 주입하는 Resolver
  */
 @Slf4j
 @Component
