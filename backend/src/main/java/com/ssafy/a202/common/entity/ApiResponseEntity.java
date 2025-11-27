@@ -39,6 +39,13 @@ public record ApiResponseEntity<T>(
                 .body(ApiResponse.success(successCode, data));
     }
 
+    public static ResponseEntity<Void> created(String location, SuccessCode successCode) {
+        return ResponseEntity
+                .created(URI.create(location))
+                .build();
+    }
+
+
     public static <T> ResponseEntity<ApiResponse<T>> created(String location, T data) {
         return ResponseEntity
                 .created(URI.create(location))

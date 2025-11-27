@@ -2,14 +2,15 @@ package com.ssafy.a202.domain.scenario.entity;
 
 
 import com.ssafy.a202.common.entity.BaseTimeEntity;
+import com.ssafy.a202.domain.scenario.dto.request.OptionRequest;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Table(name = "options")
 @Getter
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Option extends BaseTimeEntity {
 
@@ -30,6 +31,16 @@ public class Option extends BaseTimeEntity {
     private String optionText;
 
     private String optionS3Key;
+
+    public static Option from(Sequence sequence, OptionRequest opt) {
+        return Option.builder()
+                .sequence(sequence)
+                .optionNo(opt.optionNo())
+                .isCorrect(opt.isCorrect())
+                .optionText(opt.optionText())
+                .optionS3Key(opt.optionS3Key())
+                .build();
+    }
 }
 
 

@@ -1,15 +1,16 @@
 package com.ssafy.a202.domain.scenario.entity;
 
 import com.ssafy.a202.common.entity.BaseTimeEntity;
+import com.ssafy.a202.domain.scenario.dto.request.SequenceRequest;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 
 @Entity
 @Table(name = "sequences")
 @Getter
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Sequence extends BaseTimeEntity {
 
@@ -23,4 +24,11 @@ public class Sequence extends BaseTimeEntity {
 
     @Column(nullable = false)
     private Integer seqNo;
+
+    public static Sequence from(Scenario scenario, SequenceRequest seq) {
+        return Sequence.builder()
+                .scenario(scenario)
+                .seqNo(seq.seqNo())
+                .build();
+    }
 }
