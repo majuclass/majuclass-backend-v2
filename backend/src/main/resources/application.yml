@@ -74,6 +74,6 @@ jwt:
 # ===================================
 aws:
   s3:
-    public-url-base: ${S3_PUBLIC_URL_BASE:https://ssafy-sai-project.s3.ap-northeast-2.amazonaws.com}
+    public-url-base: ${S3_PUBLIC_URL_BASE}
   lambda:
-    presigned-url-api: ${LAMBDA_PRESIGNED_URL_API:https://fdmkozia90.execute-api.ap-northeast-2.amazonaws.com/presigned-url}
+    presigned-url-api: ${LAMBDA_PRESIGNED_URL_API}
