@@ -1,7 +1,7 @@
 package com.ssafy.a202.domain.auth.service;
 
 import com.ssafy.a202.common.entity.CustomException.CustomException;
-import com.ssafy.a202.common.entity.ErrorCode;
+import com.ssafy.a202.common.exception.ErrorCode;
 import com.ssafy.a202.common.security.JwtProvider;
 import com.ssafy.a202.domain.auth.dto.request.LoginRequest;
 import com.ssafy.a202.domain.auth.dto.request.SignupRequest;
@@ -67,7 +67,7 @@ public class AuthServiceImpl implements AuthService {
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         // 2. 비밀번호 검증
-        if(passwordEncoder.matches(request.password(), user.getPassword())) {
+        if(!passwordEncoder.matches(request.password(), user.getPassword())) {
             throw new CustomException(ErrorCode.INVALID_PASSWORD);
         }
 

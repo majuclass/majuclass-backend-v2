@@ -1,6 +1,6 @@
 package com.ssafy.a202.common.entity.CustomException;
 
-import com.ssafy.a202.common.entity.ErrorCode;
+import com.ssafy.a202.common.exception.ErrorCode;
 import lombok.Getter;
 
 @Getter
