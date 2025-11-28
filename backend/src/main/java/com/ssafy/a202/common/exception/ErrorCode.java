@@ -31,7 +31,8 @@ public enum ErrorCode {
 
     // S3 에러
     S3_PRESIGNED_URL_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "S3 Presigned URL 생성에 실패했습니다."),
-    S3_UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "S3 파일 업로드에 실패했습니다.");
+    S3_UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "S3 파일 업로드에 실패했습니다."),
+    S3_FILE_NOT_FOUND(HttpStatus.BAD_REQUEST, "S3에 파일이 존재하지 않습니다. 파일을 먼저 업로드해주세요.");
 
     private final HttpStatus status;
     private final String message;
