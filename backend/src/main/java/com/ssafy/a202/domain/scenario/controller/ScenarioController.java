@@ -5,7 +5,7 @@ import com.ssafy.a202.common.entity.ApiResponse;
 import com.ssafy.a202.common.entity.ApiResponseEntity;
 import com.ssafy.a202.common.entity.PageResponse;
 import com.ssafy.a202.common.entity.SuccessCode;
-import com.ssafy.a202.domain.scenario.dto.request.ScenarioCreateRequest;
+import com.ssafy.a202.domain.scenario.dto.request.ScenarioRequest;
 import com.ssafy.a202.domain.scenario.dto.response.ScenarioCreateResponse;
 import com.ssafy.a202.domain.scenario.dto.response.ScenarioPreviewResponse;
 import com.ssafy.a202.domain.scenario.service.ScenarioService;
@@ -26,7 +26,7 @@ public class ScenarioController {
     @PostMapping
     public ResponseEntity<ApiResponse<ScenarioCreateResponse>> createScenario(
             @UserId Long userId,
-            @RequestBody ScenarioCreateRequest request
+            @RequestBody ScenarioRequest request
     ) {
         ScenarioCreateResponse response = scenarioService.create(userId, request);
         return ApiResponseEntity.created(

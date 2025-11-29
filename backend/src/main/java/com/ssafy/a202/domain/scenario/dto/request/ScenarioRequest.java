@@ -7,7 +7,7 @@ import com.ssafy.a202.domain.scenario.entity.DifficultyLevel;
 import java.util.List;
 
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public record ScenarioCreateRequest(
+public record ScenarioRequest(
         Long categoryId,
         String title,
         String description,

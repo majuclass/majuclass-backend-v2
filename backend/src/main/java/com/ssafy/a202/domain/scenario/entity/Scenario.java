@@ -2,7 +2,7 @@ package com.ssafy.a202.domain.scenario.entity;
 
 import com.ssafy.a202.common.entity.BaseTimeEntity;
 import com.ssafy.a202.domain.category.entity.Category;
-import com.ssafy.a202.domain.scenario.dto.request.ScenarioCreateRequest;
+import com.ssafy.a202.domain.scenario.dto.request.ScenarioRequest;
 import com.ssafy.a202.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -42,7 +42,7 @@ public class Scenario extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private DifficultyLevel difficultyLevel;
 
-    public static Scenario from(User user, Category category, ScenarioCreateRequest request) {
+    public static Scenario from(User user, Category category, ScenarioRequest request) {
         return Scenario.builder()
                 .user(user)
                 .category(category)
@@ -52,5 +52,14 @@ public class Scenario extends BaseTimeEntity {
                 .backgroundS3Key(request.backgroundS3Key())
                 .difficultyLevel(request.difficultyLevel())
                 .build();
+    }
+
+    public void update(Category category, ScenarioRequest request) {
+        this.category = category;
+        this.title = request.title();
+        this.description = request.description();
+        this.thumbnailS3Key = request.thumbnailS3Key();
+        this.backgroundS3Key = request.backgroundS3Key();
+        this.difficultyLevel = request.difficultyLevel();
     }
 }

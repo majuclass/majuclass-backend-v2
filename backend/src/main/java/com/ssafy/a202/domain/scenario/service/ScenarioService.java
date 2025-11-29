@@ -7,7 +7,7 @@ import com.ssafy.a202.common.exception.ErrorCode;
 import com.ssafy.a202.domain.category.entity.Category;
 import com.ssafy.a202.domain.category.repository.CategoryRepository;
 import com.ssafy.a202.domain.scenario.dto.request.OptionRequest;
-import com.ssafy.a202.domain.scenario.dto.request.ScenarioCreateRequest;
+import com.ssafy.a202.domain.scenario.dto.request.ScenarioRequest;
 import com.ssafy.a202.domain.scenario.dto.request.SequenceRequest;
 import com.ssafy.a202.domain.scenario.dto.response.ScenarioCreateResponse;
 import com.ssafy.a202.domain.scenario.dto.response.ScenarioPreviewResponse;
@@ -18,6 +18,7 @@ import com.ssafy.a202.domain.scenario.repository.OptionRepository;
 import com.ssafy.a202.domain.scenario.repository.ScenarioRepository;
 import com.ssafy.a202.domain.scenario.repository.SequenceRepository;
 import com.ssafy.a202.domain.user.entity.User;
+import com.ssafy.a202.domain.user.entity.UserRole;
 import com.ssafy.a202.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -41,7 +42,7 @@ public class ScenarioService {
 
 
     @Transactional
-    public ScenarioCreateResponse create(Long userId, ScenarioCreateRequest request) {
+    public ScenarioCreateResponse create(Long userId, ScenarioRequest request) {
 
         Category category;
         Scenario scenario;
