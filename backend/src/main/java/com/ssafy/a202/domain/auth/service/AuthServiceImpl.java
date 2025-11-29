@@ -1,6 +1,6 @@
 package com.ssafy.a202.domain.auth.service;
 
-import com.ssafy.a202.common.entity.CustomException.CustomException;
+import com.ssafy.a202.common.exception.CustomException;
 import com.ssafy.a202.common.exception.ErrorCode;
 import com.ssafy.a202.common.security.JwtProvider;
 import com.ssafy.a202.domain.auth.dto.request.LoginRequest;
