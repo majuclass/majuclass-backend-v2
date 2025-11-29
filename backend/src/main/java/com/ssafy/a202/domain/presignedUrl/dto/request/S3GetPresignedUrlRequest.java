@@ -1,4 +1,4 @@
-package com.ssafy.a202.common.client.s3.dto.request;
+package com.ssafy.a202.domain.presignedUrl.dto.request;
 
 import java.util.List;
 

@@ -1,6 +1,6 @@
 package com.ssafy.a202.domain.scenario.service;
 
-import com.ssafy.a202.common.client.s3.S3Client;
+import com.ssafy.a202.domain.presignedUrl.client.S3Client;
 import com.ssafy.a202.common.entity.PageResponse;
 import com.ssafy.a202.common.exception.CustomException;
 import com.ssafy.a202.common.exception.ErrorCode;

@@ -20,7 +20,8 @@ public enum SuccessCode {
     SCENARIO_DELETE_SUCCESS("시나리오가 성공적으로 삭제되었습니다."),
 
     // 시나리오 난이도
-    DIFFICULTY_LEVEL_GET_SUCCESS("시나리오 난이도 목록을 성공적으로 조회했습니다.");
+    DIFFICULTY_LEVEL_GET_SUCCESS("시나리오 난이도 목록을 성공적으로 조회했습니다."),
+    PRESIGNED_URL_GET_PUT_SUCCESS("PUT용 Presigned URL을 성공적으로 발급했습니다.");
 
     private final String message;
 }

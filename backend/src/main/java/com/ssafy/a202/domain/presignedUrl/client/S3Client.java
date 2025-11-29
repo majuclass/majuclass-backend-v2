@@ -1,8 +1,8 @@
-package com.ssafy.a202.common.client.s3;
+package com.ssafy.a202.domain.presignedUrl.client;
 
-import com.ssafy.a202.common.client.s3.dto.request.S3GetPresignedUrlRequest;
-import com.ssafy.a202.common.client.s3.dto.request.S3PutPresignedUrlRequest;
-import com.ssafy.a202.common.client.s3.dto.response.S3PresignedUrlResponse;
+import com.ssafy.a202.domain.presignedUrl.dto.request.S3GetPresignedUrlRequest;
+import com.ssafy.a202.domain.presignedUrl.dto.request.S3PutPresignedUrlRequest;
+import com.ssafy.a202.domain.presignedUrl.dto.response.S3PresignedUrlResponse;
 import com.ssafy.a202.common.exception.CustomException;
 import com.ssafy.a202.common.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +24,7 @@ public class S3Client {
     @Value("${aws.s3.public-url-base}")
     private String publicBucket;
 
-    public S3PresignedUrlResponse getPresignedUrl(S3GetPresignedUrlRequest request) {
+    public S3PresignedUrlResponse getS3GetPresignedUrl(S3GetPresignedUrlRequest request) {
         return webClient
                 .post()
                 .uri(apiGatewayUrl)
@@ -34,7 +34,7 @@ public class S3Client {
                 .block(); // 동기방식으로 결과 대기
     }
 
-    public S3PresignedUrlResponse getPresignedUrl(S3PutPresignedUrlRequest request) {
+    public S3PresignedUrlResponse getS3PutPresignedUrl(S3PutPresignedUrlRequest request) {
         return webClient
                 .post()
                 .uri(apiGatewayUrl)
