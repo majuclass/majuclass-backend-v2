@@ -108,7 +108,7 @@ public class ScenarioService {
     @CheckScenarioPermission(PermissionAction.UPDATE)
     @Transactional
     public void update(Long userId, Long scenarioId, ScenarioRequest request) {
-        // 1. Scenario 조회 (AOP에서 이미 권한 검증됨)
+        // 1. Scenario 조회
         Scenario scenario = scenarioRepository.findByIdAndDeletedAtIsNull(scenarioId)
                 .orElseThrow(() -> new CustomException(ErrorCode.SCENARIO_NOT_FOUND));
 

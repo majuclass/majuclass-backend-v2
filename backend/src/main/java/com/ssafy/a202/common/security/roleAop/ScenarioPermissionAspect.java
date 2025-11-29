@@ -81,13 +81,13 @@ public class ScenarioPermissionAspect {
 
     private boolean canDelete(User user, Scenario scenario) {
         // DELETE 권한 로직 (향후 필요시 구현)
-        // 예: ADMIN만 삭제 가능
+        // ADMIN만 삭제 가능
         return user.getRole() == UserRole.ADMIN;
     }
 
     private boolean canView(User user, Scenario scenario) {
         // VIEW 권한 로직 (향후 필요시 구현)
-        // 예: 모든 사용자가 조회 가능
+        // 모든 사용자가 조회 가능
         return true;
     }
 }
