@@ -13,7 +13,8 @@ public enum SuccessCode {
     SIGNUP_SUCCESS("회원가입이 성공적으로 완료되었습니다."),
 
     // 시나리오
-    SCENARIO_CREATE_SUCCESS("시나리오가 성공적으로 생성되었습니다.");
+    SCENARIO_CREATE_SUCCESS("시나리오가 성공적으로 생성되었습니다."),
+    SCENARIO_GET_LIST_SUCCESS("시나리오 목록을 성공적으로 조회했습니다.");
 
     private final String message;
 }
