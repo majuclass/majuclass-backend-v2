@@ -89,18 +89,38 @@ public class ScenarioService {
         List<ScenarioPreviewResponse> responseList = new ArrayList<>();
 
         for (Scenario scenario : scenarioPage.getContent()) {
-            String thumbnailUrl = null;
-            String backgroundUrl = null;
-
-            if (scenario.getThumbnailS3Key() != null)
-                thumbnailUrl = s3Client.getPublicS3Url(scenario.getThumbnailS3Key());
-            if (scenario.getBackgroundS3Key() != null)
-                backgroundUrl = s3Client.getPublicS3Url(scenario.getBackgroundS3Key());
-
-            ScenarioPreviewResponse response = ScenarioPreviewResponse.of(scenario, thumbnailUrl, backgroundUrl);
+            ScenarioPreviewResponse response = toScenarioPreviewResponse(scenario);
             responseList.add(response);
         }
 
         return PageResponse.of(scenarioPage, responseList);
+    }
+
+    public ScenarioPreviewResponse getSingleScenario(Long scenarioId) {
+        Scenario scenario = scenarioRepository.findByIdAndDeletedAtIsNull(scenarioId)
+                .orElseThrow(() -> new CustomException(ErrorCode.SCENARIO_NOT_FOUND));
+
+        return toScenarioPreviewResponse(scenario);
+    }
+
+    /**
+     * Scenario 엔티티를 ScenarioPreviewResponse로 변환합니다.
+     * <p>
+     * S3 키가 있는 경우 공개 URL로 변환하여 포함시킵니다.
+     * 썸네일 및 배경 이미지 URL을 함께 반환합니다.
+     *
+     * @param scenario 변환할 Scenario 엔티티
+     * @return S3 URL이 포함된 ScenarioPreviewResponse
+     */
+    private ScenarioPreviewResponse toScenarioPreviewResponse(Scenario scenario) {
+        String thumbnailUrl = null;
+        String backgroundUrl = null;
+
+        if (scenario.getThumbnailS3Key() != null)
+            thumbnailUrl = s3Client.getPublicS3Url(scenario.getThumbnailS3Key());
+        if (scenario.getBackgroundS3Key() != null)
+            backgroundUrl = s3Client.getPublicS3Url(scenario.getBackgroundS3Key());
+
+        return ScenarioPreviewResponse.of(scenario, thumbnailUrl, backgroundUrl);
     }
 }
