@@ -40,7 +40,7 @@ public class ScenarioPermissionAspect {
         if (!hasPermission(user, scenario, action)) {
             log.warn("Permission denied - userId: {}, scenarioId: {}, action: {}, userRole: {}",
                     userId, scenarioId, action, user.getRole());
-            throw new CustomException(ErrorCode.SCENARIO_UPDATE_FORBIDDEN);
+            throw new CustomException(ErrorCode.SCENARIO_PERMISSION_DENIED);
         }
 
         log.info("Permission granted - userId: {}, scenarioId: {}, action: {}, userRole: {}",
@@ -80,9 +80,27 @@ public class ScenarioPermissionAspect {
     }
 
     private boolean canDelete(User user, Scenario scenario) {
-        // DELETE 권한 로직 (향후 필요시 구현)
-        // ADMIN만 삭제 가능
-        return user.getRole() == UserRole.ADMIN;
+        UserRole userRole = user.getRole();
+
+        // ADMIN은 모든 시나리오 삭제 가능
+        if (userRole == UserRole.ADMIN) {
+            return true;
+        }
+
+        // TEACHER는 본인이 생성한 시나리오만 삭제 가능
+        if (userRole == UserRole.TEACHER) {
+            return scenario.getUser().getId().equals(user.getId());
+        }
+
+        // ORG_ADMIN은 같은 기관 소속이 생성한 시나리오 모두 삭제 가능
+        if (userRole == UserRole.ORG_ADMIN) {
+            User scenarioCreator = scenario.getUser();
+
+            return scenarioCreator.getOrganization().getId()
+                    .equals(user.getOrganization().getId());
+        }
+
+        return false;
     }
 
     private boolean canView(User user, Scenario scenario) {

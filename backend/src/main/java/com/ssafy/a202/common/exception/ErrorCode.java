@@ -37,7 +37,8 @@ public enum ErrorCode {
 
     // 시나리오
     SCENARIO_NOT_FOUND(HttpStatus.NOT_FOUND, "시나리오를 찾을 수 없습니다."),
-    SCENARIO_UPDATE_FORBIDDEN(HttpStatus.FORBIDDEN, "시나리오를 수정할 권한이 없습니다.");
+    SCENARIO_UPDATE_FORBIDDEN(HttpStatus.FORBIDDEN, "시나리오를 수정할 권한이 없습니다."),
+    SCENARIO_PERMISSION_DENIED(HttpStatus.FORBIDDEN, "시나리오에 대한 권한이 없습니다.");
 
     private final HttpStatus status;
     private final String message;

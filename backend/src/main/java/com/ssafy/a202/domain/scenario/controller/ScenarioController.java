@@ -70,4 +70,16 @@ public class ScenarioController {
                 SuccessCode.SCENARIO_UPDATE_SUCCESS
         );
     }
+
+    @DeleteMapping("/{scenarioId}")
+    public ResponseEntity<ApiResponse<Void>> deleteScenario(
+            @UserId Long userId,
+            @PathVariable Long scenarioId
+    ) {
+        scenarioService.delete(userId, scenarioId);
+        return ApiResponseEntity.success(
+                SuccessCode.SCENARIO_DELETE_SUCCESS
+        );
+    }
+
 }
