@@ -10,7 +10,6 @@ import com.ssafy.a202.domain.scenario.dto.response.ScenarioCreateResponse;
 import com.ssafy.a202.domain.scenario.dto.response.ScenarioPreviewResponse;
 import com.ssafy.a202.domain.scenario.service.ScenarioService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -39,7 +38,7 @@ public class ScenarioController {
 
     @GetMapping
     public ResponseEntity<ApiResponse<PageResponse<ScenarioPreviewResponse>>> getScenarios(
-            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
+            @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC)
             Pageable pageable
     ) {
         PageResponse<ScenarioPreviewResponse> response = scenarioService.getScenarios(pageable);
