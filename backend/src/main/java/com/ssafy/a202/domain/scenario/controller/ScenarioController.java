@@ -49,4 +49,13 @@ public class ScenarioController {
         );
     }
 
+    @GetMapping("/{scenarioId}")
+    public ResponseEntity<ApiResponse<ScenarioPreviewResponse>> getScenario(
+            @PathVariable Long scenarioId) {
+        ScenarioPreviewResponse response = scenarioService.getSingleScenario(scenarioId);
+        return ApiResponseEntity.success(
+                SuccessCode.SCENARIO_GET_DETAIL_SUCCESS,
+                response
+        );
+    }
 }

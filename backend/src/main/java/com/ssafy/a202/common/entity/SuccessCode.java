@@ -14,7 +14,8 @@ public enum SuccessCode {
 
     // 시나리오
     SCENARIO_CREATE_SUCCESS("시나리오가 성공적으로 생성되었습니다."),
-    SCENARIO_GET_LIST_SUCCESS("시나리오 목록을 성공적으로 조회했습니다.");
+    SCENARIO_GET_LIST_SUCCESS("시나리오 목록을 성공적으로 조회했습니다."),
+    SCENARIO_GET_DETAIL_SUCCESS("시나리오 상세를 성공적으로 조회했습니다.");
 
     private final String message;
 }
