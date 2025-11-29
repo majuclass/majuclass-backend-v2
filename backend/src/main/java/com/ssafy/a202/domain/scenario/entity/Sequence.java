@@ -25,10 +25,14 @@ public class Sequence extends BaseTimeEntity {
     @Column(nullable = false)
     private Integer seqNo;
 
+    @Column(nullable = false)
+    private String question;
+
     public static Sequence from(Scenario scenario, SequenceRequest seq) {
         return Sequence.builder()
                 .scenario(scenario)
                 .seqNo(seq.seqNo())
+                .question(seq.question())
                 .build();
     }
 }

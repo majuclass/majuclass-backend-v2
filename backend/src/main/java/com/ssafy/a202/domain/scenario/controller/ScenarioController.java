@@ -7,6 +7,7 @@ import com.ssafy.a202.common.entity.PageResponse;
 import com.ssafy.a202.common.entity.SuccessCode;
 import com.ssafy.a202.domain.scenario.dto.request.ScenarioRequest;
 import com.ssafy.a202.domain.scenario.dto.response.ScenarioCreateResponse;
+import com.ssafy.a202.domain.scenario.dto.response.ScenarioDetailResponse;
 import com.ssafy.a202.domain.scenario.dto.response.ScenarioPreviewResponse;
 import com.ssafy.a202.domain.scenario.service.ScenarioService;
 import lombok.RequiredArgsConstructor;
@@ -49,9 +50,9 @@ public class ScenarioController {
     }
 
     @GetMapping("/{scenarioId}")
-    public ResponseEntity<ApiResponse<ScenarioPreviewResponse>> getScenario(
+    public ResponseEntity<ApiResponse<ScenarioDetailResponse>> getScenario(
             @PathVariable Long scenarioId) {
-        ScenarioPreviewResponse response = scenarioService.getSingleScenario(scenarioId);
+        ScenarioDetailResponse response = scenarioService.getSingleScenario(scenarioId);
         return ApiResponseEntity.success(
                 SuccessCode.SCENARIO_GET_DETAIL_SUCCESS,
                 response

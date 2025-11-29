@@ -12,7 +12,10 @@ import com.ssafy.a202.domain.scenario.dto.request.OptionRequest;
 import com.ssafy.a202.domain.scenario.dto.request.ScenarioRequest;
 import com.ssafy.a202.domain.scenario.dto.request.SequenceRequest;
 import com.ssafy.a202.domain.scenario.dto.response.ScenarioCreateResponse;
+import com.ssafy.a202.domain.scenario.dto.response.ScenarioDetailResponse;
 import com.ssafy.a202.domain.scenario.dto.response.ScenarioPreviewResponse;
+import com.ssafy.a202.domain.scenario.dto.response.SequenceResponse;
+import com.ssafy.a202.domain.scenario.dto.response.OptionResponse;
 import com.ssafy.a202.domain.scenario.entity.Option;
 import com.ssafy.a202.domain.scenario.entity.Scenario;
 import com.ssafy.a202.domain.scenario.entity.Sequence;
@@ -91,18 +94,54 @@ public class ScenarioService {
         List<ScenarioPreviewResponse> responseList = new ArrayList<>();
 
         for (Scenario scenario : scenarioPage.getContent()) {
-            ScenarioPreviewResponse response = toScenarioPreviewResponse(scenario);
+//            ScenarioPreviewResponse response = toScenarioPreviewResponse(scenario);
+            String thumbnailUrl = null;
+            String backgroundUrl = null;
+
+            if (scenario.getThumbnailS3Key() != null)
+                thumbnailUrl = s3Client.getPublicS3Url(scenario.getThumbnailS3Key());
+            if (scenario.getBackgroundS3Key() != null)
+                backgroundUrl = s3Client.getPublicS3Url(scenario.getBackgroundS3Key());
+
+            ScenarioPreviewResponse response =  ScenarioPreviewResponse.of(scenario, thumbnailUrl, backgroundUrl);
             responseList.add(response);
         }
-
         return PageResponse.of(scenarioPage, responseList);
     }
 
-    public ScenarioPreviewResponse getSingleScenario(Long scenarioId) {
+    public ScenarioDetailResponse getSingleScenario(Long scenarioId) {
         Scenario scenario = scenarioRepository.findByIdAndDeletedAtIsNull(scenarioId)
                 .orElseThrow(() -> new CustomException(ErrorCode.SCENARIO_NOT_FOUND));
 
-        return toScenarioPreviewResponse(scenario);
+        // S3 URL 변환
+        String thumbnailUrl = null;
+        String backgroundUrl = null;
+
+        if (scenario.getThumbnailS3Key() != null)
+            thumbnailUrl = s3Client.getPublicS3Url(scenario.getThumbnailS3Key());
+        if (scenario.getBackgroundS3Key() != null)
+            backgroundUrl = s3Client.getPublicS3Url(scenario.getBackgroundS3Key());
+
+        // Sequence 조회 및 변환
+        List<Sequence> sequences = sequenceRepository.findByScenarioIdAndDeletedAtIsNull(scenario.getId());
+        List<SequenceResponse> sequenceResponses = new ArrayList<>();
+
+        for (Sequence sequence : sequences) {
+            List<Option> options = optionRepository.findBySequenceIdAndDeletedAtIsNull(sequence.getId());
+            List<OptionResponse> optionResponses = new ArrayList<>();
+
+            for (Option option : options) {
+                String optionUrl = null;
+                if (option.getOptionS3Key() != null) {
+                    optionUrl = s3Client.getPublicS3Url(option.getOptionS3Key());
+                }
+                optionResponses.add(OptionResponse.of(option, optionUrl));
+            }
+
+            sequenceResponses.add(SequenceResponse.of(sequence, optionResponses));
+        }
+
+        return ScenarioDetailResponse.of(scenario, thumbnailUrl, backgroundUrl, sequenceResponses);
     }
 
     @CheckScenarioPermission(PermissionAction.UPDATE)
@@ -152,24 +191,9 @@ public class ScenarioService {
         }
     }
 
-    /**
-     * Scenario 엔티티를 ScenarioPreviewResponse로 변환합니다.
-     * <p>
-     * S3 키가 있는 경우 공개 URL로 변환하여 포함시킵니다.
-     * 썸네일 및 배경 이미지 URL을 함께 반환합니다.
-     *
-     * @param scenario 변환할 Scenario 엔티티
-     * @return S3 URL이 포함된 ScenarioPreviewResponse
-     */
-    private ScenarioPreviewResponse toScenarioPreviewResponse(Scenario scenario) {
-        String thumbnailUrl = null;
-        String backgroundUrl = null;
+    @CheckScenarioPermission(PermissionAction.DELETE)
+    @Transactional
+    public void delete(Long userId, Long scenarioId) {
 
-        if (scenario.getThumbnailS3Key() != null)
-            thumbnailUrl = s3Client.getPublicS3Url(scenario.getThumbnailS3Key());
-        if (scenario.getBackgroundS3Key() != null)
-            backgroundUrl = s3Client.getPublicS3Url(scenario.getBackgroundS3Key());
-
-        return ScenarioPreviewResponse.of(scenario, thumbnailUrl, backgroundUrl);
     }
 }
