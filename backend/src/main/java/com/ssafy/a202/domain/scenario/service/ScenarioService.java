@@ -4,6 +4,8 @@ import com.ssafy.a202.common.client.s3.S3Client;
 import com.ssafy.a202.common.entity.PageResponse;
 import com.ssafy.a202.common.exception.CustomException;
 import com.ssafy.a202.common.exception.ErrorCode;
+import com.ssafy.a202.common.security.roleAop.CheckScenarioPermission;
+import com.ssafy.a202.common.security.roleAop.PermissionAction;
 import com.ssafy.a202.domain.category.entity.Category;
 import com.ssafy.a202.domain.category.repository.CategoryRepository;
 import com.ssafy.a202.domain.scenario.dto.request.OptionRequest;
@@ -18,7 +20,6 @@ import com.ssafy.a202.domain.scenario.repository.OptionRepository;
 import com.ssafy.a202.domain.scenario.repository.ScenarioRepository;
 import com.ssafy.a202.domain.scenario.repository.SequenceRepository;
 import com.ssafy.a202.domain.user.entity.User;
-import com.ssafy.a202.domain.user.entity.UserRole;
 import com.ssafy.a202.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -102,6 +103,53 @@ public class ScenarioService {
                 .orElseThrow(() -> new CustomException(ErrorCode.SCENARIO_NOT_FOUND));
 
         return toScenarioPreviewResponse(scenario);
+    }
+
+    @CheckScenarioPermission(PermissionAction.UPDATE)
+    @Transactional
+    public void update(Long userId, Long scenarioId, ScenarioRequest request) {
+        // 1. Scenario 조회 (AOP에서 이미 권한 검증됨)
+        Scenario scenario = scenarioRepository.findByIdAndDeletedAtIsNull(scenarioId)
+                .orElseThrow(() -> new CustomException(ErrorCode.SCENARIO_NOT_FOUND));
+
+        // 2. Category 조회
+        Category category = categoryRepository.findById(request.categoryId())
+                .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
+
+        // 3. S3 키 검증
+        if (request.thumbnailS3Key() != null)
+            s3Client.validateS3FileExists(request.thumbnailS3Key());
+        if (request.backgroundS3Key() != null)
+            s3Client.validateS3FileExists(request.backgroundS3Key());
+
+        // 4. Scenario 업데이트
+        scenario.update(category, request);
+
+        // 5. 기존 Sequence와 Option 소프트 딜리트
+        List<Sequence> existingSequences = sequenceRepository.findByScenarioIdAndDeletedAtIsNull(scenarioId);
+        for (Sequence seq : existingSequences) {
+            // 먼저 Sequence에 속한 Option들 소프트 딜리트
+            List<Option> options = optionRepository.findBySequenceIdAndDeletedAtIsNull(seq.getId());
+            for (Option option : options) {
+                option.delete();
+            }
+            // 그 다음 Sequence 소프트 딜리트
+            seq.delete();
+        }
+
+        // 6. 새로운 Sequence와 Option 생성
+        for (SequenceRequest seq : request.sequences()) {
+            Sequence sequence = Sequence.from(scenario, seq);
+            sequenceRepository.save(sequence);
+
+            for (OptionRequest opt : seq.options()) {
+                if (opt.optionS3Key() != null) {
+                    s3Client.validateS3FileExists(opt.optionS3Key());
+                }
+                Option option = Option.from(sequence, opt);
+                optionRepository.save(option);
+            }
+        }
     }
 
     /**

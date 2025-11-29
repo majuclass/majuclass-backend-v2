@@ -57,4 +57,16 @@ public class ScenarioController {
                 response
         );
     }
+
+    @PutMapping("/{scenarioId}")
+    public ResponseEntity<ApiResponse<Void>> updateScenario(
+            @UserId Long userId,
+            @PathVariable Long scenarioId,
+            @RequestBody ScenarioRequest request
+    ) {
+        scenarioService.update(userId, scenarioId, request);
+        return ApiResponseEntity.success(
+                SuccessCode.SCENARIO_UPDATE_SUCCESS
+        );
+    }
 }

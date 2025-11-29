@@ -36,7 +36,8 @@ public enum ErrorCode {
     S3_FILE_NOT_FOUND(HttpStatus.BAD_REQUEST, "S3에 파일이 존재하지 않습니다. 파일을 먼저 업로드해주세요."),
 
     // 시나리오
-    SCENARIO_NOT_FOUND(HttpStatus.NOT_FOUND, "시나리오를 찾을 수 없습니다.");
+    SCENARIO_NOT_FOUND(HttpStatus.NOT_FOUND, "시나리오를 찾을 수 없습니다."),
+    SCENARIO_UPDATE_FORBIDDEN(HttpStatus.FORBIDDEN, "시나리오를 수정할 권한이 없습니다.");
 
     private final HttpStatus status;
     private final String message;
