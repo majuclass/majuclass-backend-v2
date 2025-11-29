@@ -165,16 +165,7 @@ public class ScenarioService {
         scenario.update(category, request);
 
         // 5. 기존 Sequence와 Option 소프트 딜리트
-        List<Sequence> existingSequences = sequenceRepository.findByScenarioIdAndDeletedAtIsNull(scenarioId);
-        for (Sequence seq : existingSequences) {
-            // 먼저 Sequence에 속한 Option들 소프트 딜리트
-            List<Option> options = optionRepository.findBySequenceIdAndDeletedAtIsNull(seq.getId());
-            for (Option option : options) {
-                option.delete();
-            }
-            // 그 다음 Sequence 소프트 딜리트
-            seq.delete();
-        }
+        softDeleteSequencesAndOptionsByScenarioId(scenarioId);
 
         // 6. 새로운 Sequence와 Option 생성
         for (SequenceRequest seq : request.sequences()) {
@@ -194,6 +185,67 @@ public class ScenarioService {
     @CheckScenarioPermission(PermissionAction.DELETE)
     @Transactional
     public void delete(Long userId, Long scenarioId) {
+        // 1. Scenario 조회
+        Scenario scenario = scenarioRepository.findByIdAndDeletedAtIsNull(scenarioId)
+                .orElseThrow(() -> new CustomException(ErrorCode.SCENARIO_NOT_FOUND));
 
+        // 2. 연관된 Sequence와 Option 소프트 딜리트
+        softDeleteSequencesAndOptionsByScenarioId(scenarioId);
+
+        // 3. Scenario 소프트 딜리트
+        scenario.delete();
     }
+
+//    /**
+//     * 시나리오 ID에 해당하는 모든 시퀀스와 옵션을 비활성화합니다.
+//     * <p>
+//     * 주어진 시나리오 ID와 연관된 모든 시퀀스 및 각 시퀀스에 속한 옵션들을 찾아 비활성화(소프트 삭제) 처리합니다.
+//     * 이 메서드는 먼저 시나리오 ID를 사용하여 활성 상태의 모든 시퀀스를 조회합니다.
+//     * 그런 다음, 각 시퀀스에 대해 연관된 모든 활성 옵션을 조회하여 비활성화합니다.
+//     * 마지막으로, 해당 시퀀스 자체도 비활성화합니다.
+//     * @param scenarioId 비활성화할 시퀀스와 옵션이 속한 시나리오의 ID
+//     */
+
+
+
+    /**
+     * 시나리오에 속한 모든 시퀀스와 옵션을 소프트 삭제합니다.
+     *
+     * <p>이 메서드는 특정 시나리오에 연결된 모든 학습 데이터를 안전하게 제거하기 위해 사용됩니다.
+     * 실제 데이터베이스에서 레코드를 삭제하는 대신 {@code deleted_at} 타임스탬프를 설정하여
+     * 데이터 무결성을 유지하면서 논리적으로 삭제합니다.</p>
+     *
+     * <p><b>동작 흐름:</b></p>
+     * <ol>
+     *   <li>시나리오 ID로 모든 활성 시퀀스 조회</li>
+     *   <li>각 시퀀스에 속한 모든 활성 옵션 소프트 삭제</li>
+     *   <li>시퀀스 소프트 삭제</li>
+     * </ol>
+     *
+     * <p><b>주의사항:</b></p>
+     * <ul>
+     *   <li>이 메서드는 트랜잭션 내에서 실행되어야 합니다</li>
+     *   <li>학생 학습 기록과의 무결성을 위해 실제 삭제가 아닌 소프트 삭제를 사용합니다</li>
+     * </ul>
+     *
+     * @param scenarioId 삭제할 시나리오의 ID (NotNull)
+     *
+     * @throws CustomException 시나리오를 찾을 수 없거나 삭제 처리 중 오류가 발생한 경우
+     *
+     * @since 1.0
+     */
+    private void softDeleteSequencesAndOptionsByScenarioId(Long scenarioId) {
+        List<Sequence> sequences = sequenceRepository.findByScenarioIdAndDeletedAtIsNull(scenarioId);
+        for (Sequence sequence : sequences) {
+            // Option 소프트 딜리트
+            List<Option> options = optionRepository.findBySequenceIdAndDeletedAtIsNull(sequence.getId());
+            for (Option option : options) {
+                option.delete();
+            }
+            // Sequence 소프트 딜리트
+            sequence.delete();
+        }
+    }
+
+
 }
