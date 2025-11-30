@@ -28,7 +28,7 @@ public class StudentPermissionAspect {
     public void checkPermission(JoinPoint joinPoint, CheckStudentPermission checkPermission) {
         Object[] args = joinPoint.getArgs();
         Long userId = (Long) args[0];
-        String studentId = (String) args[1];
+        Long studentId = (Long) args[1];
 
         User user = userRepository.findByIdAndDeletedAtIsNull(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));

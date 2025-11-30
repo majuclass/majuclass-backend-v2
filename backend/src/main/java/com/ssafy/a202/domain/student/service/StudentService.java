@@ -84,7 +84,7 @@ public class StudentService {
 
     @CheckStudentPermission(PermissionAction.UPDATE)
     @Transactional
-    public void update(Long userId, String studentId, StudentRequest request) {
+    public void update(Long userId, Long studentId, StudentRequest request) {
         User user = userRepository.findByIdAndDeletedAtIsNull(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
@@ -119,10 +119,9 @@ public class StudentService {
 
     @CheckStudentPermission(PermissionAction.DELETE)
     @Transactional
-    public void delete(Long userId, String studentId) {
+    public void delete(Long userId, Long studentId) {
         Student student = studentRepository.findByIdAndDeletedAtIsNull(studentId)
                 .orElseThrow(() -> new CustomException(ErrorCode.STUDENT_NOT_FOUND));
-
         student.delete();
     }
 }

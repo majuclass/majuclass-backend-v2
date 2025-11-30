@@ -53,7 +53,7 @@ public class StudentController {
     @PutMapping("/{studentId}")
     public ResponseEntity<ApiResponse<Void>> updateStudent(
             @UserId Long userId,
-            @PathVariable String studentId,
+            @PathVariable Long studentId,
             @RequestBody StudentRequest request
     ) {
         studentService.update(userId, studentId, request);
@@ -65,7 +65,7 @@ public class StudentController {
     @DeleteMapping("/{studentId}")
     public ResponseEntity<ApiResponse<Void>> deleteStudent(
             @UserId Long userId,
-            @PathVariable String studentId
+            @PathVariable Long studentId
     ) {
         studentService.delete(userId, studentId);
         return ApiResponseEntity.success(

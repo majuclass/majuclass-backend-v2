@@ -15,5 +15,5 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
 
     Page<Student> findByUserIdAndDeletedAtIsNull(Long userId, Pageable pageable);
 
-    Optional<Student> findByIdAndDeletedAtIsNull(String studentId);
+    Optional<Student> findByIdAndDeletedAtIsNull(Long studentId);
 }
