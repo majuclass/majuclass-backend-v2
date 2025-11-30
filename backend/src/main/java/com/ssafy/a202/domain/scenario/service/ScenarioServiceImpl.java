@@ -1,21 +1,17 @@
 package com.ssafy.a202.domain.scenario.service;
 
-import com.ssafy.a202.domain.presignedUrl.client.S3Client;
 import com.ssafy.a202.common.entity.PageResponse;
 import com.ssafy.a202.common.exception.CustomException;
 import com.ssafy.a202.common.exception.ErrorCode;
-import com.ssafy.a202.common.roleAop.scenarioPermission.CheckScenarioPermission;
 import com.ssafy.a202.common.roleAop.PermissionAction;
+import com.ssafy.a202.common.roleAop.scenarioPermission.CheckScenarioPermission;
 import com.ssafy.a202.domain.category.entity.Category;
 import com.ssafy.a202.domain.category.repository.CategoryRepository;
+import com.ssafy.a202.domain.presignedUrl.client.S3Client;
 import com.ssafy.a202.domain.scenario.dto.request.OptionRequest;
 import com.ssafy.a202.domain.scenario.dto.request.ScenarioRequest;
 import com.ssafy.a202.domain.scenario.dto.request.SequenceRequest;
-import com.ssafy.a202.domain.scenario.dto.response.ScenarioCreateResponse;
-import com.ssafy.a202.domain.scenario.dto.response.ScenarioDetailResponse;
-import com.ssafy.a202.domain.scenario.dto.response.ScenarioPreviewResponse;
-import com.ssafy.a202.domain.scenario.dto.response.SequenceResponse;
-import com.ssafy.a202.domain.scenario.dto.response.OptionResponse;
+import com.ssafy.a202.domain.scenario.dto.response.*;
 import com.ssafy.a202.domain.scenario.entity.Option;
 import com.ssafy.a202.domain.scenario.entity.Scenario;
 import com.ssafy.a202.domain.scenario.entity.Sequence;
