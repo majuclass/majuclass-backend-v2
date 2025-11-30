@@ -22,6 +22,9 @@ public enum SuccessCode {
     // 시나리오 난이도,
     DIFFICULTY_LEVEL_GET_SUCCESS("시나리오 난이도 목록을 성공적으로 조회했습니다."),
 
+    // 카테고리
+    CATEGORY_LIST_SUCCESS("카테고리 목록을 성공적으로 조회했습니다."),
+
     // S3
     PRESIGNED_URL_GET_PUT_SUCCESS("PUT용 Presigned URL을 성공적으로 발급했습니다."),
 
