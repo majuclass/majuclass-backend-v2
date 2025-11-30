@@ -116,4 +116,13 @@ public class StudentService {
 
         student.update(homeroomTeacher, request);
     }
+
+    @CheckStudentPermission(PermissionAction.DELETE)
+    @Transactional
+    public void delete(Long userId, String studentId) {
+        Student student = studentRepository.findByIdAndDeletedAtIsNull(studentId)
+                .orElseThrow(() -> new CustomException(ErrorCode.STUDENT_NOT_FOUND));
+
+        student.delete();
+    }
 }

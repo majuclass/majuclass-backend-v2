@@ -61,4 +61,15 @@ public class StudentController {
                 SuccessCode.STUDENT_UPDATE_SUCCESS
         );
     }
+
+    @DeleteMapping("/{studentId}")
+    public ResponseEntity<ApiResponse<Void>> deleteStudent(
+            @UserId Long userId,
+            @PathVariable String studentId
+    ) {
+        studentService.delete(userId, studentId);
+        return ApiResponseEntity.success(
+                SuccessCode.STUDENT_DELETE_SUCCESS
+        );
+    }
 }
