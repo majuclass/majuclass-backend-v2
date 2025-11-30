@@ -31,7 +31,7 @@ public class StudentController {
     // todo: csv, excel 등 파일 일괄 등록 기능도 있음.
     @PostMapping
     public ResponseEntity<ApiResponse<StudentCreateResponse>> createStudent(
-            @UserId Long userId,
+            @Parameter(hidden = true) @UserId Long userId,
             @RequestBody StudentRequest request
     ) {
         StudentCreateResponse response = studentService.create(userId, request);
@@ -45,7 +45,7 @@ public class StudentController {
     @Operation(summary = "학생 목록 조회", description = "선생님의 학생 목록을 페이징하여 조회합니다.")
     @GetMapping
     public ResponseEntity<ApiResponse<PageResponse<StudentPreviewResponse>>> getStudents(
-            @UserId Long userId,
+            @Parameter(hidden = true) @UserId Long userId,
             @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC)
             Pageable pageable
     ) {
@@ -59,7 +59,7 @@ public class StudentController {
     @Operation(summary = "학생 정보 수정", description = "기존 학생의 정보를 수정합니다.")
     @PutMapping("/{studentId}")
     public ResponseEntity<ApiResponse<Void>> updateStudent(
-            @UserId Long userId,
+            @Parameter(hidden = true) @UserId Long userId,
             @Parameter(description = "수정할 학생 ID", required = true, example = "1")
             @PathVariable Long studentId,
             @RequestBody StudentRequest request
@@ -73,7 +73,7 @@ public class StudentController {
     @Operation(summary = "학생 삭제", description = "학생을 삭제합니다.")
     @DeleteMapping("/{studentId}")
     public ResponseEntity<ApiResponse<Void>> deleteStudent(
-            @UserId Long userId,
+            @Parameter(hidden = true) @UserId Long userId,
             @Parameter(description = "삭제할 학생 ID", required = true, example = "1")
             @PathVariable Long studentId
     ) {

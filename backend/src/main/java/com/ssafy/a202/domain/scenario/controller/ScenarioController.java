@@ -31,7 +31,7 @@ public class ScenarioController {
     @Operation(summary = "시나리오 생성", description = "새로운 시나리오를 생성합니다.")
     @PostMapping
     public ResponseEntity<ApiResponse<ScenarioCreateResponse>> createScenario(
-            @UserId Long userId,
+            @Parameter(hidden = true) @UserId Long userId,
             @RequestBody ScenarioRequest request
     ) {
         ScenarioCreateResponse response = scenarioService.create(userId, request);
@@ -70,7 +70,7 @@ public class ScenarioController {
     @Operation(summary = "시나리오 수정", description = "기존 시나리오를 수정합니다.")
     @PutMapping("/{scenarioId}")
     public ResponseEntity<ApiResponse<Void>> updateScenario(
-            @UserId Long userId,
+            @Parameter(hidden = true) @UserId Long userId,
             @Parameter(description = "수정할 시나리오 ID", required = true, example = "1")
             @PathVariable Long scenarioId,
             @RequestBody ScenarioRequest request
@@ -84,7 +84,7 @@ public class ScenarioController {
     @Operation(summary = "시나리오 삭제", description = "시나리오를 삭제합니다.")
     @DeleteMapping("/{scenarioId}")
     public ResponseEntity<ApiResponse<Void>> deleteScenario(
-            @UserId Long userId,
+            @Parameter(hidden = true) @UserId Long userId,
             @Parameter(description = "삭제할 시나리오 ID", required = true, example = "1")
             @PathVariable Long scenarioId
     ) {
