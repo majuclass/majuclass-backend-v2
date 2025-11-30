@@ -9,6 +9,9 @@ import com.ssafy.a202.domain.student.dto.request.StudentRequest;
 import com.ssafy.a202.domain.student.dto.response.StudentCreateResponse;
 import com.ssafy.a202.domain.student.dto.response.StudentPreviewResponse;
 import com.ssafy.a202.domain.student.service.StudentService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -19,10 +22,12 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/students")
 @RequiredArgsConstructor
+@Tag(name = "Student", description = "학생 관리 API")
 public class StudentController {
 
     private final StudentService studentService;
 
+    @Operation(summary = "학생 생성", description = "새로운 학생을 등록합니다.")
     // todo: csv, excel 등 파일 일괄 등록 기능도 있음.
     @PostMapping
     public ResponseEntity<ApiResponse<StudentCreateResponse>> createStudent(
@@ -37,6 +42,7 @@ public class StudentController {
         );
     }
 
+    @Operation(summary = "학생 목록 조회", description = "선생님의 학생 목록을 페이징하여 조회합니다.")
     @GetMapping
     public ResponseEntity<ApiResponse<PageResponse<StudentPreviewResponse>>> getStudents(
             @UserId Long userId,
@@ -50,9 +56,11 @@ public class StudentController {
         );
     }
 
+    @Operation(summary = "학생 정보 수정", description = "기존 학생의 정보를 수정합니다.")
     @PutMapping("/{studentId}")
     public ResponseEntity<ApiResponse<Void>> updateStudent(
             @UserId Long userId,
+            @Parameter(description = "수정할 학생 ID", required = true, example = "1")
             @PathVariable Long studentId,
             @RequestBody StudentRequest request
     ) {
@@ -62,9 +70,11 @@ public class StudentController {
         );
     }
 
+    @Operation(summary = "학생 삭제", description = "학생을 삭제합니다.")
     @DeleteMapping("/{studentId}")
     public ResponseEntity<ApiResponse<Void>> deleteStudent(
             @UserId Long userId,
+            @Parameter(description = "삭제할 학생 ID", required = true, example = "1")
             @PathVariable Long studentId
     ) {
         studentService.delete(userId, studentId);
