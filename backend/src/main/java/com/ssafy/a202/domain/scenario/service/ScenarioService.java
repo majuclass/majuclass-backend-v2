@@ -1,8 +1,8 @@
 package com.ssafy.a202.domain.scenario.service;
 
 import com.ssafy.a202.common.entity.PageResponse;
-import com.ssafy.a202.common.security.roleAop.CheckScenarioPermission;
-import com.ssafy.a202.common.security.roleAop.PermissionAction;
+import com.ssafy.a202.common.roleAop.scenarioPermission.CheckScenarioPermission;
+import com.ssafy.a202.common.roleAop.PermissionAction;
 import com.ssafy.a202.domain.scenario.dto.request.ScenarioRequest;
 import com.ssafy.a202.domain.scenario.dto.response.ScenarioCreateResponse;
 import com.ssafy.a202.domain.scenario.dto.response.ScenarioDetailResponse;

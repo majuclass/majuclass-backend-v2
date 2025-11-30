@@ -1,4 +1,6 @@
-package com.ssafy.a202.common.security.roleAop;
+package com.ssafy.a202.common.roleAop.scenarioPermission;
+
+import com.ssafy.a202.common.roleAop.PermissionAction;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

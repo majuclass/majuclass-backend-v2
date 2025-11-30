@@ -1,7 +1,8 @@
-package com.ssafy.a202.common.security.roleAop;
+package com.ssafy.a202.common.roleAop.scenarioPermission;
 
 import com.ssafy.a202.common.exception.CustomException;
 import com.ssafy.a202.common.exception.ErrorCode;
+import com.ssafy.a202.common.roleAop.PermissionAction;
 import com.ssafy.a202.domain.scenario.entity.Scenario;
 import com.ssafy.a202.domain.scenario.repository.ScenarioRepository;
 import com.ssafy.a202.domain.user.entity.User;
