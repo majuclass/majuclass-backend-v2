@@ -1,7 +1,5 @@
 package com.ssafy.a202.common.entity;
 
-import com.ssafy.a202.domain.scenario.dto.response.ScenarioPreviewResponse;
-import com.ssafy.a202.domain.scenario.entity.Scenario;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -15,27 +13,15 @@ public record PageResponse<T>(
         boolean first,
         boolean last
 ) {
-    public static <T> PageResponse<T> of(Page<T> page) {
+    public static <E, T> PageResponse<T> of(Page<E> page, List<T> responseList) {
         return new PageResponse<>(
-                page.getContent(),
+                responseList,
                 page.getNumber(),
                 page.getSize(),
                 page.getTotalElements(),
                 page.getTotalPages(),
                 page.isFirst(),
                 page.isLast()
-        );
-    }
-
-    public static PageResponse<ScenarioPreviewResponse> of (Page<Scenario> scenarioPage, List<ScenarioPreviewResponse> responseList) {
-        return new PageResponse<>(
-                responseList,
-                scenarioPage.getNumber(),
-                scenarioPage.getSize(),
-                scenarioPage.getTotalElements(),
-                scenarioPage.getTotalPages(),
-                scenarioPage.isFirst(),
-                scenarioPage.isLast()
         );
     }
 }

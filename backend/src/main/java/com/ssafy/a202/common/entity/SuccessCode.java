@@ -12,16 +12,24 @@ public enum SuccessCode {
     LOGIN_SUCCESS("로그인이 성공적으로 처리되었습니다."),
     SIGNUP_SUCCESS("회원가입이 성공적으로 완료되었습니다."),
 
-    // 시나리오
+    // 시나리오,
     SCENARIO_CREATE_SUCCESS("시나리오가 성공적으로 생성되었습니다."),
     SCENARIO_GET_LIST_SUCCESS("시나리오 목록을 성공적으로 조회했습니다."),
     SCENARIO_GET_DETAIL_SUCCESS("시나리오 상세를 성공적으로 조회했습니다."),
     SCENARIO_UPDATE_SUCCESS("시나리오가 성공적으로 수정되었습니다."),
     SCENARIO_DELETE_SUCCESS("시나리오가 성공적으로 삭제되었습니다."),
 
-    // 시나리오 난이도
+    // 시나리오 난이도,
     DIFFICULTY_LEVEL_GET_SUCCESS("시나리오 난이도 목록을 성공적으로 조회했습니다."),
-    PRESIGNED_URL_GET_PUT_SUCCESS("PUT용 Presigned URL을 성공적으로 발급했습니다.");
+
+    // S3
+    PRESIGNED_URL_GET_PUT_SUCCESS("PUT용 Presigned URL을 성공적으로 발급했습니다."),
+
+    // 학생
+    STUDENT_CREATED_SUCCESS("학생이 성공적으로 생성되었습니다."),
+    STUDENT_GET_LIST_SUCCESS("학생 목록을 성공적으로 조회했습니다."),
+    STUDENT_UPDATE_SUCCESS("학생이 성공적으로 수정되었습니다."),
+    STUDENT_DELETE_SUCCESS("학생이 성공적으로 삭제되었습니다.");
 
     private final String message;
 }

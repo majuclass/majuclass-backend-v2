@@ -37,8 +37,14 @@ public enum ErrorCode {
 
     // 시나리오
     SCENARIO_NOT_FOUND(HttpStatus.NOT_FOUND, "시나리오를 찾을 수 없습니다."),
-    SCENARIO_UPDATE_FORBIDDEN(HttpStatus.FORBIDDEN, "시나리오를 수정할 권한이 없습니다."),
-    SCENARIO_PERMISSION_DENIED(HttpStatus.FORBIDDEN, "시나리오에 대한 권한이 없습니다.");
+    SCENARIO_PERMISSION_DENIED(HttpStatus.FORBIDDEN, "시나리오에 대한 권한이 없습니다."),
+
+    // 학생
+    STUDENT_NOT_FOUND(HttpStatus.NOT_FOUND, "학생을 찾을 수 없습니다."),
+    STUDENT_PERMISSION_DENIED(HttpStatus.FORBIDDEN, "학생에 대한 권한이 없습니다."),
+    TEACHER_ID_REQUIRED(HttpStatus.BAD_REQUEST, "학생 담당 선생님의 ID를 입력해야 합니다."),
+
+    PERMISSION_DENIED(HttpStatus.FORBIDDEN, "권한이 없습니다.");
 
     private final HttpStatus status;
     private final String message;
