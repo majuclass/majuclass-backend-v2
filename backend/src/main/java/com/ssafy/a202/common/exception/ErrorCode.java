@@ -44,7 +44,14 @@ public enum ErrorCode {
     STUDENT_PERMISSION_DENIED(HttpStatus.FORBIDDEN, "학생에 대한 권한이 없습니다."),
     TEACHER_ID_REQUIRED(HttpStatus.BAD_REQUEST, "학생 담당 선생님의 ID를 입력해야 합니다."),
 
-    PERMISSION_DENIED(HttpStatus.FORBIDDEN, "권한이 없습니다.");
+    PERMISSION_DENIED(HttpStatus.FORBIDDEN, "권한이 없습니다."),
+
+    // 세션
+    SESSION_NOT_FOUND(HttpStatus.NOT_FOUND, "세션을 찾을 수 없습니다."),
+    SESSION_UPDATE_DENIED(HttpStatus.FORBIDDEN, "세션이 진행중 상태가 아닙니다."),
+    SESSION_FINISH_FAIL(HttpStatus.FORBIDDEN, "세션을 종료할 수 없습니다."),
+    SESSION_ABORT_FAIL(HttpStatus.FORBIDDEN, "세션을 중단할 수 없습니다.");
+
 
     private final HttpStatus status;
     private final String message;

@@ -29,7 +29,15 @@ public enum SuccessCode {
     STUDENT_CREATED_SUCCESS("학생이 성공적으로 생성되었습니다."),
     STUDENT_GET_LIST_SUCCESS("학생 목록을 성공적으로 조회했습니다."),
     STUDENT_UPDATE_SUCCESS("학생이 성공적으로 수정되었습니다."),
-    STUDENT_DELETE_SUCCESS("학생이 성공적으로 삭제되었습니다.");
+    STUDENT_DELETE_SUCCESS("학생이 성공적으로 삭제되었습니다."),
+
+    // 세션
+    SESSION_CREATE_SUCCESS("세션이 성공적으로 시작되었습니다."),
+    SESSION_FINISH_SUCCESS("세션이 성공적으로 완료되었습니다."),
+    SESSION_ABORT_SUCCESS("세션이 성공적으로 중단되었습니다."),
+
+    // 세션 정답
+    ANSWER_CREATE_SUCCESS("정답이 성공적으로 저장되었습니다.");
 
     private final String message;
 }
