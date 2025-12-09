@@ -5,27 +5,27 @@
 
 ## 📚 프로젝트 소개
 
+발달장애 사회적 상황 시뮬레이션 서비스
+
+---
+
+## 🎨 미리보기
+
+<img src="./assets/images/scenario_preview1" alt="dutymate-architecture" width="1000px" />
+<img src="./assets/images/scenario_preview2" alt="dutymate-architecture" width="1000px" />
+<img src="./assets/images/scenario_preview3" alt="dutymate-architecture" width="1000px" />
+
+
+## 🏗️ ERD
+<img src="./assets/images/erd-ver2" alt="dutymate-architecture" width="1000px" />
+
+## 📝 프로젝트 개요
+마주교실은 발달장애를 가진 학생들이 일상에서 일어나는 다양한 상황을 안전하게 연습할 수 있는 시뮬레이션 기반 교육 플랫폼입니다. 
+학생들은 시나리오를 체험하고 선생님은 시나리오를 생성하고 학생들을 관리할 수 있습니다. 
+
 **마주교실**은 발달장애·통합학급 학생들이 일상 사회 상황을 안전하게 연습할 수 있는 시뮬레이션 기반 교육 플랫폼입니다. 교사는 카페 주문, 영화표 구매 등 실생활 시나리오를 생성하고, 학생들은 난이도별 시뮬레이션을 통해 사회적 상호작용을 학습합니다.
----
 
-## 🏗️ 시스템 아키텍처
 
-```
-마주교실 시스템
-├── Frontend (React + TypeScript)
-│   └── 포트: 5173 (개발) / 80 (프로덕션)
-├── Backend API (Spring Boot)
-│   └── 포트: 8080
-├── AI Service (FastAPI)
-│   └── 포트: 8000
-├── Database (MySQL 8.4)
-│   └── 포트: 3306
-├── Cache (Redis 7)
-│   └── 포트: 6379
-└── Storage (AWS S3, ChromaDB)
-```
-
----
 
 ## 🛠️ 기술 스택
 
