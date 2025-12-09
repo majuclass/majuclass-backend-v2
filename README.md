@@ -12,6 +12,13 @@
 <img src="./assets/images/scenario_preview2.png" alt="scenario_preview2" width="600px" />
 <img src="./assets/images/scenario_preview3.png" alt="scenario_preview3" width="600px" />
 
+## 🏫 한국육영학교 현장사용
+
+<p>
+  <img src="./assets/images/demo_onSite1.png" alt="scenario_preview3" width="45%" />
+  <img src="./assets/images/demo_onSite2.png" alt="scenario_preview3" width="45%" />
+</p>
+
 
 ## 🏗️ ERD
 <img src="./assets/images/erd-ver2.png" alt="erd-ver2" width="800px" />
