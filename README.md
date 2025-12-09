@@ -11,9 +11,9 @@
 
 ## 🎨 미리보기
 
-<img src="./assets/images/scenario_preview1" alt="dutymate-architecture" width="1000px" />
-<img src="./assets/images/scenario_preview2" alt="dutymate-architecture" width="1000px" />
-<img src="./assets/images/scenario_preview3" alt="dutymate-architecture" width="1000px" />
+<img src="./assets/images/scenario_preview1" alt="scenario_preview1" width="1000px" />
+<img src="./assets/images/scenario_preview2" alt="scenario_preview2" width="1000px" />
+<img src="./assets/images/scenario_preview3" alt="scenario_preview3" width="1000px" />
 
 
 ## 🏗️ ERD
