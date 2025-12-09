@@ -17,7 +17,7 @@
 
 
 ## 🏗️ ERD
-<img src="./assets/images/erd-ver2" alt="dutymate-architecture" width="1000px" />
+<img src="./assets/images/erd-ver2" alt="erd-ver2" width="1000px" />
 
 ## 📝 프로젝트 개요
 마주교실은 발달장애를 가진 학생들이 일상에서 일어나는 다양한 상황을 안전하게 연습할 수 있는 시뮬레이션 기반 교육 플랫폼입니다. 
